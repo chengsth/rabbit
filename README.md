@@ -15,12 +15,19 @@ no internet required.
 
 ## 📖 Bonus: Picture Word Book
 There's also a cute **picture-and-word book** for little learners in
-`picture-book.html`. Flip through the alphabet from **A to Z** — each page shows
-a big picture, the letter, and the word (with the first letter highlighted).
+`picture-book.html`. It holds six mini-books you can switch between with the tabs
+at the top:
+
+- **ABC** — the alphabet A to Z (A is for Apple, B is for Butterfly, …)
+- **Animals**, **Food**, **Colors**, **Shapes** — themed first words
+- **Numbers** — a counting book (page 3 shows ⭐⭐⭐ = *Three*)
+
+Each page shows a big picture, the letter, and the word with its first letter
+highlighted.
 
 - **Tap a picture** (or press <kbd>Space</kbd>) to hear the word read aloud.
 - **Turn pages** with the ◀ ▶ buttons, the arrow keys, or a swipe on touch.
-- Press **Read to me** to auto-play through every page, or tap a letter in the
+- Press **Read to me** to auto-play through the whole book, or tap an item in the
   strip to jump straight to it.
 
 Just open `picture-book.html` in any browser — same as the game, no setup needed.

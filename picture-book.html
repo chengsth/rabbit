@@ -22,36 +22,47 @@
     display:flex;align-items:center;justify-content:center;
     padding:14px;min-height:100%;
   }
-  .book{width:100%;max-width:560px;display:flex;flex-direction:column;gap:14px;}
+  .book{width:100%;max-width:560px;display:flex;flex-direction:column;gap:13px;}
 
   /* ---------- header ---------- */
   .head{display:flex;align-items:center;gap:10px;justify-content:center;
     text-align:center;flex-wrap:wrap;}
-  .head h1{margin:0;font-size:23px;font-weight:800;color:var(--pink2);letter-spacing:.2px;}
-  .head .mascot{font-size:30px;line-height:1;filter:drop-shadow(0 3px 4px rgba(180,120,160,.35));}
+  .head h1{margin:0;font-size:22px;font-weight:800;color:var(--pink2);letter-spacing:.2px;}
+  .head .mascot{font-size:29px;line-height:1;filter:drop-shadow(0 3px 4px rgba(180,120,160,.35));}
   .sub{margin:-4px 0 0;text-align:center;font-size:13.5px;color:var(--muted);}
+
+  /* ---------- collection chips ---------- */
+  .tabs{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;}
+  .tab{border:none;border-radius:15px;padding:9px 14px;font-family:inherit;font-weight:800;
+    font-size:14px;color:var(--muted);background:var(--cream);cursor:pointer;transition:.12s;
+    display:flex;align-items:center;gap:6px;box-shadow:0 8px 20px -16px rgba(180,120,160,.6);}
+  .tab:hover{transform:translateY(-1px);color:var(--ink);}
+  .tab.on{color:#fff;background:linear-gradient(180deg,var(--pink),var(--pink2));
+    box-shadow:0 8px 16px -8px var(--pink2);}
 
   /* ---------- the page ---------- */
   .page{position:relative;background:var(--cream);border-radius:30px;
-    padding:22px 22px 20px;box-shadow:0 22px 48px -20px rgba(180,120,160,.55);
+    padding:20px 22px 18px;box-shadow:0 22px 48px -20px rgba(180,120,160,.55);
     overflow:hidden;}
   .page::after{content:"";position:absolute;inset:0;border-radius:30px;
     border:3px solid rgba(255,255,255,.7);pointer-events:none;}
-  .letter{display:flex;align-items:baseline;justify-content:center;gap:6px;
-    font-weight:800;line-height:1;margin-bottom:6px;}
-  .letter .big{font-size:56px;}
-  .letter .small{font-size:34px;opacity:.65;}
+  .letter{display:flex;align-items:baseline;justify-content:center;gap:5px;
+    font-weight:800;line-height:1;margin-bottom:4px;}
+  .letter .big{font-size:52px;}
+  .letter .small{font-size:32px;opacity:.6;}
 
-  .pic{margin:6px auto 4px;width:210px;height:210px;border-radius:50%;
-    display:grid;place-items:center;cursor:pointer;user-select:none;
+  .pic{position:relative;margin:4px auto 2px;width:210px;height:210px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:2px;padding:14px;
+    cursor:pointer;user-select:none;
     box-shadow:inset 0 6px 22px rgba(0,0,0,.05), 0 14px 30px -16px rgba(120,80,120,.5);
     transition:transform .16s ease;}
   .pic:active{transform:scale(.95);}
-  .pic .emoji{font-size:118px;line-height:1;filter:drop-shadow(0 8px 10px rgba(120,80,120,.28));}
+  .pic .emoji{line-height:1;filter:drop-shadow(0 8px 10px rgba(120,80,120,.28));}
 
-  .word{text-align:center;margin:8px 0 2px;font-size:44px;font-weight:800;letter-spacing:.5px;}
+  .word{text-align:center;margin:8px 0 0;font-size:42px;font-weight:800;letter-spacing:.5px;}
   .word .first{color:var(--pink2);}
-  .sayrow{display:flex;justify-content:center;margin-top:8px;}
+  .phonics{text-align:center;margin:3px 0 0;font-size:15px;font-weight:700;color:var(--muted);}
+  .sayrow{display:flex;justify-content:center;margin-top:10px;}
   .say{border:none;border-radius:18px;padding:11px 20px;font-family:inherit;
     font-weight:800;font-size:16px;color:#fff;cursor:pointer;display:flex;align-items:center;gap:8px;
     background:linear-gradient(180deg,var(--lav),var(--lav2));
@@ -62,8 +73,7 @@
   .page.turn{animation:turn .34s ease;}
   @keyframes turn{0%{opacity:0;transform:translateX(var(--dir,26px)) scale(.985);}100%{opacity:1;transform:none;}}
 
-  /* sparkles on the picture */
-  .spark{position:absolute;font-size:22px;pointer-events:none;animation:pop .7s ease forwards;}
+  .spark{position:absolute;font-size:22px;pointer-events:none;animation:pop .7s ease forwards;z-index:2;}
   @keyframes pop{0%{opacity:0;transform:scale(.2) translateY(0);}
     30%{opacity:1;}100%{opacity:0;transform:scale(1.2) translateY(-26px);}}
 
@@ -87,23 +97,22 @@
   .read:hover{filter:brightness(1.04);transform:translateY(-1px);}
   .read.stop{background:linear-gradient(180deg,var(--amber),#f59a2e);box-shadow:0 9px 18px -8px #f59a2e;}
 
-  /* ---------- alphabet strip ---------- */
-  .strip{display:grid;grid-template-columns:repeat(13,1fr);gap:5px;
-    background:var(--cream);border-radius:20px;padding:12px;
+  /* ---------- quick-jump strip ---------- */
+  .strip{display:grid;gap:5px;background:var(--cream);border-radius:20px;padding:12px;
     box-shadow:0 10px 24px -18px rgba(180,120,160,.6);}
   .strip button{border:none;border-radius:11px;padding:0;aspect-ratio:1;cursor:pointer;
     font-family:inherit;font-weight:800;font-size:14px;color:var(--muted);
-    background:var(--cream2);transition:.1s;}
+    background:var(--cream2);transition:.1s;display:grid;place-items:center;}
   .strip button:hover{color:var(--ink);transform:translateY(-1px);}
   .strip button.on{color:#fff;background:linear-gradient(180deg,var(--lav),var(--lav2));
     box-shadow:0 5px 12px -5px var(--lav2);}
+  .strip button.emoji{font-size:19px;}
 
   .note{text-align:center;font-size:12px;color:var(--muted);margin:2px 0 0;line-height:1.4;}
 
   @media(max-width:520px){
-    .head h1{font-size:19px;} .word{font-size:38px;}
-    .pic{width:180px;height:180px;} .pic .emoji{font-size:100px;}
-    .strip{grid-template-columns:repeat(9,1fr);}
+    .head h1{font-size:18px;} .word{font-size:36px;}
+    .pic{width:184px;height:184px;}
     .arrow{width:52px;height:52px;}
   }
 </style>
@@ -115,12 +124,15 @@
     <h1>Rabbit &amp; Memo's Picture Word Book</h1>
     <span class="mascot">🐱</span>
   </div>
-  <p class="sub">Tap a picture to hear the word. Learn your ABCs from A to Z!</p>
+  <p class="sub">Tap a picture to hear the word. Pick a book below and flip away!</p>
+
+  <div class="tabs" id="tabs"></div>
 
   <div class="page" id="page">
     <div class="letter"><span class="big" id="lBig">Aa</span></div>
-    <div class="pic" id="pic"><span class="emoji" id="emoji">🍎</span></div>
+    <div class="pic" id="pic"></div>
     <div class="word" id="word">Apple</div>
+    <div class="phonics" id="phonics">A is for Apple</div>
     <div class="sayrow"><button class="say" id="sayBtn">🔊 Say it</button></div>
   </div>
 
@@ -138,58 +150,97 @@
 </div>
 
 <script>
-// ---------- the picture words (A to Z) ----------
-const WORDS = [
-  {l:'A', word:'Apple',     emoji:'🍎'},
-  {l:'B', word:'Butterfly', emoji:'🦋'},
-  {l:'C', word:'Carrot',    emoji:'🥕'},
-  {l:'D', word:'Duck',      emoji:'🦆'},
-  {l:'E', word:'Elephant',  emoji:'🐘'},
-  {l:'F', word:'Flower',    emoji:'🌸'},
-  {l:'G', word:'Grapes',    emoji:'🍇'},
-  {l:'H', word:'House',     emoji:'🏠'},
-  {l:'I', word:'Ice cream', emoji:'🍦'},
-  {l:'J', word:'Jellyfish', emoji:'🪼'},
-  {l:'K', word:'Kite',      emoji:'🪁'},
-  {l:'L', word:'Lemon',     emoji:'🍋'},
-  {l:'M', word:'Moon',      emoji:'🌙'},
-  {l:'N', word:'Nest',      emoji:'🪺'},
-  {l:'O', word:'Orange',    emoji:'🍊'},
-  {l:'P', word:'Penguin',   emoji:'🐧'},
-  {l:'Q', word:'Queen',     emoji:'👑'},
-  {l:'R', word:'Rabbit',    emoji:'🐰'},
-  {l:'S', word:'Star',      emoji:'⭐'},
-  {l:'T', word:'Tree',      emoji:'🌳'},
-  {l:'U', word:'Umbrella',  emoji:'☂️'},
-  {l:'V', word:'Violin',    emoji:'🎻'},
-  {l:'W', word:'Whale',     emoji:'🐳'},
-  {l:'X', word:'Xylophone', emoji:'🎼'},
-  {l:'Y', word:'Yarn',      emoji:'🧶'},
-  {l:'Z', word:'Zebra',     emoji:'🦓'},
-];
+// ---------- helper to turn a word list into items ----------
+const A = (word, emoji) => ({ word, emoji });
+
+// ---------- the collections (little "books") ----------
+const COLLECTIONS = {
+  abc: { name:'ABC', icon:'🔤', items:[
+    A('Apple','🍎'), A('Butterfly','🦋'), A('Carrot','🥕'), A('Duck','🦆'),
+    A('Elephant','🐘'), A('Flower','🌸'), A('Grapes','🍇'), A('House','🏠'),
+    A('Ice cream','🍦'), A('Jellyfish','🪼'), A('Kite','🪁'), A('Lemon','🍋'),
+    A('Moon','🌙'), A('Nest','🪺'), A('Orange','🍊'), A('Penguin','🐧'),
+    A('Queen','👑'), A('Rabbit','🐰'), A('Star','⭐'), A('Tree','🌳'),
+    A('Umbrella','☂️'), A('Violin','🎻'), A('Whale','🐳'), A('Xylophone','🎼'),
+    A('Yarn','🧶'), A('Zebra','🦓'),
+  ]},
+  animals: { name:'Animals', icon:'🐾', items:[
+    A('Cat','🐱'), A('Dog','🐶'), A('Rabbit','🐰'), A('Duck','🦆'),
+    A('Fish','🐟'), A('Bear','🐻'), A('Lion','🦁'), A('Frog','🐸'),
+    A('Bird','🐦'), A('Cow','🐮'), A('Pig','🐷'), A('Owl','🦉'),
+  ]},
+  food: { name:'Food', icon:'🍓', items:[
+    A('Apple','🍎'), A('Banana','🍌'), A('Carrot','🥕'), A('Strawberry','🍓'),
+    A('Grapes','🍇'), A('Bread','🍞'), A('Cheese','🧀'), A('Egg','🥚'),
+    A('Milk','🥛'), A('Cookie','🍪'),
+  ]},
+  colors: { name:'Colors', icon:'🎨', items:[
+    A('Red','🟥'), A('Orange','🟧'), A('Yellow','🟨'), A('Green','🟩'),
+    A('Blue','🟦'), A('Purple','🟪'), A('Pink','🩷'), A('Brown','🟫'),
+    A('Black','⬛'), A('White','⬜'),
+  ]},
+  shapes: { name:'Shapes', icon:'⭐', items:[
+    A('Circle','🔵'), A('Square','🟦'), A('Triangle','🔺'),
+    A('Star','⭐'), A('Heart','❤️'), A('Diamond','🔷'),
+  ]},
+  numbers: { name:'Numbers', icon:'🔢', numeric:true, items:[
+    {tag:'1', word:'One',   emoji:'🍎', count:1,  things:'apple'},
+    {tag:'2', word:'Two',   emoji:'🐰', count:2,  things:'rabbits'},
+    {tag:'3', word:'Three', emoji:'⭐', count:3,  things:'stars'},
+    {tag:'4', word:'Four',  emoji:'🌸', count:4,  things:'flowers'},
+    {tag:'5', word:'Five',  emoji:'🍓', count:5,  things:'berries'},
+    {tag:'6', word:'Six',   emoji:'🐱', count:6,  things:'cats'},
+    {tag:'7', word:'Seven', emoji:'🎈', count:7,  things:'balloons'},
+    {tag:'8', word:'Eight', emoji:'🍋', count:8,  things:'lemons'},
+    {tag:'9', word:'Nine',  emoji:'🐟', count:9,  things:'fish'},
+    {tag:'10',word:'Ten',   emoji:'🐢', count:10, things:'turtles'},
+  ]},
+};
+const ORDER = ['abc','animals','food','colors','shapes','numbers'];
 
 // soft pastel backgrounds cycled per page
 const TINTS = ['#ffe1ec','#e7ecfb','#e3f6e8','#fff0d6','#f1e6fb','#ffe6de','#dff3f6'];
 
 const $ = id=>document.getElementById(id);
-let i = 0;               // current page index
-let reading = false;     // "read to me" mode
+let colKey = 'abc';           // current collection
+let i = 0;                    // current page index within collection
+let reading = false;
 let readTimer = null;
 
 const pageEl = $('page');
+const col = ()=>COLLECTIONS[colKey];
+const items = ()=>col().items;
+const cur = ()=>items()[i];
+const bigLetter = it => it.tag || it.word[0].toUpperCase();
 
 function render(dir){
-  const w = WORDS[i];
-  $('lBig').textContent = w.l + w.l.toLowerCase();
-  $('emoji').textContent = w.emoji;
-  // word with a highlighted first letter
-  $('word').innerHTML = `<span class="first">${w.word[0]}</span>${w.word.slice(1)}`;
-  $('pic').style.background =
+  const it = cur(), numeric = !!col().numeric, L = bigLetter(it);
+  // big letter / number
+  $('lBig').innerHTML = numeric ? L
+    : `${L}<span class="small">${L.toLowerCase()}</span>`;
+  // picture (single big emoji, or a count of them)
+  const pic = $('pic');
+  pic.style.background =
     `radial-gradient(circle at 50% 38%, #ffffff 0%, ${TINTS[i%TINTS.length]} 78%)`;
+  if(it.count){
+    const size = it.count<=3 ? 62 : it.count<=6 ? 46 : 34;
+    pic.innerHTML = Array.from({length:it.count},
+      ()=>`<span class="emoji" style="font-size:${size}px">${it.emoji}</span>`).join('');
+  } else {
+    pic.innerHTML = `<span class="emoji" style="font-size:118px">${it.emoji}</span>`;
+  }
+  // word with a highlighted first letter
+  $('word').innerHTML = `<span class="first">${it.word[0]}</span>${it.word.slice(1)}`;
+  // phonics line
+  $('phonics').textContent = numeric
+    ? `${it.count} ${it.things}`
+    : `${L} is for ${it.word}`;
+  // counters + arrows
   $('idx').textContent = i+1;
+  $('total').textContent = items().length;
   $('prev').disabled = i===0;
-  $('next').disabled = i===WORDS.length-1;
-  // alphabet strip highlight
+  $('next').disabled = i===items().length-1;
+  // strip highlight
   [...$('strip').children].forEach((b,k)=>b.classList.toggle('on',k===i));
   // page-turn animation
   if(dir!==undefined){
@@ -208,34 +259,30 @@ function speak(text, after){
   window.speechSynthesis.speak(u);
 }
 function sayCurrent(after){
-  const w = WORDS[i];
-  speak(`${w.l}. ${w.word}.`, after);
+  const it = cur();
+  speak(`${bigLetter(it)}. ${it.word}.`, after);
   sparkle();
 }
-
-// tap picture / say button
 $('pic').onclick = ()=>sayCurrent();
 $('sayBtn').onclick = ()=>sayCurrent();
 
 // ---------- sparkle burst ----------
 function sparkle(){
   const chars = ['✨','⭐','💛','🌟'];
-  const rect = $('pic');
   for(let n=0;n<5;n++){
     const s = document.createElement('span');
     s.className = 'spark'; s.textContent = chars[n%chars.length];
-    s.style.left = (30+Math.random()*60)+'%';
-    s.style.top  = (20+Math.random()*40)+'%';
-    rect.appendChild(s);
+    s.style.left = (28+Math.random()*44)+'%';
+    s.style.top  = (24+Math.random()*40)+'%';
+    $('pic').appendChild(s);
     setTimeout(()=>s.remove(), 720);
   }
 }
 
 // ---------- navigation ----------
 function go(n){
-  const dir = n - i;
-  if(n<0||n>=WORDS.length) return;
-  i = n; render(dir);
+  if(n<0||n>=items().length) return;
+  const dir = n - i; i = n; render(dir);
 }
 $('next').onclick = ()=>go(i+1);
 $('prev').onclick = ()=>go(i-1);
@@ -269,7 +316,7 @@ function startReading(){
     if(!reading) return;
     sayCurrent(()=>{
       if(!reading) return;
-      if(i < WORDS.length-1){ readTimer=setTimeout(()=>{ go(i+1); step(); }, 550); }
+      if(i < items().length-1){ readTimer=setTimeout(()=>{ go(i+1); step(); }, 550); }
       else { stopReading(); }
     });
   };
@@ -277,21 +324,48 @@ function startReading(){
 }
 $('readBtn').onclick = ()=> reading ? stopReading() : startReading();
 
-// ---------- build alphabet strip ----------
-const stripEl = $('strip');
-WORDS.forEach((w,k)=>{
+// ---------- build the quick-jump strip for a collection ----------
+function buildStrip(){
+  const strip = $('strip');
+  strip.innerHTML='';
+  const numeric = !!col().numeric;
+  const cols = Math.min(items().length, 13);
+  strip.style.gridTemplateColumns = `repeat(${cols},1fr)`;
+  items().forEach((it,k)=>{
+    const b=document.createElement('button');
+    if(numeric || colKey==='abc'){ b.textContent = bigLetter(it); }
+    else { b.textContent = it.emoji; b.classList.add('emoji'); }
+    b.title = it.word;
+    b.onclick=()=>{ if(reading) stopReading(); go(k); };
+    strip.appendChild(b);
+  });
+}
+
+// ---------- switch collection ----------
+function selectCollection(key){
+  if(reading) stopReading();
+  colKey = key; i = 0;
+  [...$('tabs').children].forEach(t=>t.classList.toggle('on', t.dataset.k===key));
+  buildStrip();
+  render();
+}
+
+// ---------- build collection tabs ----------
+const tabsEl = $('tabs');
+ORDER.forEach(key=>{
+  const c = COLLECTIONS[key];
   const b=document.createElement('button');
-  b.textContent=w.l; b.title=w.word;
-  b.onclick=()=>{ if(reading) stopReading(); go(k); };
-  stripEl.appendChild(b);
+  b.className='tab'; b.dataset.k=key;
+  b.innerHTML = `<span>${c.icon}</span>${c.name}`;
+  b.onclick=()=>selectCollection(key);
+  tabsEl.appendChild(b);
 });
 
 // ---------- init ----------
-$('total').textContent = WORDS.length;
 if(!('speechSynthesis' in window)){
   $('note').textContent = 'Turn the page with ◀ ▶ or the arrow keys. (Voice not available in this browser.)';
 }
-render();
+selectCollection('abc');
 </script>
 </body>
 </html>
