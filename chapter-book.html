@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Rabbit &amp; Memo and the 153 Stars</title>
+<style>
+  :root{
+    --cream:#fff6ee; --cream2:#ffe9dc; --ink:#5b4a52; --muted:#a58e98;
+    --pink:#f7b6c8; --pink2:#f194ac; --lav:#cdb0ec; --lav2:#b8a5ee;
+    --mint:#8ed0a0; --amber:#ffb24d;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;}
+  body{
+    font-family:'Nunito',ui-rounded,'Segoe UI',system-ui,sans-serif;
+    background:
+      radial-gradient(1200px 500px at 15% -10%, #fde4ef 0%, transparent 60%),
+      radial-gradient(1000px 500px at 110% 0%, #e6ecfb 0%, transparent 55%),
+      #f4e2f7;
+    color:var(--ink);
+    display:flex;align-items:flex-start;justify-content:center;
+    padding:16px;min-height:100%;
+  }
+  .book{width:100%;max-width:640px;display:flex;flex-direction:column;gap:13px;}
+
+  /* ---------- header ---------- */
+  .head{display:flex;align-items:center;gap:10px;justify-content:center;text-align:center;flex-wrap:wrap;}
+  .head .mascot{font-size:28px;line-height:1;filter:drop-shadow(0 3px 4px rgba(180,120,160,.35));}
+  .head h1{margin:0;font-size:23px;font-weight:800;color:var(--pink2);letter-spacing:.2px;}
+  .sub{margin:-4px 0 0;text-align:center;font-size:13.5px;color:var(--muted);}
+
+  /* ---------- toolbar ---------- */
+  .bar{display:flex;align-items:center;gap:10px;}
+  .toc-btn{border:none;border-radius:16px;padding:11px 16px;font-family:inherit;font-weight:800;
+    font-size:15px;color:#fff;cursor:pointer;display:flex;align-items:center;gap:7px;
+    background:linear-gradient(180deg,var(--lav),var(--lav2));box-shadow:0 9px 18px -8px var(--lav2);
+    transition:.12s;white-space:nowrap;}
+  .toc-btn:hover{filter:brightness(1.05);transform:translateY(-1px);}
+  .progress{flex:1;height:16px;border-radius:10px;background:var(--cream);overflow:hidden;
+    box-shadow:inset 0 2px 6px rgba(180,120,160,.25);}
+  .progress i{display:block;height:100%;width:0;border-radius:10px;
+    background:linear-gradient(90deg,var(--pink),var(--lav2));transition:width .35s ease;}
+
+  /* ---------- contents panel ---------- */
+  .toc{display:none;background:var(--cream);border-radius:24px;padding:14px 8px 14px 14px;
+    box-shadow:0 18px 40px -20px rgba(180,120,160,.55);max-height:60vh;overflow-y:auto;}
+  .toc.open{display:block;}
+  .toc-head{display:flex;align-items:center;gap:10px;margin:2px 8px 10px 2px;}
+  .toc-head b{font-size:16px;}
+  .toc-head .over{margin-left:auto;border:none;border-radius:13px;padding:7px 12px;cursor:pointer;
+    font-family:inherit;font-weight:800;font-size:13px;color:var(--ink);background:var(--cream2);}
+  .toc-part{font-weight:800;font-size:13px;color:var(--pink2);margin:12px 6px 6px;
+    text-transform:uppercase;letter-spacing:.5px;}
+  .toc-list{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding-right:6px;}
+  .toc-list button{text-align:left;border:none;border-radius:12px;padding:8px 10px;cursor:pointer;
+    font-family:inherit;font-size:13px;color:var(--ink);background:var(--cream2);transition:.1s;
+    display:flex;gap:7px;line-height:1.2;}
+  .toc-list button:hover{background:#f6efff;transform:translateY(-1px);}
+  .toc-list button.on{background:linear-gradient(180deg,var(--lav),var(--lav2));color:#fff;}
+  .toc-list button .n{font-weight:800;opacity:.7;flex:0 0 auto;}
+  @media(max-width:520px){.toc-list{grid-template-columns:1fr;}}
+
+  /* ---------- the reading page ---------- */
+  .page{position:relative;background:var(--cream);border-radius:30px;padding:26px 28px 24px;
+    box-shadow:0 22px 48px -20px rgba(180,120,160,.55);overflow:hidden;}
+  .page::after{content:"";position:absolute;inset:0;border-radius:30px;
+    border:3px solid rgba(255,255,255,.7);pointer-events:none;}
+  .pic{margin:0 auto 10px;width:118px;height:118px;border-radius:50%;display:grid;place-items:center;
+    cursor:pointer;transition:transform .12s ease;
+    box-shadow:inset 0 5px 18px rgba(0,0,0,.05),0 12px 26px -16px rgba(120,80,120,.5);}
+  .pic:active{transform:scale(.94);}
+  .pic .emoji{font-size:64px;line-height:1;filter:drop-shadow(0 6px 8px rgba(120,80,120,.28));}
+  .partlabel{font-size:13px;font-weight:800;color:var(--lav2);letter-spacing:.4px;text-align:center;}
+  .kicker{margin-top:4px;font-size:13px;font-weight:800;color:var(--pink2);
+    text-transform:uppercase;letter-spacing:1.2px;text-align:center;}
+  .ctitle{margin:2px 0 4px;font-size:30px;font-weight:800;line-height:1.15;text-align:center;}
+  .ornament{color:var(--pink);font-size:20px;letter-spacing:6px;margin-bottom:12px;text-align:center;}
+  .ctext{font-size:18.5px;line-height:1.75;color:#6a5860;}
+  .ctext p{margin:0 0 14px;}
+  .ctext p:last-child{margin-bottom:0;}
+  .theend{text-align:center;font-weight:800;color:var(--pink2);font-size:20px;margin-top:8px;}
+  .page.turn{animation:turn .15s ease;}
+  @keyframes turn{0%{opacity:0;transform:translateX(var(--dir,20px));}100%{opacity:1;transform:none;}}
+
+  /* ---------- controls ---------- */
+  .nav{display:flex;align-items:center;gap:12px;}
+  .arrow{flex:0 0 auto;width:58px;height:58px;border:none;border-radius:20px;cursor:pointer;
+    font-size:24px;font-weight:800;color:#fff;background:linear-gradient(180deg,var(--pink),var(--pink2));
+    box-shadow:0 9px 18px -8px var(--pink2);transition:.12s;}
+  .arrow:hover{filter:brightness(1.05);transform:translateY(-1px);}
+  .arrow:disabled{opacity:.4;cursor:default;transform:none;filter:none;}
+  .counter{flex:1;text-align:center;font-weight:800;font-size:16px;color:var(--muted);
+    background:var(--cream);border-radius:18px;padding:14px;box-shadow:0 10px 24px -18px rgba(180,120,160,.6);}
+  .counter b{color:var(--ink);font-size:19px;}
+  .read{border:none;border-radius:18px;padding:12px;font-family:inherit;font-weight:800;font-size:16px;
+    color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+    background:linear-gradient(180deg,var(--mint),#6fc389);box-shadow:0 9px 18px -8px #6fc389;transition:.12s;}
+  .read:hover{filter:brightness(1.04);transform:translateY(-1px);}
+  .read.stop{background:linear-gradient(180deg,var(--amber),#f59a2e);box-shadow:0 9px 18px -8px #f59a2e;}
+  .note{text-align:center;font-size:12px;color:var(--muted);margin:2px 0 4px;line-height:1.4;}
+
+  @media(max-width:520px){.ctitle{font-size:25px;}.ctext{font-size:17.5px;}.arrow{width:52px;height:52px;}}
+</style>
+</head>
+<body>
+<a href="index.html" title="Home" style="position:fixed;top:10px;left:10px;z-index:60;text-decoration:none;
+  width:40px;height:40px;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.92);
+  font-size:18px;box-shadow:0 8px 18px -8px rgba(180,120,160,.6);">🏠</a>
+<div class="book">
+  <div class="head">
+    <span class="mascot">🐰</span>
+    <h1>Rabbit &amp; Memo and the 153 Stars</h1>
+    <span class="mascot">🐱</span>
+  </div>
+  <p class="sub">A bedtime chapter book &mdash; 153 little chapters, in 9 parts.</p>
+
+  <div class="bar">
+    <button class="toc-btn" id="tocBtn">📖 Contents</button>
+    <div class="progress"><i id="pbar"></i></div>
+  </div>
+
+  <div class="toc" id="toc">
+    <div class="toc-head">
+      <b>Table of Contents</b>
+      <button class="over" id="startOver">↺ Start over</button>
+    </div>
+    <div id="tocBody"></div>
+  </div>
+
+  <div class="page" id="page">
+    <div class="pic" id="pic"><span class="emoji" id="emoji">✨</span></div>
+    <div class="partlabel" id="partlabel"></div>
+    <div class="kicker" id="kicker">Chapter 1</div>
+    <h2 class="ctitle" id="ctitle"></h2>
+    <div class="ornament">✦ ✦ ✦</div>
+    <div class="ctext" id="ctext"></div>
+  </div>
+
+  <div class="nav">
+    <button class="arrow" id="prev" aria-label="Previous chapter">◀</button>
+    <div class="counter">Chapter <b id="idx">1</b> of <b id="total">153</b></div>
+    <button class="arrow" id="next" aria-label="Next chapter">▶</button>
+  </div>
+
+  <button class="read" id="readBtn">🔊 Read this chapter aloud</button>
+  <p class="note" id="note">Use ◀ ▶ or your arrow keys to turn the page. Your place is saved automatically.</p>
+</div>
+
+<script>
+// ============================================================
+//  Rabbit & Memo and the 153 Stars — 9 parts × 17 chapters
+// ============================================================
+const PARTS = [
+{ n:'Part One', title:'The Falling Star', chapters:[
+ {t:'A Knock of Light', p:`It was long past bedtime when a soft light knocked at the window of the burrow — not a knock like a paw, but a knock like a warm little glow, tapping on the glass. Rabbit sat up in the dark and blinked.`},
+ {t:'Memo Wakes', p:`Memo the grey cat was already awake, of course; cats are always a little awake. "Rabbit," he whispered, "something fell out of the sky and landed in the cabbages."`},
+ {t:'The Cold Little Star', p:`They crept outside in their slippers. There, among the round cabbages, sat a star no bigger than a plum, its light thin and shivery, like a candle that wants to go out.`},
+ {t:'What the Star Whispered', p:`Rabbit cupped it in his paws. "Please," the star whispered. "One hundred and fifty-three of us blew out tonight. Without our lights, the meadow will forget the way home."`},
+ {t:'The Empty Jar', p:`Far up on the hill stood the Night Lantern's great glass jar, the one that holds every star-light. Tonight it was dark and empty — not one light glowed inside.`},
+ {t:'Grandpa Tortoise', p:`They woke Grandpa Tortoise, the oldest and slowest and wisest neighbour of all. He unrolled a map freckled with tiny stars. "Each dot is a light that fell," he said. "Bring them home before the moon sets."`},
+ {t:'The Basket', p:`Rabbit packed a basket — three carrots, a ball of thread, a warm blanket, and the empty jar to carry stars in. Memo packed something too, but tucked it away and would not say what.`},
+ {t:'Blink', p:`At the garden gate, a firefly bobbed up and down. "I'm Blink," it said. "I'm only a small light — but a small light is better than none. May I come along?" And so they were three.`},
+ {t:'The First Light in the Hedge', p:`In the hedge by the lane, something twinkled. It was a star, tangled in the twigs like a lost mitten. Very carefully, Rabbit lifted it free and set it glowing in the jar.`},
+ {t:'How to Carry a Star', p:`Stars are shy. Grab one and it dims; but hold it soft, the way you'd hold a sleepy chick, and it warms and shines. Memo learned this first, being gentle under all that grey fur.`},
+ {t:'The Locked Gate', p:`At the meadow's edge stood an old iron gate, locked tight, rust in every hinge. Rabbit pushed. Rabbit pulled. The gate did not care one bit.`},
+ {t:"Memo's Clever Paw", p:`But Memo could fold up small as a scarf. He slipped between the bars, found the latch, and lifted it, and the gate swung open with a friendly creak. "After you," he said.`},
+ {t:'A Promise', p:`Before stepping through, Rabbit made a promise out loud to the dark meadow: "We will find every last light, and bring it home." The jar in the basket glowed a little brighter, as if it had heard.`},
+ {t:'The Helpful Wind', p:`A soft wind rose up behind them and pushed, the way a friend nudges you toward something wonderful. It smelled of grass and far-off rain.`},
+ {t:'Two Stars on the Pond', p:`The pond lay flat and black, and on it floated two stars, calm as water lilies. Rabbit reached out with a long reed and drew them, dripping light, into the jar.`},
+ {t:'The Sleepy Frog', p:`A big frog guarded the pond and did not care for visitors. So Memo hummed a slow, low lullaby until the frog's eyes drooped shut, and they tiptoed past without a single splash.`},
+ {t:'Looking Back', p:`On the far hill, their burrow was only a small dark shape now. Home already looked far away — but the jar held its first handful of warm lights, and that is a brave place to begin.`},
+]},
+{ n:'Part Two', title:'The Whispering Meadow', chapters:[
+ {t:'The Tall Grass', p:`The Whispering Meadow grew grass taller than Rabbit's ears. Every blade leaned in to murmur as they passed, though no one could quite say what about. "Stay close," said Memo, "and don't listen too hard."`},
+ {t:'Following Blink', p:`It was easy to lose your way in grass so tall, so Blink flew up high and glowed like a tiny green moon. "This way," the firefly called, drawing a soft path through the dark.`},
+ {t:'The Hedgehog Family', p:`In a snug hollow they met the hedgehogs — Pip, Pop, and a very small one named Pud. "We've lost our nightlight," sniffled Pip. "Poor Pud can't sleep without it."`},
+ {t:"Pud's Lost Light", p:`Little Pud had cried himself into hiccups. His nightlight had been a star that lived in the crook of an old root — and last night, it had simply gone dark.`},
+ {t:'Under the Toadstool', p:`Rabbit searched low and Memo searched high, until Blink spotted a glimmer beneath a red toadstool. There sat the star, dim and damp, hiding from the cold.`},
+ {t:'Giving and Keeping', p:`Rabbit longed to leave the star for Pud, but every light was needed for the great jar. So Blink whistled, and a firefly cousin flew down to be Pud's new nightlight instead. Everyone was happy — Pud most of all.`},
+ {t:'The Cricket Orchestra', p:`Further on, a hundred crickets played a hundred tiny fiddles. The song was so lovely that stopping it would have been a crime, so the friends had to cross without breaking the music.`},
+ {t:'Memo Conducts', p:`Memo lifted both paws like a conductor and swept them through the air. The crickets played louder and grander, and under all that music the friends slipped by unheard.`},
+ {t:'A Star in the Nest', p:`An empty bird's nest swung in a bush, and in it, round as an egg, glowed a warm little star. Rabbit lifted it as gently as if it might hatch.`},
+ {t:'The Cross Wind', p:`Then the wind changed. It turned cold and cross and shoved at the basket until the jar nearly tipped. "Down!" cried Memo, and they threw themselves over the lights to keep them safe.`},
+ {t:'Holding On', p:`They huddled behind a grey stone while the cross wind grumbled overhead. Rabbit held the jar tight against his chest, and the stars inside held their light steady, brave against the gusts.`},
+ {t:'The Dandelion Boat', p:`A little stream cut across the meadow. On its bank grew a dandelion gone to fluff, big as a boat, so they climbed aboard and pushed off across the water.`},
+ {t:'Memo Hates Water', p:`Cats do not like getting wet, and Memo liked it least of all. He balanced in the very middle of the fluff-boat, tail high, muttering that this was a terrible, soggy idea — but across they went.`},
+ {t:'Three Stars in the Reeds', p:`Among the reeds on the far side, three stars had snagged like lost balloons. One by one Rabbit freed them, and the jar grew a little heavier and a little brighter.`},
+ {t:'The Meadow Mouse', p:`A meadow mouse popped up with wide, worried eyes. "Beyond here lies the Grumbly Hollow," she warned, "a cave that swallows light. Be careful, small travellers."`},
+ {t:'Whispers in the Dark', p:`The meadow's whispers grew louder now, and it was hard to tell if they were kind. Rabbit chose to believe they were. "Thank you, meadow," he said — and the whispers softened, pleased to be thanked.`},
+ {t:'The Old Scarecrow', p:`At the meadow's edge slouched a shabby old scarecrow. It could not speak, but when the wind moved its straw arm, it seemed to point the way — down, toward a dark mouth in the hill.`},
+]},
+{ n:'Part Three', title:'The Carrot Caves', chapters:[
+ {t:'The Hollow', p:`The Grumbly Hollow yawned before them, a cave mouth ringed with old roots. From inside came a low, sleepy grumble, as if the hill itself were snoring.`},
+ {t:'Into the Dark', p:`They stepped inside, and the dark closed behind them like a curtain. Now the jar was their only light — a small warm sun they carried between them.`},
+ {t:'Carrot Roots', p:`The walls were hung with the fat orange roots of carrots grown wild and huge. To a rabbit, it was the most tempting hallway in all the world.`},
+ {t:"Don't Eat the Path", p:`"Rabbit," Memo warned, "those roots are our markers. Eat them, and we'll never find the way out." Rabbit's tummy gave a sad little rumble, but he kept his teeth to himself.`},
+ {t:'The Echo', p:`Every step came back doubled. "Hello?" said Rabbit, and the cave said hello, hello, hello, until he wasn't sure which voice was his own.`},
+ {t:"Memo's Ears", p:`But Memo's ears were cleverer than any echo. He turned them this way and that, sorting the true sounds from the false, and led on as surely as if a map were painted on the dark.`},
+ {t:'The Blind Mole', p:`Deep down they met a mole with tiny, useless eyes and an enormous smile. "I can't see a thing," he said cheerfully, "but I know every tunnel in this hill by heart."`},
+ {t:"Mole's Bargain", p:`"Sing me a song of the sky," said the mole, "for I have never seen it — and I'll guide you true." So Rabbit sang of stars and moon, and the mole wept happy underground tears.`},
+ {t:'A Star in the Crystal', p:`The mole led them to a great crystal, and inside it, like a firefly caught in ice, glowed a trapped star. It shone and shone and could not get out.`},
+ {t:'Tap, Tap, Tap', p:`Memo listened to the crystal, found its one true note, and tapped it three times — tap, tap, tap. The crystal opened like a flower, and the star floated free.`},
+ {t:'The Underground River', p:`A black river ran across their path, cold and quick and far too deep to wade. On the far side, the tunnel climbed toward a distant grey glimmer of sky.`},
+ {t:'Jelly Stepping-Stones', p:`Then something in the river went blub. Up bobbed a row of round, wobbly, glowing jelly-blobs, orange as marmalade. "Step on us!" they giggled. "We don't mind!"`},
+ {t:'Meeting the Jellies', p:`The jellies were the happiest creatures they had met, bouncing and wobbling and laughing at nothing at all. Memo knew them at once — they were cousins of his own little jelly buddy back home.`},
+ {t:'Bounce Across', p:`So they bounced from jelly to jelly — boing, boing, boing — laughing all the way, while the jellies wobbled and cheered beneath their feet.`},
+ {t:'Two Stars in the Deep', p:`Deep in the river, two stars glimmered, too far down to reach. The jellies dived like happy dumplings and brought them up, dripping and giggling and bright.`},
+ {t:'Nearly Fifty', p:`They rested on the bank and counted the jar's glow. Nearly fifty little lights now! Half a hundred stars, warm and safe — and the whole wide sky still to go.`},
+ {t:'The Way Up', p:`A stair of stone climbed out of the dark toward a patch of night. The jellies waved their wobbly goodbyes, and up the friends went, back toward the moon.`},
+]},
+{ n:'Part Four', title:'The Jelly River', chapters:[
+ {t:'Out of the Dark', p:`They climbed out into moonlight and blinked like newborn owls. After the cave, the plain old night looked absolutely magnificent.`},
+ {t:'The River of Jelly', p:`Before them ran a strange, slow river that wobbled instead of flowed — a whole river of pale, glowing jelly, humming softly to itself as it went.`},
+ {t:'A Boat of Bark', p:`Rabbit peeled a great curl of birch bark and folded it into a little boat. Memo tested it with one careful paw and declared it "just barely acceptable."`},
+ {t:'The Jellies Come Along', p:`To their delight, the river jellies came too, wobbling alongside the boat like a crowd of cheerful cushions, ready to catch anyone who tumbled in.`},
+ {t:'Fishing for Stars', p:`Stars bobbed on the jelly-river like apples in a barrel. Rabbit leaned out with a net of thread and scooped them up, one plip at a time.`},
+ {t:'Memo the Captain', p:`Memo took the tiller and grew very grand about it. "Steady as she goes," he ordered no one in particular, tail up like a flag. Rabbit tried hard not to giggle.`},
+ {t:'The Waterfall Ahead', p:`A roar rose up ahead. The river fell away into a great wobbling waterfall, and the little boat began to hurry toward the edge.`},
+ {t:'Steering to Shore', p:`"Paddle, paddle!" cried Memo, forgetting all about being grand. Together they dug at the jelly and swung the boat to the bank just in time, hearts thumping like drums.`},
+ {t:'The Kingfisher', p:`On the bank perched a kingfisher with a star clutched in its claws. "Mine," it said. "A jewel. The finest in all my collection."`},
+ {t:'Sharing', p:`"It isn't a jewel," said Rabbit gently. "It's a light the whole meadow needs." The kingfisher thought hard, for it did love shiny things very much.`},
+ {t:'A Star for a Song', p:`In the end they traded: the star for a smooth silver pebble, and a song about a bird whose feathers were the colour of rivers. The kingfisher liked the song even better than the star.`},
+ {t:'The Rainshower', p:`A warm rain began to patter down. They tucked under a broad leaf and watched the drops make little crowns upon the river.`},
+ {t:'Rainbows at Night', p:`When the rain thinned, the moon caught it and hung a moonbow across the sky — a rainbow made all of silver and grey. At its far end, something twinkled.`},
+ {t:'Chasing the Moonbow', p:`They ran along the bank after the moonbow's end, which kept politely moving, the way rainbow-ends always do, just to make the game more fun.`},
+ {t:'The Star at the End', p:`At last the moonbow rested its foot on a mossy rock, and there sat the star it had been guarding. Rabbit thanked the moonbow, which bowed and faded shyly away.`},
+ {t:'Drying Off', p:`A glowworm invited them into its cozy nook to dry off. In its soft green light they warmed their toes and felt, for a little while, entirely at home.`},
+ {t:'The Far Bank', p:`Rested and dry, they found the road again. It left the river behind and began, gently at first, to climb up and up toward the clouds.`},
+]},
+{ n:'Part Five', title:'The Cloudstair', chapters:[
+ {t:'The Stair of Clouds', p:`The road ended at the foot of a staircase — but the stairs were made of clouds, soft and white and floating up into the dark.`},
+ {t:'Testing the First Step', p:`"Can you truly stand on a cloud?" wondered Rabbit. Blink flew down and landed on the first step. It held. "Well," said Memo, "only one way to find out for certain."`},
+ {t:'Up We Go', p:`Step by careful step they climbed, and each cloud held them like a great soft cushion. Below, the river shrank to a thin silver thread.`},
+ {t:"Memo Doesn't Look Down", p:`Memo, it turned out, did not love high places. He climbed with his eyes fixed straight ahead. "I am not looking down," he announced. "I am simply looking forward. Forever."`},
+ {t:'The Wind Sprites', p:`Halfway up, giggling wind sprites came whirling around them, tugging ears and tails and trying to snatch the map away.`},
+ {t:'A Game of Tag', p:`Rather than shoo them, Rabbit invited them to play tag. The sprites had never once been asked to play, and they loved it so much they forgot all about mischief.`},
+ {t:"The Sprites' Gift", p:`To say thank you, the sprites blew the clouds apart here and there, uncovering stars tucked inside like coins in a cushion. The jar drank up their light greedily.`},
+ {t:'Cloud Sheep', p:`On a wide cloud-meadow grazed a flock of cloud sheep, soft as steam. One had a star tangled deep in its wool.`},
+ {t:'Shearing a Little Light', p:`Very gently, Rabbit combed the wool with his paws until the star came loose. The sheep baaed a thank-you and drifted off, one shade whiter than before.`},
+ {t:'The Thunder Cousin', p:`A small dark cloud rumbled by itself in a corner, grumpy and alone. It was a baby thundercloud, and it did not know how to be anything but loud.`},
+ {t:'Calming the Thunder', p:`"A soft rumble is friendlier than a loud one," said Rabbit, and he showed it how to purr its thunder low, the way Memo did. The little cloud tried, and gave a gentle, happy roll.`},
+ {t:'A Star in the Rain Barrel', p:`The thundercloud, pleased, tipped up its rain-barrel to show them a star floating inside. They fished it out and thanked their new grey friend.`},
+ {t:'Higher and Colder', p:`The higher they climbed, the colder it grew. Rabbit shared out the blanket, and they walked wrapped up together like one lumpy, three-headed traveller.`},
+ {t:'The Halfway Cloud', p:`They rested on a flat cloud and looked back down the whole long way — the snowy peaks ahead, the woods, the river, the tiny far meadow. "We've come so far," Rabbit whispered.`},
+ {t:'Blink Grows Tired', p:`Small lights tire, and Blink's glow began to flutter and fade. Without a word, Memo scooped the firefly into his warm paws and carried it, so it might rest.`},
+ {t:'Sharing the Warmth', p:`They held the jar close to Blink, and the gathered stars poured out their warmth. Slowly the little firefly brightened again. "You carried me," Blink said, amazed. "Of course," said Rabbit. "That's what friends are for."`},
+ {t:'The Top of the Stair', p:`At last the cloud-stair reached a high white plateau — and there, on the far side, a great dark forest waited, hung with a thousand unlit lanterns.`},
+]},
+{ n:'Part Six', title:'The Lantern Woods', chapters:[
+ {t:'A Forest of Lanterns', p:`The Lantern Woods spread out before them, tree after tree strung with paper lanterns — and every single one was dark.`},
+ {t:'Why the Woods Went Dark', p:`"The lanterns hold star-lights," Blink explained, "the very ones that fell. Without them, the woods forget how to be woods, and grow lonely and grey."`},
+ {t:'Relighting the First Lantern', p:`Rabbit lifted a star from the jar and set it inside the nearest lantern. It caught, and glowed, and a warm gold circle bloomed in the dark.`},
+ {t:'The Woods Wake Up', p:`As the lantern glowed, the wood around it seemed to breathe. Leaves rustled awake, a stream remembered to trickle, and somewhere a sleepy voice grumbled, "Who turned the lights on?"`},
+ {t:'Bram the Badger', p:`Out of a den stomped Bram the badger, big and cross and bristling. "Go away," he growled. "I like the dark. I have always liked the dark. Now shoo."`},
+ {t:"Bram's Real Problem", p:`But Memo, who understood grumpiness better than most, looked closer. Bram's paws were trembling. It was not the light he minded — it was that, deep down, the badger was afraid of the dark, and far too proud to say so.`},
+ {t:"A Light for Bram's Den", p:`So Rabbit hung a small star just inside Bram's den, where its glow would keep the shadows soft all night long. Bram opened his mouth to argue, then shut it, and looked away.`},
+ {t:'Bram Joins', p:`"I'll come with you," Bram muttered at last, "only to make sure you don't break anything. Not because I want to. Certainly not." And he fell into step behind them, secretly glad.`},
+ {t:'The Lantern Map', p:`As more lanterns lit, they made a map of glowing dots through the trees, showing exactly where the last woodland stars still hid.`},
+ {t:"The Spider's Web of Light", p:`In a silver web hung with dew glimmered a star like the biggest bead of all. At its centre sat a very polite spider.`},
+ {t:'Asking the Spider', p:`"May we borrow the star?" asked Rabbit. "You may keep it," said the spider kindly, "if you promise to leave me one dewdrop to shine in its place." And so they did.`},
+ {t:'The Owl Librarian', p:`In the oldest tree lived an owl who kept a great book. "This," she hooted, "is the book of every star's name. A named star always shines the brightest."`},
+ {t:'Finding the Names', p:`She read the names aloud — Pim, Fenn, Marigold, Little Sim — and as each name was spoken, its star flared up joyfully and floated down into the waiting jar.`},
+ {t:'The Hundredth Light', p:`And then, with a soft chime, the hundredth star lit. All at once the whole forest blazed gold, lantern after lantern, until the night looked like a city of tiny suns.`},
+ {t:'A Celebration', p:`The woodland creatures came out to dance in the new light — mice and moths and the polite spider, the owl and the badger and the bobbing jellies who had followed all this way.`},
+ {t:'Bram Laughs', p:`And in the middle of it all, Bram the badger threw back his head and laughed — a great rusty laugh, as if he had not used it in years. Perhaps he hadn't.`},
+ {t:'The Path Onward', p:`When the dancing was done, they shouldered their basket, now heavy with light, and set off once more — toward a cold white shine on the far horizon.`},
+]},
+{ n:'Part Seven', title:'The Quiet Snowfields', chapters:[
+ {t:'First Snow', p:`The first snowflake landed on Rabbit's nose. Then another, and another, until the whole world went soft and white and wonderfully quiet.`},
+ {t:'Footprints', p:`Theirs were the first footprints in the fresh snow — little round rabbit prints, neat cat prints, a firefly's shadow, and Bram's big deep paws behind.`},
+ {t:'The Cold Jar', p:`The cold pressed close, but the jar of stars stayed warm as a hearth. They walked with their paws near it, taking turns to thaw their whiskers.`},
+ {t:'The Snow Hare', p:`A shape moved in the whiteness — a snow hare, so white she was nearly invisible, watching them with shy, dark eyes.`},
+ {t:"The Hare's Secret Valley", p:`"You're seeking the fallen lights," she whispered. "I know where many landed. Follow me." And she led them into a hidden valley, dimpled all over with snow.`},
+ {t:'Digging Gently', p:`Under each dimple lay a buried star, sleeping in the snow. They dug them out with soft paws, brushing them off like treasure, and dropped them glowing into the jar.`},
+ {t:"Memo's Cold Paws", p:`"My paws," Memo complained, "have turned to little blocks of ice." So Rabbit unwound his ball of thread and knitted four small paw-warmers on the spot. Memo pretended not to be grateful, and wore them everywhere after.`},
+ {t:'The Frozen Pond Stars', p:`They came upon a frozen pond, and under the clear ice glowed a scatter of stars, trapped like fish beneath glass.`},
+ {t:'Warming the Ice', p:`They breathed and hummed against the ice until a small warm hole opened, just big enough to lift one star out at a time.`},
+ {t:'Bram Breaks the Ice', p:`Where the ice was thick, big Bram tapped it — gently, gently — with one careful paw, cracking neat little doors for the stars to rise through. Strength, it turned out, could be tender too.`},
+ {t:'The Snow Storm', p:`Then the wind gathered up the snow and flung it, and the world vanished into a roaring white. They could not see paw in front of face.`},
+ {t:'The Rope of Thread', p:`"Nobody let go!" cried Rabbit, and he tied them all together with his last long thread — Rabbit to Memo to Blink to Bram — one small brave chain in the storm.`},
+ {t:'Following Blink', p:`Only Blink's light could be seen at all, a faint green spark ahead. They fixed their eyes upon it and trusted it, step by frozen step, through the howling white.`},
+ {t:'The Snow Cave', p:`Blink led them to a hollow beneath a drift, a snug snow cave out of the wind. They tumbled in, breathless, and the storm shut its door behind them.`},
+ {t:'Stories in the Snow Cave', p:`Warm at last, they shared out the final carrot and told, each in turn, why they had come. Even Bram admitted, very quietly, that he had come because being brave with friends beat being grumpy alone.`},
+ {t:'The Storm Passes', p:`By morning the storm had blown itself out. They crawled up into a hushed, sparkling world — and a sky with dark, empty gaps where stars still needed to go.`},
+ {t:'Almost There', p:`And there, far across the snowfields, something glittered against the night: a bridge of light, thin as a thread, leading up to a lonely tower. "Almost there," breathed Rabbit.`},
+]},
+{ n:'Part Eight', title:'The Star Bridge', chapters:[
+ {t:'The Bridge of Light', p:`The Star Bridge arched up into the dark, built plank by plank of glowing stars. But many planks were missing or gone dark, leaving gaps that fell away into nothing.`},
+ {t:'Counting the Gaps', p:`Memo counted the dark places, nose twitching. "We have just enough stars to mend it," he said slowly, "if we don't drop a single one."`},
+ {t:'Placing the Planks', p:`So they walked out onto the bridge, and where a plank was missing, Rabbit fitted a star from the jar. Each one caught and glowed and grew firm beneath their feet.`},
+ {t:'The Wobble', p:`But one gap was wider than a single star could fill, and the bridge wobbled over a great dark drop. Everyone went very still.`},
+ {t:'Jelly Fills the Gap', p:`Then blub — the faithful jellies, who had wobbled along the whole way, stretched themselves across the gap into a bouncy, glowing bridge of their own. "Cross quick," they giggled, "we're ticklish!"`},
+ {t:'Memo Leads', p:`Sure-footed Memo went first, testing each plank with a careful paw, calling back which were solid and which to skip. For once, nobody teased him for being fussy.`},
+ {t:'Halfway on the Bridge', p:`Halfway across, they stood over an enormous darkness, the whole night yawning below. Rabbit's knees shook — but Blink glowed at his ear and whispered, "Look up, not down," and he did.`},
+ {t:'The Wind Returns', p:`Then a familiar cold gust came screaming up the bridge — the cross wind from the meadow, back for one last try at knocking them down.`},
+ {t:'Bram the Windbreak', p:`Big Bram planted himself sideways and spread his broad body wide. "Get behind me," he rumbled, and he stood like a warm wall while the others crept safely past.`},
+ {t:'A Star Blows Loose', p:`But one gust slipped by and plucked a star from the jar. It tumbled out over the edge, spinning down into the dark, its little light shrinking away.`},
+ {t:"Blink's Big Moment", p:`Quick as a thought, tiny Blink dove after it — down, down into the black — caught the falling star, beat its small wings, and struggled it back up to safety. The smallest friend had saved them all.`},
+ {t:'The Far Tower', p:`Ahead now stood the tower plainly, dark and tall, the great empty jar just visible at its very top. They were so close.`},
+ {t:'The Last Long Stretch', p:`But the last stretch of bridge was the longest and the darkest, with more gaps than planks. It would take every last light they carried.`},
+ {t:'Holding the Line', p:`"Link up," said Memo, and they made a chain again — paw in paw in claw in wing — and edged forward together. Nobody would cross this part alone.`},
+ {t:'One Plank Left', p:`At last only one gap remained, a single missing plank between them and the tower door. The jar, they saw with a jolt, was nearly empty.`},
+ {t:"Everyone's Light", p:`So each friend gave the smallest light they had — Blink's glow, Bram's den-star, the jellies' shine — and together the little lights made one last plank, just strong enough to hold.`},
+ {t:'Across at Last', p:`They stepped off the bridge onto solid stone and stood, trembling and triumphant, at the foot of the Night Lantern's tower. The door creaked slowly open.`},
+]},
+{ n:'Part Nine', title:'The Top of the Night', chapters:[
+ {t:'The Dark Tower', p:`Inside, the tower was cold and still. At its top hung the great glass jar — the one that holds every star in the sky — and it was utterly, silently dark.`},
+ {t:'The Night Lantern Sleeps', p:`Curled beside the jar was the Night Lantern itself: a great soft moth, keeper of all the lights, faded now to the palest, dimmest grey. It barely stirred.`},
+ {t:'Why the Lights Fell', p:`"I grew so tired," the Lantern breathed, no louder than a moth's wing. "So tired I could not hold the jar, and it slipped, and every light spilled out across the world. I am sorry. I am so very sorry."`},
+ {t:'Waking the Keeper', p:`"We found them," said Rabbit softly. "We brought them home." And one by one they poured their gathered stars into the great jar, and it began, faintly, to glow.`},
+ {t:'One Light Short', p:`But when the last star was in, the Lantern counted, and its dim face fell. "One hundred and fifty-two," it whispered. "One is still missing. Without all one hundred and fifty-three, the sky cannot wake."`},
+ {t:'Where Is the Last Star?', p:`They searched the basket, the blanket, every pocket and paw. They shook out the thread and turned the jar upside down. Nothing. The very last star was nowhere to be found.`},
+ {t:"Memo's Secret", p:`Then Memo went quiet. Slowly, from under his grey fur — close to his heart, where he had kept it warm this whole long way — he drew out a small, dim, familiar star: the very first one, the cold little star from the cabbage patch.`},
+ {t:"Memo's Gift", p:`"I kept it safe," Memo said, "the one that started everything. I wanted to carry it all the way home myself." He gazed at it a moment longer — then held it out. "Here. It was always meant for the jar."`},
+ {t:'The Hundred-and-Fifty-Third', p:`Rabbit took the little star, warm from Memo's keeping, lifted it high, and set it gently among the others — the one hundred and fifty-third light, home at last.`},
+ {t:'The Jar Blazes', p:`For a heartbeat, nothing. Then the great jar bloomed with light — all one hundred and fifty-three stars blazing together — until the whole tower shone like the inside of the sun.`},
+ {t:'The Lantern Wakes', p:`The Night Lantern lifted its head, and its wings unfolded, brighter and brighter, silver and gold and every gentle colour. "You have given the night back its stars," it said, and its voice was strong again.`},
+ {t:'The Sky Refills', p:`Then the Lantern opened the jar to the window, and the stars rose up one by one to take their old places, until the whole dark roof of the world sparkled just as it should.`},
+ {t:'Naming the Friends', p:`The Lantern thanked each of them by name — brave Rabbit, clever Memo, tiny bright Blink, big kind Bram, the wobbling jellies, the shy snow hare — and every name it spoke lit a new star, just for them.`},
+ {t:'A Light to Keep', p:`"Each of you must keep one light of your own," said the Lantern, and it gave to every friend a small warm star to carry always, so none of them need ever fear the dark again.`},
+ {t:'The Long Way Home', p:`Then down the mended bridge and home they went, beneath a sky so full and bright it seemed to smile. The way that had taken so long going out felt gentle and short coming back.`},
+ {t:'The Burrow Again', p:`Dawn was turning the hills pink when they reached the little burrow at last. Pip and Pop and Pud waved from their hollow; the meadow whispered welcome, and this time it was surely, warmly kind.`},
+ {t:'Goodnight, Meadow', p:`Rabbit and Memo curled up in their own soft beds, their two little keeping-stars glowing on the sill. Outside, every star was home, and the meadow remembered the way. "Goodnight, Memo," yawned Rabbit. "Goodnight, Rabbit," purred Memo. And the whole bright night said goodnight to them both.`},
+]},
+];
+
+// ---------- one little picture per chapter (1..153) ----------
+const EMOJI = [
+ '✨','🐱','🌟','💫','🫙','🐢','🧺','💡','🌿','🤲','🔒','🐾','🤞','🍃','🌊','🐸','🏡',
+ '🌾','💡','🦔','🕯️','🍄','🤗','🦗','🎼','🪺','🌬️','🪨','🌼','💦','⭐','🐭','🌙','🪧',
+ '🕳️','🌑','🥕','😋','🔊','👂','🐭','🎵','💎','👆','🌊','🟠','🟠','🦘','🌟','✨','⬆️',
+ '🌙','🌊','🛶','🟠','🎣','⚓','💦','🛶','🐦','🤝','🎵','🌧️','🌈','🏃','⭐','🔥','⛰️',
+ '☁️','👣','⬆️','🙈','🌬️','🏃','⭐','🐑','✂️','⛈️','🌥️','💧','🧣','☁️','😴','🤗','🏔️',
+ '🏮','🌲','🏮','🍃','🦡','😟','🏮','🦡','🗺️','🕸️','🕷️','🦉','📖','🌟','🎉','😄','🚶',
+ '❄️','👣','🫙','🐇','🏞️','⛏️','🧤','🧊','😮‍💨','🦡','🌨️','🧵','💡','⛄','💬','🌤️','🌉',
+ '🌉','🔢','⭐','😰','🟠','🐾','🌌','🌬️','🦡','💫','💡','🗼','🌉','🤝','⭐','✨','🚪',
+ '🗼','🦋','😢','🫙','🕯️','🔍','🐱','🤲','⭐','🌟','🦋','🌌','🫂','🌟','🌙','🏡','😴',
+];
+const TINTS = ['#ffe1ec','#e7ecfb','#e3f6e8','#fff0d6','#f1e6fb','#ffe6de','#dff3f6'];
+
+// ---------- flatten to 153 chapters ----------
+const CH = [];
+let _k = 0;
+PARTS.forEach(part=>part.chapters.forEach(c=>{
+  CH.push({part:part.n, partTitle:part.title, t:c.t, p:c.p, e:EMOJI[_k]||'✨'}); _k++;
+}));
+const TOTAL = CH.length;
+
+const $ = id=>document.getElementById(id);
+const KEY = 'rm153-idx';
+let idx = 0, reading = false;
+
+// restore saved place
+const saved = parseInt(localStorage.getItem(KEY), 10);
+if(!isNaN(saved) && saved>=0 && saved<TOTAL) idx = saved;
+
+const pageEl = $('page');
+
+function render(dir){
+  const c = CH[idx], last = idx===TOTAL-1;
+  $('emoji').textContent = c.e;
+  $('pic').style.background = `radial-gradient(circle at 50% 38%, #ffffff 0%, ${TINTS[idx%TINTS.length]} 78%)`;
+  $('partlabel').textContent = `${c.part} · ${c.partTitle}`;
+  $('kicker').textContent = `Chapter ${idx+1}`;
+  $('ctitle').textContent = c.t;
+  $('ctext').innerHTML = `<p>${c.p}</p>` + (last ? `<p class="theend">✦ The End ✦</p>` : '');
+  $('idx').textContent = idx+1;
+  $('prev').disabled = idx===0;
+  $('next').disabled = last;
+  $('pbar').style.width = ((idx+1)/TOTAL*100).toFixed(2)+'%';
+  // highlight in contents
+  [...document.querySelectorAll('.toc-list button')].forEach(b=>
+    b.classList.toggle('on', +b.dataset.i===idx));
+  localStorage.setItem(KEY, idx);
+  if(dir!==undefined){
+    pageEl.style.setProperty('--dir', dir>=0 ? '26px' : '-26px');
+    pageEl.classList.remove('turn'); void pageEl.offsetWidth; pageEl.classList.add('turn');
+    pageEl.scrollIntoView({block:'nearest'});
+  }
+}
+
+function go(n){
+  if(n<0||n>=TOTAL) return;
+  if(reading) stopReading();
+  const dir = n - idx; idx = n; render(dir);
+}
+$('next').onclick = ()=>go(idx+1);
+$('prev').onclick = ()=>go(idx-1);
+document.addEventListener('keydown', e=>{
+  if(e.target.closest('.toc')) return;
+  if(e.key==='ArrowRight') go(idx+1);
+  else if(e.key==='ArrowLeft') go(idx-1);
+});
+
+// swipe
+let sx=null;
+pageEl.addEventListener('touchstart', e=>{ sx=e.touches[0].clientX; }, {passive:true});
+pageEl.addEventListener('touchend', e=>{
+  if(sx===null) return;
+  const dx=e.changedTouches[0].clientX - sx; sx=null;
+  if(Math.abs(dx)>45){ dx<0 ? go(idx+1) : go(idx-1); }
+});
+
+// ---------- read aloud ----------
+function stopReading(){
+  reading=false;
+  if('speechSynthesis' in window) window.speechSynthesis.cancel();
+  $('readBtn').classList.remove('stop');
+  $('readBtn').innerHTML='🔊 Read this chapter aloud';
+}
+function startReading(){
+  if(!('speechSynthesis' in window)) return;
+  reading=true;
+  $('readBtn').classList.add('stop');
+  $('readBtn').innerHTML='⏹ Stop reading';
+  const c = CH[idx];
+  const u = new SpeechSynthesisUtterance(`Chapter ${idx+1}. ${c.t}. ${c.p}`);
+  u.rate=1.05; u.pitch=1.05;
+  u.onend = ()=>{ if(reading && idx<TOTAL-1){ go(idx+1); startReading(); } else stopReading(); };
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(u);
+}
+$('readBtn').onclick = ()=> reading ? stopReading() : startReading();
+$('pic').onclick = ()=> reading ? stopReading() : startReading();
+if(!('speechSynthesis' in window)){ $('readBtn').style.display='none'; }
+
+// ---------- table of contents ----------
+const tocBody = $('tocBody');
+let gi = 0;
+PARTS.forEach(part=>{
+  const h=document.createElement('div');
+  h.className='toc-part'; h.textContent = `${part.n} — ${part.title}`;
+  tocBody.appendChild(h);
+  const list=document.createElement('div');
+  list.className='toc-list';
+  part.chapters.forEach(c=>{
+    const g=gi++;
+    const b=document.createElement('button');
+    b.dataset.i=g;
+    b.innerHTML=`<span class="n">${g+1}</span><span>${EMOJI[g]||'✨'} ${c.t}</span>`;
+    b.onclick=()=>{ go(g); $('toc').classList.remove('open'); };
+    list.appendChild(b);
+  });
+  tocBody.appendChild(list);
+});
+$('tocBtn').onclick = ()=> $('toc').classList.toggle('open');
+$('startOver').onclick = ()=>{ go(0); $('toc').classList.remove('open'); };
+
+// ---------- init ----------
+$('total').textContent = TOTAL;
+render();
+</script>
+</body>
+</html>
