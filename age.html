@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Rabbit &amp; Memo — Choose Your Age</title>
+<style>
+  :root{
+    --cream:#fff6ee; --cream2:#ffe9dc; --ink:#5b4a52; --muted:#a58e98;
+    --pink:#f7b6c8; --pink2:#f194ac; --lav:#cdb0ec; --lav2:#b8a5ee;
+    --mint:#8ed0a0; --amber:#ffb24d;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;}
+  body{
+    font-family:'Nunito',ui-rounded,'Segoe UI',system-ui,sans-serif;
+    background:
+      radial-gradient(1200px 500px at 15% -10%, #fde4ef 0%, transparent 60%),
+      radial-gradient(1000px 500px at 110% 0%, #e6ecfb 0%, transparent 55%),
+      #f4e2f7;
+    color:var(--ink);
+    display:flex;align-items:flex-start;justify-content:center;
+    padding:16px;min-height:100%;
+  }
+  .book{width:100%;max-width:600px;display:flex;flex-direction:column;gap:14px;}
+
+  .head{display:flex;align-items:center;gap:10px;justify-content:center;text-align:center;flex-wrap:wrap;}
+  .head .mascot{font-size:30px;line-height:1;filter:drop-shadow(0 3px 4px rgba(180,120,160,.35));}
+  .head h1{margin:0;font-size:24px;font-weight:800;color:var(--pink2);letter-spacing:.2px;}
+  .sub{margin:-4px 0 0;text-align:center;font-size:14px;color:var(--muted);line-height:1.4;}
+
+  /* chosen-age panel */
+  .panel{background:var(--cream);border-radius:26px;padding:18px 20px;text-align:center;
+    border:3px solid rgba(255,255,255,.7);box-shadow:0 20px 44px -22px rgba(180,120,160,.55);}
+  .panel .big{font-size:40px;font-weight:800;color:var(--ink);line-height:1;}
+  .panel .lbl{margin-top:6px;font-size:20px;font-weight:800;}
+  .panel .eff{margin-top:6px;font-size:14px;color:var(--muted);line-height:1.45;min-height:20px;}
+  .meter{height:14px;border-radius:9px;margin-top:12px;overflow:hidden;background:var(--cream2);
+    box-shadow:inset 0 2px 6px rgba(180,120,160,.25);}
+  .meter i{display:block;height:100%;width:0;border-radius:9px;transition:width .2s ease;
+    background:linear-gradient(90deg,var(--mint),var(--amber),var(--pink2));}
+  .play{margin-top:14px;display:inline-block;text-decoration:none;border-radius:18px;padding:13px 26px;
+    font-weight:800;font-size:17px;color:#fff;background:linear-gradient(180deg,var(--pink),var(--pink2));
+    box-shadow:0 9px 18px -8px var(--pink2);transition:.12s;}
+  .play:hover{filter:brightness(1.05);transform:translateY(-1px);}
+
+  /* the ages 1..100 */
+  .card{background:var(--cream);border-radius:26px;padding:16px;
+    border:3px solid rgba(255,255,255,.7);box-shadow:0 18px 40px -22px rgba(180,120,160,.55);}
+  .card h2{margin:0 0 4px;font-size:17px;font-weight:800;text-align:center;}
+  .card .hint{margin:0 0 12px;text-align:center;font-size:12.5px;color:var(--muted);}
+  .agegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:6px;
+    max-height:52vh;overflow-y:auto;padding:2px;}
+  .agegrid button{border:none;border-radius:12px;aspect-ratio:1;cursor:pointer;font-family:inherit;
+    font-weight:800;font-size:15px;color:var(--ink);background:var(--cream2);transition:.1s;
+    display:grid;place-items:center;}
+  .agegrid button:hover{background:#f6efff;transform:translateY(-1px);}
+  .agegrid button.on{color:#fff;background:linear-gradient(180deg,var(--lav),var(--lav2));
+    box-shadow:0 6px 12px -5px var(--lav2);transform:translateY(-1px);}
+  .agegrid button:focus-visible{outline:3px solid var(--lav2);outline-offset:2px;}
+  .note{text-align:center;font-size:12px;color:var(--muted);margin:0;line-height:1.4;}
+</style>
+</head>
+<body>
+<a href="index.html" title="Home" style="position:fixed;top:10px;left:10px;z-index:60;text-decoration:none;
+  width:40px;height:40px;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.92);
+  font-size:18px;box-shadow:0 8px 18px -8px rgba(180,120,160,.6);">🏠</a>
+<div class="book">
+  <div class="head">
+    <span class="mascot">🎂</span>
+    <h1>Choose Your Age</h1>
+    <span class="mascot">🐰</span>
+  </div>
+  <p class="sub">A younger age makes everything <b>easier</b>. An older age makes everything <b>harder</b>. Ages go all the way up to 100!</p>
+
+  <div class="panel">
+    <div class="big" id="ageBig">8</div>
+    <div class="lbl" id="lbl">🙂 Easy</div>
+    <div class="eff" id="eff"></div>
+    <div class="meter"><i id="meter"></i></div>
+    <a class="play" id="play" href="game.html">Play the game →</a>
+  </div>
+
+  <div class="card">
+    <h2>Tap an age</h2>
+    <p class="hint">1 is a tiny baby (easiest) · 100 is very old (hardest)</p>
+    <div class="agegrid" id="grid"></div>
+  </div>
+
+  <p class="note">Your choice is saved, and the Tower Defense game will use it right away.</p>
+</div>
+
+<script>
+const $ = id=>document.getElementById(id);
+const KEY = 'rm-age';
+
+// difficulty is 0.5 (age 1, easiest) up to 2.5 (age 100, hardest)
+function diffOf(age){ return 0.5 + (age-1)/99*2.0; }
+function tierOf(age){
+  if(age<=10) return {emoji:'🐣', label:'Easiest'};
+  if(age<=25) return {emoji:'🌱', label:'Easy'};
+  if(age<=45) return {emoji:'🙂', label:'Normal'};
+  if(age<=70) return {emoji:'😅', label:'Hard'};
+  if(age<=90) return {emoji:'🔥', label:'Very hard'};
+  return {emoji:'💀', label:'Extreme'};
+}
+
+let age = parseInt(localStorage.getItem(KEY), 10);
+if(isNaN(age) || age<1 || age>100) age = 8;
+
+function pick(a){
+  age = a;
+  localStorage.setItem(KEY, age);
+  const t = tierOf(age), d = diffOf(age);
+  $('ageBig').textContent = age;
+  $('lbl').textContent = `${t.emoji} ${t.label}`;
+  const pct = Math.round((age-1)/99*100);
+  const tough = Math.round((d-1)*100);
+  $('eff').textContent = tough>=0
+    ? `Enemies are about ${tough}% tougher and faster than normal.`
+    : `Enemies are about ${-tough}% weaker and slower than normal.`;
+  $('meter').style.width = pct + '%';
+  [...$('grid').children].forEach(b=>b.classList.toggle('on', +b.dataset.a===age));
+}
+
+// build 1..100
+const grid = $('grid');
+for(let a=1; a<=100; a++){
+  const b=document.createElement('button');
+  b.textContent=a; b.dataset.a=a;
+  b.onclick=()=>pick(a);
+  grid.appendChild(b);
+}
+pick(age);
+// scroll the chosen age into view inside the grid
+const cur = [...grid.children].find(b=>+b.dataset.a===age);
+if(cur) cur.scrollIntoView({block:'center'});
+</script>
+</body>
+</html>

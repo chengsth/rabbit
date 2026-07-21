@@ -81,6 +81,7 @@
       <span class="chip">🪙<b id="coins">150</b></span>
       <span class="chip">❤️<b id="lives">10</b></span>
       <span class="chip">🌊 Wave <b id="wave">0</b>/10</span>
+      <span class="chip" title="Set on the Choose Age page">🎂<b id="agechip">8</b></span>
     </div>
     <canvas id="cv" width="900" height="620"></canvas>
   </div>
@@ -111,6 +112,11 @@ const cv = document.getElementById('cv');
 const ctx = cv.getContext('2d');
 const W = 900, H = 620;
 
+// ---------- difficulty from the "Choose Age" page (1..100) ----------
+let AGE = parseInt(localStorage.getItem('rm-age'), 10);
+if(isNaN(AGE) || AGE<1 || AGE>100) AGE = 8;
+const DIFF = 0.5 + (AGE-1)/99*2.0;   // 0.5 = easiest (age 1), 2.5 = hardest (age 100)
+
 // ---------- path the enemies walk ----------
 const PATH = [
   {x:-30,y:95},{x:300,y:95},{x:300,y:235},{x:120,y:235},{x:120,y:395},
@@ -139,7 +145,7 @@ const GUNS = [
 ];
 
 // ---------- game state ----------
-let coins=150, lives=10, wave=0, running=false, gameOver=false;
+let coins=150, lives=Math.max(3, Math.round(10*(1.4-0.4*DIFF))), wave=0, running=false, gameOver=false;
 let enemies=[], shots=[], pops=[];
 let selectedGun=null, selectedPad=null;
 let spawnQueue=0, spawnTimer=0, waveActive=false;
@@ -216,16 +222,16 @@ $('sellbtn').onclick=()=>{
 $('wavebtn').onclick=()=>{
   if(waveActive||gameOver) return;
   wave++; sync();
-  spawnQueue = 6+Math.floor(wave*2.2);
+  spawnQueue = 6+Math.floor(wave*2.2*DIFF);
   spawnTimer=0; waveActive=true; running=true;
   $('wavebtn').disabled=true;
 };
 
 function spawnEnemy(){
-  const hp = Math.round(3 + wave*2.6);
+  const hp = Math.round((3 + wave*2.6) * DIFF);
   const kinds=[{c:'#f6a5c0',s:1.15,r:14},{c:'#a8c5f2',s:.95,r:16},{c:'#bda6ef',s:1.35,r:12}];
   const k=kinds[Math.floor(Math.random()*kinds.length)];
-  enemies.push({t:0, seg:0, hp, max:hp, spd:(38+wave*1.2)*k.s, col:k.c, r:k.r, reward:6+Math.floor(wave*.8)});
+  enemies.push({t:0, seg:0, hp, max:hp, spd:(38+wave*1.2)*k.s*(0.7+0.3*DIFF), col:k.c, r:k.r, reward:6+Math.floor(wave*.8)});
 }
 
 // ---------- movement along path ----------
@@ -456,6 +462,7 @@ window.addEventListener('error', e=>{
   if(b){ b.style.display='block'; b.textContent='Oops: '+(e.message||e.error||'unknown error'); }
 });
 try{
+  $('agechip').textContent = AGE;
   sync(); refreshShopLock();
   draw();                 // paint the map right away
   requestAnimationFrame(loop);
