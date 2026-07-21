@@ -150,178 +150,485 @@
 <script>
 // ============================================================
 //  Rabbit & Memo and the 153 Stars — 9 parts × 17 chapters
+//  Each chapter is two paragraphs (p is an array).
 // ============================================================
 const PARTS = [
 { n:'Part One', title:'The Falling Star', chapters:[
- {t:'A Knock of Light', p:`It was long past bedtime when a soft light knocked at the window of the burrow — not a knock like a paw, but a knock like a warm little glow, tapping on the glass. Rabbit sat up in the dark and blinked.`},
- {t:'Memo Wakes', p:`Memo the grey cat was already awake, of course; cats are always a little awake. "Rabbit," he whispered, "something fell out of the sky and landed in the cabbages."`},
- {t:'The Cold Little Star', p:`They crept outside in their slippers. There, among the round cabbages, sat a star no bigger than a plum, its light thin and shivery, like a candle that wants to go out.`},
- {t:'What the Star Whispered', p:`Rabbit cupped it in his paws. "Please," the star whispered. "One hundred and fifty-three of us blew out tonight. Without our lights, the meadow will forget the way home."`},
- {t:'The Empty Jar', p:`Far up on the hill stood the Night Lantern's great glass jar, the one that holds every star-light. Tonight it was dark and empty — not one light glowed inside.`},
- {t:'Grandpa Tortoise', p:`They woke Grandpa Tortoise, the oldest and slowest and wisest neighbour of all. He unrolled a map freckled with tiny stars. "Each dot is a light that fell," he said. "Bring them home before the moon sets."`},
- {t:'The Basket', p:`Rabbit packed a basket — three carrots, a ball of thread, a warm blanket, and the empty jar to carry stars in. Memo packed something too, but tucked it away and would not say what.`},
- {t:'Blink', p:`At the garden gate, a firefly bobbed up and down. "I'm Blink," it said. "I'm only a small light — but a small light is better than none. May I come along?" And so they were three.`},
- {t:'The First Light in the Hedge', p:`In the hedge by the lane, something twinkled. It was a star, tangled in the twigs like a lost mitten. Very carefully, Rabbit lifted it free and set it glowing in the jar.`},
- {t:'How to Carry a Star', p:`Stars are shy. Grab one and it dims; but hold it soft, the way you'd hold a sleepy chick, and it warms and shines. Memo learned this first, being gentle under all that grey fur.`},
- {t:'The Locked Gate', p:`At the meadow's edge stood an old iron gate, locked tight, rust in every hinge. Rabbit pushed. Rabbit pulled. The gate did not care one bit.`},
- {t:"Memo's Clever Paw", p:`But Memo could fold up small as a scarf. He slipped between the bars, found the latch, and lifted it, and the gate swung open with a friendly creak. "After you," he said.`},
- {t:'A Promise', p:`Before stepping through, Rabbit made a promise out loud to the dark meadow: "We will find every last light, and bring it home." The jar in the basket glowed a little brighter, as if it had heard.`},
- {t:'The Helpful Wind', p:`A soft wind rose up behind them and pushed, the way a friend nudges you toward something wonderful. It smelled of grass and far-off rain.`},
- {t:'Two Stars on the Pond', p:`The pond lay flat and black, and on it floated two stars, calm as water lilies. Rabbit reached out with a long reed and drew them, dripping light, into the jar.`},
- {t:'The Sleepy Frog', p:`A big frog guarded the pond and did not care for visitors. So Memo hummed a slow, low lullaby until the frog's eyes drooped shut, and they tiptoed past without a single splash.`},
- {t:'Looking Back', p:`On the far hill, their burrow was only a small dark shape now. Home already looked far away — but the jar held its first handful of warm lights, and that is a brave place to begin.`},
+ {t:'A Knock of Light', p:[
+   `It was long past bedtime when a soft light knocked at the window of the burrow — not a knock like a paw, but a knock like a warm little glow, tapping on the glass. Rabbit sat up in the dark and blinked.`,
+   `For a moment he thought he had dreamed it. Then it came again — tap, tap, tap — soft and golden against the cold night glass. Rabbit slid out from under his blanket, his heart going pit-a-pat, and tiptoed toward the window to see what in the world could be knocking so late.`]},
+ {t:'Memo Wakes', p:[
+   `Memo the grey cat was already awake, of course; cats are always a little awake. "Rabbit," he whispered, "something fell out of the sky and landed in the cabbages."`,
+   `His green eyes were wide and round, fixed on the garden below. Memo did not frighten easily — he was far too sensible for that — but tonight his tail was puffed up like a bottlebrush. "I watched it come down," he said. "Slow, like a snowflake. And then it just... stopped glowing."`]},
+ {t:'The Cold Little Star', p:[
+   `They crept outside in their slippers. There, among the round cabbages, sat a star no bigger than a plum, its light thin and shivery, like a candle that wants to go out.`,
+   `The grass was wet and cold beneath their toes, and the whole garden seemed to hold its breath. Rabbit knelt down slowly. The little star flickered up at him, dim and frightened, giving off hardly any warmth at all — as if it had spent nearly everything it had just reaching the ground.`]},
+ {t:'What the Star Whispered', p:[
+   `Rabbit cupped it in his paws. "Please," the star whispered. "One hundred and fifty-three of us blew out tonight. Without our lights, the meadow will forget the way home."`,
+   `"The whole sky went dark at once," it went on, its voice as small as a falling leaf. "We tumbled down all over the world — into hedges and ponds and caves and clouds. If nobody gathers us before the moon sets, we will fade for good, and every lost thing will stay lost forever." Rabbit and Memo looked at one another, and knew at once what they had to do.`]},
+ {t:'The Empty Jar', p:[
+   `Far up on the hill stood the Night Lantern's great glass jar, the one that holds every star-light. Tonight it was dark and empty — not one light glowed inside.`,
+   `Usually it shone like a small moon of its own, spilling silver across the fields so that no creature ever lost its way after dark. Now it sat cold and hollow on the hilltop, and the meadow below had gone strange and shadowy. Even the familiar path to the garden gate looked unfamiliar without it.`]},
+ {t:'Grandpa Tortoise', p:[
+   `They woke Grandpa Tortoise, the oldest and slowest and wisest neighbour of all. He unrolled a map freckled with tiny stars. "Each dot is a light that fell," he said. "Bring them home before the moon sets."`,
+   `Grandpa Tortoise had lived so long he remembered the very first time the stars were hung. He tapped the map with one wrinkled claw. "You will meet cold and dark, and steep and deep," he said, "but you will meet kindness too, if you carry some with you. Now go, little ones — and mind you look after each other."`]},
+ {t:'The Basket', p:[
+   `Rabbit packed a basket — three carrots, a ball of thread, a warm blanket, and the empty jar to carry stars in. Memo packed something too, but tucked it away and would not say what.`,
+   `He folded the blanket into the bottom of the jar, so the stars would have something soft to rest on. Memo watched him pack, then quietly slipped a small something into the fold of his scarf and patted it flat. "Ready?" asked Rabbit. "Ready," said Memo, and told him nothing more.`]},
+ {t:'Blink', p:[
+   `At the garden gate, a firefly bobbed up and down. "I'm Blink," it said. "I'm only a small light — but a small light is better than none. May I come along?" And so they were three.`,
+   `It flew a nervous little loop, its tail glowing on and off, on and off. "I've always wanted to be part of something big," Blink admitted, "but I'm ever so small." "Small is exactly right," said Rabbit kindly. "A small light can go where the big ones can't." And Blink glowed so brightly with pride it nearly bumped into the gatepost.`]},
+ {t:'The First Light in the Hedge', p:[
+   `In the hedge by the lane, something twinkled. It was a star, tangled in the twigs like a lost mitten. Very carefully, Rabbit lifted it free and set it glowing in the jar.`,
+   `It had caught on a thorn and could not wriggle loose, and it had been growing dimmer and dimmer all the while. Rabbit worked it free thorn by thorn, careful not to tear its light. When at last it dropped into the jar, it gave a small happy shiver and glowed a little brighter, glad to be found.`]},
+ {t:'How to Carry a Star', p:[
+   `Stars are shy. Grab one and it dims; but hold it soft, the way you'd hold a sleepy chick, and it warms and shines. Memo learned this first, being gentle under all that grey fur.`,
+   `Rabbit showed him how to make a loose cradle of his paws, the way you'd hold a soap bubble you didn't want to pop. "Gentle wins," Rabbit said. Memo, who was used to catching things with claws, found this surprisingly hard — and surprisingly nice. The star purred with warmth in his paws, and so, very quietly, did he.`]},
+ {t:'The Locked Gate', p:[
+   `At the meadow's edge stood an old iron gate, locked tight, rust in every hinge. Rabbit pushed. Rabbit pulled. The gate did not care one bit.`,
+   `It was taller than three Rabbits standing on each other's ears, and its bars were slick with cold dew. "There's no way over," sighed Rabbit, rubbing his sore paws. Blink circled the lock and reported it rusted shut. For a moment the whole adventure seemed about to end right there, at the very first gate.`]},
+ {t:"Memo's Clever Paw", p:[
+   `But Memo could fold up small as a scarf. He slipped between the bars, found the latch, and lifted it, and the gate swung open with a friendly creak. "After you," he said.`,
+   `He breathed all the way out to make himself thin, wriggled his whiskers through first, and the rest of him poured after like water through a crack. On the far side he reached up, worked the stiff latch this way and that, and — clunk — it gave. "Cats," he said smugly, holding the gate wide, "are very good at getting into places."`]},
+ {t:'A Promise', p:[
+   `Before stepping through, Rabbit made a promise out loud to the dark meadow: "We will find every last light, and bring it home." The jar in the basket glowed a little brighter, as if it had heard.`,
+   `Saying it aloud made it feel real, and a little frightening, and a little wonderful all at once. Memo pressed a paw over Rabbit's. "Every last one," he agreed. "However far." And with that they stepped through the gate together, out of the garden they knew and into the wide dark meadow they didn't.`]},
+ {t:'The Helpful Wind', p:[
+   `A soft wind rose up behind them and pushed, the way a friend nudges you toward something wonderful. It smelled of grass and far-off rain.`,
+   `It ruffled Rabbit's ears and curled around Memo's tail and seemed, almost, to be pointing. "I think it wants to help," said Rabbit. So they stopped leaning against it and let it carry them along, and walking became easy, as if the whole night had quietly taken their side.`]},
+ {t:'Two Stars on the Pond', p:[
+   `The pond lay flat and black, and on it floated two stars, calm as water lilies. Rabbit reached out with a long reed and drew them, dripping light, into the jar.`,
+   `They lay so still on the dark water that Rabbit feared a single ripple might frighten them off. He stretched out along the bank and coaxed them gently to shore, one and then the other. Two more lights blinked awake in the jar, and the pond sighed, as if it had been keeping them safe just for this.`]},
+ {t:'The Sleepy Frog', p:[
+   `A big frog guarded the pond and did not care for visitors. So Memo hummed a slow, low lullaby until the frog's eyes drooped shut, and they tiptoed past without a single splash.`,
+   `The frog was very grand and very grumpy and did not approve of anyone crossing after dark. But Memo's lullaby was slow and warm, and one by one the frog's heavy eyelids sank. By the last verse it was snoring in fat, contented bubbles, and the friends slipped by on the very tips of their toes.`]},
+ {t:'Looking Back', p:[
+   `On the far hill, their burrow was only a small dark shape now. Home already looked far away — but the jar held its first handful of warm lights, and that is a brave place to begin.`,
+   `From here they could just make out the little round window they had climbed from, no bigger now than a button. Rabbit felt a small tug of missing-home in his chest. But the jar glowed warm against his side, and Memo bumped him gently with a shoulder, and somehow that was enough to turn them both toward the dark and keep going.`]},
 ]},
 { n:'Part Two', title:'The Whispering Meadow', chapters:[
- {t:'The Tall Grass', p:`The Whispering Meadow grew grass taller than Rabbit's ears. Every blade leaned in to murmur as they passed, though no one could quite say what about. "Stay close," said Memo, "and don't listen too hard."`},
- {t:'Following Blink', p:`It was easy to lose your way in grass so tall, so Blink flew up high and glowed like a tiny green moon. "This way," the firefly called, drawing a soft path through the dark.`},
- {t:'The Hedgehog Family', p:`In a snug hollow they met the hedgehogs — Pip, Pop, and a very small one named Pud. "We've lost our nightlight," sniffled Pip. "Poor Pud can't sleep without it."`},
- {t:"Pud's Lost Light", p:`Little Pud had cried himself into hiccups. His nightlight had been a star that lived in the crook of an old root — and last night, it had simply gone dark.`},
- {t:'Under the Toadstool', p:`Rabbit searched low and Memo searched high, until Blink spotted a glimmer beneath a red toadstool. There sat the star, dim and damp, hiding from the cold.`},
- {t:'Giving and Keeping', p:`Rabbit longed to leave the star for Pud, but every light was needed for the great jar. So Blink whistled, and a firefly cousin flew down to be Pud's new nightlight instead. Everyone was happy — Pud most of all.`},
- {t:'The Cricket Orchestra', p:`Further on, a hundred crickets played a hundred tiny fiddles. The song was so lovely that stopping it would have been a crime, so the friends had to cross without breaking the music.`},
- {t:'Memo Conducts', p:`Memo lifted both paws like a conductor and swept them through the air. The crickets played louder and grander, and under all that music the friends slipped by unheard.`},
- {t:'A Star in the Nest', p:`An empty bird's nest swung in a bush, and in it, round as an egg, glowed a warm little star. Rabbit lifted it as gently as if it might hatch.`},
- {t:'The Cross Wind', p:`Then the wind changed. It turned cold and cross and shoved at the basket until the jar nearly tipped. "Down!" cried Memo, and they threw themselves over the lights to keep them safe.`},
- {t:'Holding On', p:`They huddled behind a grey stone while the cross wind grumbled overhead. Rabbit held the jar tight against his chest, and the stars inside held their light steady, brave against the gusts.`},
- {t:'The Dandelion Boat', p:`A little stream cut across the meadow. On its bank grew a dandelion gone to fluff, big as a boat, so they climbed aboard and pushed off across the water.`},
- {t:'Memo Hates Water', p:`Cats do not like getting wet, and Memo liked it least of all. He balanced in the very middle of the fluff-boat, tail high, muttering that this was a terrible, soggy idea — but across they went.`},
- {t:'Three Stars in the Reeds', p:`Among the reeds on the far side, three stars had snagged like lost balloons. One by one Rabbit freed them, and the jar grew a little heavier and a little brighter.`},
- {t:'The Meadow Mouse', p:`A meadow mouse popped up with wide, worried eyes. "Beyond here lies the Grumbly Hollow," she warned, "a cave that swallows light. Be careful, small travellers."`},
- {t:'Whispers in the Dark', p:`The meadow's whispers grew louder now, and it was hard to tell if they were kind. Rabbit chose to believe they were. "Thank you, meadow," he said — and the whispers softened, pleased to be thanked.`},
- {t:'The Old Scarecrow', p:`At the meadow's edge slouched a shabby old scarecrow. It could not speak, but when the wind moved its straw arm, it seemed to point the way — down, toward a dark mouth in the hill.`},
+ {t:'The Tall Grass', p:[
+   `The Whispering Meadow grew grass taller than Rabbit's ears. Every blade leaned in to murmur as they passed, though no one could quite say what about. "Stay close," said Memo, "and don't listen too hard."`,
+   `The blades brushed together overhead like a thousand soft voices, and it was impossible to tell whether they were being welcomed or warned. Rabbit kept one paw on Memo's tail so they wouldn't drift apart, and on they pushed through the green hush, one careful step at a time.`]},
+ {t:'Following Blink', p:[
+   `It was easy to lose your way in grass so tall, so Blink flew up high and glowed like a tiny green moon. "This way," the firefly called, drawing a soft path through the dark.`,
+   `Up and up went the little firefly until its glow floated above the grass-tops like a lantern on a string. "Left a bit — now straight on!" it called down. Without Blink they would have wandered in circles until morning; with Blink, the way opened gently before them.`]},
+ {t:'The Hedgehog Family', p:[
+   `In a snug hollow they met the hedgehogs — Pip, Pop, and a very small one named Pud. "We've lost our nightlight," sniffled Pip. "Poor Pud can't sleep without it."`,
+   `The little hollow was lined with moss and smelled of clover, but nobody in it was sleeping. Pip wrung her paws, Pop paced in worried circles, and baby Pud hiccupped between sniffles. "It's been dark three nights running," said Pop, "and none of us can settle."`]},
+ {t:"Pud's Lost Light", p:[
+   `Little Pud had cried himself into hiccups. His nightlight had been a star that lived in the crook of an old root — and last night, it had simply gone dark.`,
+   `He was such a tiny thing, all soft spikes and round eyes, and he clutched an empty acorn cap where his star used to sit. "It kept the shadows small," he whispered. Rabbit's heart squeezed. He knew exactly how big shadows could feel when you were little.`]},
+ {t:'Under the Toadstool', p:[
+   `Rabbit searched low and Memo searched high, until Blink spotted a glimmer beneath a red toadstool. There sat the star, dim and damp, hiding from the cold.`,
+   `The toadstool leaned over it like a little red umbrella, hiding it even from the moon. The star had tucked itself into the smallest possible ball, trying to stay warm. Rabbit reached in slowly and lifted it out, and it uncurled in his paws with a grateful shine.`]},
+ {t:'Giving and Keeping', p:[
+   `Rabbit longed to leave the star for Pud, but every light was needed for the great jar. So Blink whistled, and a firefly cousin flew down to be Pud's new nightlight instead. Everyone was happy — Pud most of all.`,
+   `For a long moment Rabbit held the star out toward Pud, wanting so badly to set everything right at once. But he had made a promise, and promises are for keeping even when they are hard. The firefly cousin settled happily into the acorn cap, glowing soft and steady, and Pud was fast asleep before they even said goodbye.`]},
+ {t:'The Cricket Orchestra', p:[
+   `Further on, a hundred crickets played a hundred tiny fiddles. The song was so lovely that stopping it would have been a crime, so the friends had to cross without breaking the music.`,
+   `Each cricket sawed away with its little legs, and together they made a sound like a whole meadow humming to itself. It rose and fell, rose and fell, and it seemed a great pity — almost rude — to walk straight through the middle of a song so lovely.`]},
+ {t:'Memo Conducts', p:[
+   `Memo lifted both paws like a conductor and swept them through the air. The crickets played louder and grander, and under all that music the friends slipped by unheard.`,
+   `He stood upon a pebble and waved his paws grandly, and the crickets, delighted to have an audience at last, played louder and prouder than ever. Under the swelling music the friends crossed on tiptoe. "A little showing-off," Memo murmured, "can be very useful."`]},
+ {t:'A Star in the Nest', p:[
+   `An empty bird's nest swung in a bush, and in it, round as an egg, glowed a warm little star. Rabbit lifted it as gently as if it might hatch.`,
+   `The nest's owner had flown south long ago and left it swaying empty in the breeze. The star sat warm in the woven cup, keeping the round shape of the eggs that once had rested there. Rabbit lifted it as tenderly as if it might crack, and added its glow to the growing jar.`]},
+ {t:'The Cross Wind', p:[
+   `Then the wind changed. It turned cold and cross and shoved at the basket until the jar nearly tipped. "Down!" cried Memo, and they threw themselves over the lights to keep them safe.`,
+   `This was not the friendly wind from before — this one was sharp and sudden and mean, and it went straight for the basket. The jar lurched, the lights slid, and for one awful heartbeat a star nearly rolled out into the dark. They caught it just in time, hearts hammering.`]},
+ {t:'Holding On', p:[
+   `They huddled behind a grey stone while the cross wind grumbled overhead. Rabbit held the jar tight against his chest, and the stars inside held their light steady, brave against the gusts.`,
+   `They pressed their backs to the cold stone and waited while the wind hurled itself past, rattling the grass and snatching their words away. Rabbit held the jar the way you hold something you love in a storm. "It'll pass," he told the frightened little lights. "Winds always do." And in time, it did.`]},
+ {t:'The Dandelion Boat', p:[
+   `A little stream cut across the meadow. On its bank grew a dandelion gone to fluff, big as a boat, so they climbed aboard and pushed off across the water.`,
+   `The dandelion had gone perfectly to seed, round and white and ready to sail. They climbed carefully into its fluff, pushed off with a reed, and drifted out onto the little stream. Seeds lifted off around them as they went, like a soft snow of tiny wishes.`]},
+ {t:'Memo Hates Water', p:[
+   `Cats do not like getting wet, and Memo liked it least of all. He balanced in the very middle of the fluff-boat, tail high, muttering that this was a terrible, soggy idea — but across they went.`,
+   `He sat bolt upright in the exact centre of the boat, as far from every edge as a cat can possibly get, and refused to so much as glance at the water. "If one single drop touches me," he announced, "I shall never forgive this stream." Rabbit hid his smile and paddled a little faster.`]},
+ {t:'Three Stars in the Reeds', p:[
+   `Among the reeds on the far side, three stars had snagged like lost balloons. One by one Rabbit freed them, and the jar grew a little heavier and a little brighter.`,
+   `They had blown into the tall reeds and tangled there like lost kites, bobbing just out of reach. One by one Rabbit leaned out and worked them loose, and one by one they slid into the jar with soft, glad shivers. Three more lights — the basket was really beginning to glow now.`]},
+ {t:'The Meadow Mouse', p:[
+   `A meadow mouse popped up with wide, worried eyes. "Beyond here lies the Grumbly Hollow," she warned, "a cave that swallows light. Be careful, small travellers."`,
+   `She clutched a single seed to her chest and gazed up at them with enormous, anxious eyes. "Nothing goes into that hollow and comes out shining," she said. "But some of your lights fell in there. You'll have to be brave, and you'll have to be quick." Then she darted away into the grass.`]},
+ {t:'Whispers in the Dark', p:[
+   `The meadow's whispers grew louder now, and it was hard to tell if they were kind. Rabbit chose to believe they were. "Thank you, meadow," he said — and the whispers softened, pleased to be thanked.`,
+   `The whispering swelled all around them, and it would have been the easiest thing in the world to grow afraid of it. But Rabbit decided, the way you decide to hope, that the meadow meant well. "Thank you for the path," he said to the grass. "Thank you for keeping the stars." And the whispers turned soft as a lullaby.`]},
+ {t:'The Old Scarecrow', p:[
+   `At the meadow's edge slouched a shabby old scarecrow. It could not speak, but when the wind moved its straw arm, it seemed to point the way — down, toward a dark mouth in the hill.`,
+   `Straw poked out at its elbows, and a friendly, faded smile was stitched across its sack of a face. It could not say a word, but the wind lifted its arm, slow and sure, until it pointed to a black opening at the foot of the hill. "Thank you," said Rabbit, and the scarecrow's button eyes seemed almost to twinkle.`]},
 ]},
 { n:'Part Three', title:'The Carrot Caves', chapters:[
- {t:'The Hollow', p:`The Grumbly Hollow yawned before them, a cave mouth ringed with old roots. From inside came a low, sleepy grumble, as if the hill itself were snoring.`},
- {t:'Into the Dark', p:`They stepped inside, and the dark closed behind them like a curtain. Now the jar was their only light — a small warm sun they carried between them.`},
- {t:'Carrot Roots', p:`The walls were hung with the fat orange roots of carrots grown wild and huge. To a rabbit, it was the most tempting hallway in all the world.`},
- {t:"Don't Eat the Path", p:`"Rabbit," Memo warned, "those roots are our markers. Eat them, and we'll never find the way out." Rabbit's tummy gave a sad little rumble, but he kept his teeth to himself.`},
- {t:'The Echo', p:`Every step came back doubled. "Hello?" said Rabbit, and the cave said hello, hello, hello, until he wasn't sure which voice was his own.`},
- {t:"Memo's Ears", p:`But Memo's ears were cleverer than any echo. He turned them this way and that, sorting the true sounds from the false, and led on as surely as if a map were painted on the dark.`},
- {t:'The Blind Mole', p:`Deep down they met a mole with tiny, useless eyes and an enormous smile. "I can't see a thing," he said cheerfully, "but I know every tunnel in this hill by heart."`},
- {t:"Mole's Bargain", p:`"Sing me a song of the sky," said the mole, "for I have never seen it — and I'll guide you true." So Rabbit sang of stars and moon, and the mole wept happy underground tears.`},
- {t:'A Star in the Crystal', p:`The mole led them to a great crystal, and inside it, like a firefly caught in ice, glowed a trapped star. It shone and shone and could not get out.`},
- {t:'Tap, Tap, Tap', p:`Memo listened to the crystal, found its one true note, and tapped it three times — tap, tap, tap. The crystal opened like a flower, and the star floated free.`},
- {t:'The Underground River', p:`A black river ran across their path, cold and quick and far too deep to wade. On the far side, the tunnel climbed toward a distant grey glimmer of sky.`},
- {t:'Jelly Stepping-Stones', p:`Then something in the river went blub. Up bobbed a row of round, wobbly, glowing jelly-blobs, orange as marmalade. "Step on us!" they giggled. "We don't mind!"`},
- {t:'Meeting the Jellies', p:`The jellies were the happiest creatures they had met, bouncing and wobbling and laughing at nothing at all. Memo knew them at once — they were cousins of his own little jelly buddy back home.`},
- {t:'Bounce Across', p:`So they bounced from jelly to jelly — boing, boing, boing — laughing all the way, while the jellies wobbled and cheered beneath their feet.`},
- {t:'Two Stars in the Deep', p:`Deep in the river, two stars glimmered, too far down to reach. The jellies dived like happy dumplings and brought them up, dripping and giggling and bright.`},
- {t:'Nearly Fifty', p:`They rested on the bank and counted the jar's glow. Nearly fifty little lights now! Half a hundred stars, warm and safe — and the whole wide sky still to go.`},
- {t:'The Way Up', p:`A stair of stone climbed out of the dark toward a patch of night. The jellies waved their wobbly goodbyes, and up the friends went, back toward the moon.`},
+ {t:'The Hollow', p:[
+   `The Grumbly Hollow yawned before them, a cave mouth ringed with old roots. From inside came a low, sleepy grumble, as if the hill itself were snoring.`,
+   `Cold air breathed out of it, damp and earthy, and somewhere deep inside something went grumble, grumble in its sleep. Blink's little light barely reached past the entrance. "Well," said Rabbit, taking a very big breath, "in we go."`]},
+ {t:'Into the Dark', p:[
+   `They stepped inside, and the dark closed behind them like a curtain. Now the jar was their only light — a small warm sun they carried between them.`,
+   `The darkness underground was different from the darkness above — thicker, closer, with no moon to soften its edges. They walked shoulder to shoulder, the jar held up before them like a tiny sun, and their three shadows danced huge and wobbly across the walls.`]},
+ {t:'Carrot Roots', p:[
+   `The walls were hung with the fat orange roots of carrots grown wild and huge. To a rabbit, it was the most tempting hallway in all the world.`,
+   `They dangled everywhere, plump and orange and freckled with earth, filling the whole tunnel with a delicious green smell. Rabbit's nose twitched. His tummy rumbled. His paws crept, all on their own, toward the nearest crunchy root.`]},
+ {t:"Don't Eat the Path", p:[
+   `"Rabbit," Memo warned, "those roots are our markers. Eat them, and we'll never find the way out." Rabbit's tummy gave a sad little rumble, but he kept his teeth to himself.`,
+   `"We're following the roots back out again," Memo reminded him. "Nibble the trail and we're lost for good — down here, in the dark, forever." Rabbit pulled his paws back with a heroic effort and folded them firmly behind his back. It was, he decided, the hardest thing he had done all night.`]},
+ {t:'The Echo', p:[
+   `Every step came back doubled. "Hello?" said Rabbit, and the cave said hello, hello, hello, until he wasn't sure which voice was his own.`,
+   `Every whisper bounced back trebled and strange, until the tunnel seemed full of other Rabbits and other Memos all talking at once. "Which way?" "Which way, which way, which way," mocked the cave. It was enough to muddle absolutely anyone.`]},
+ {t:"Memo's Ears", p:[
+   `But Memo's ears were cleverer than any echo. He turned them this way and that, sorting the true sounds from the false, and led on as surely as if a map were painted on the dark.`,
+   `He swivelled them slowly, sifting the real drip-drip of water from its false echoes, listening for the open spaces ahead. "This way is solid," he'd say, "and that way is only air pretending to be a tunnel." Rabbit followed him with perfect trust, and the cave never fooled them once.`]},
+ {t:'The Blind Mole', p:[
+   `Deep down they met a mole with tiny, useless eyes and an enormous smile. "I can't see a thing," he said cheerfully, "but I know every tunnel in this hill by heart."`,
+   `He had soft velvet fur and paws like little shovels, and he greeted them as though visitors dropped by every day. "Down here, eyes are no use to anybody," he chuckled. "But I've a map of this whole hill right here in my whiskers. Now — where are you two headed?"`]},
+ {t:"Mole's Bargain", p:[
+   `"Sing me a song of the sky," said the mole, "for I have never seen it — and I'll guide you true." So Rabbit sang of stars and moon, and the mole wept happy underground tears.`,
+   `So Rabbit sang of the moon and the meadow and the great wide sparkling sky, and the mole listened with his eyes shut and his paws over his heart. When the song ended, a tear rolled down his velvet cheek. "Beautiful," he breathed. "Now — follow me, and mind the low bits."`]},
+ {t:'A Star in the Crystal', p:[
+   `The mole led them to a great crystal, and inside it, like a firefly caught in ice, glowed a trapped star. It shone and shone and could not get out.`,
+   `It hung inside the stone like a firefly frozen in a raindrop, its light bent and scattered into a hundred small rainbows. They could see it plainly; they simply couldn't reach it. "It's been trying to shine its way out," the mole said softly, "but crystal is patient, and stars get tired."`]},
+ {t:'Tap, Tap, Tap', p:[
+   `Memo listened to the crystal, found its one true note, and tapped it three times — tap, tap, tap. The crystal opened like a flower, and the star floated free.`,
+   `He pressed one ear to the cold crystal and hunted, note by note, for the exact spot where it wanted to break. Then — tap, tap, tap — three careful taps in three careful places. A crack ran up the stone like a climbing vine, it opened along its seams, and the star floated free with a sound like a tiny bell.`]},
+ {t:'The Underground River', p:[
+   `A black river ran across their path, cold and quick and far too deep to wade. On the far side, the tunnel climbed toward a distant grey glimmer of sky.`,
+   `It rushed by black and silent and cold, so wide that Blink's little light could not find the far shore. There was no bridge, no boat, no stepping stones. Rabbit's ears drooped. "How," he wondered aloud, "are we ever going to cross that?"`]},
+ {t:'Jelly Stepping-Stones', p:[
+   `Then something in the river went blub. Up bobbed a row of round, wobbly, glowing jelly-blobs, orange as marmalade. "Step on us!" they giggled. "We don't mind!"`,
+   `One after another they popped up out of the water, wobbling and beaming, forming a bouncy orange line clear across the river. "We heard you needed a bridge!" the biggest one giggled. "We're squishy, but we're strong — and we do so love company down here in the dark."`]},
+ {t:'Meeting the Jellies', p:[
+   `The jellies were the happiest creatures they had met, bouncing and wobbling and laughing at nothing at all. Memo knew them at once — they were cousins of his own little jelly buddy back home.`,
+   `They jiggled whenever they laughed, which was constantly, and they laughed simply because they were glad to be alive. Memo's whiskers twitched with recognition. "You're the cousins of my little jelly friend at home," he said, and the whole river burst into delighted, wobbling cheers.`]},
+ {t:'Bounce Across', p:[
+   `So they bounced from jelly to jelly — boing, boing, boing — laughing all the way, while the jellies wobbled and cheered beneath their feet.`,
+   `It was less like walking and more like being tickled by the ground itself. Rabbit couldn't help laughing out loud with every hop, and even Memo lost his dignity somewhere around the third bounce. Boing, boing, boing — and there they were, safe and breathless and giggling, on the other side.`]},
+ {t:'Two Stars in the Deep', p:[
+   `Deep in the river, two stars glimmered, too far down to reach. The jellies dived like happy dumplings and brought them up, dripping and giggling and bright.`,
+   `They shone far down where the water was blackest, well beyond any paw or reed. So the jellies took great gulps of air, tucked themselves into little balls, and plopped down after them. Up they bobbed a moment later, one star cradled in each, dripping and pleased as anything.`]},
+ {t:'Nearly Fifty', p:[
+   `They rested on the bank and counted the jar's glow. Nearly fifty little lights now! Half a hundred stars, warm and safe — and the whole wide sky still to go.`,
+   `They sat down on a smooth flat stone to rest their tired legs, and Rabbit held the jar up to count. So many little lights, all glowing together — nearly fifty of them! "Halfway to a hundred," said Memo, "and not even morning yet." It gave them just the heart they needed to go on.`]},
+ {t:'The Way Up', p:[
+   `A stair of stone climbed out of the dark toward a patch of night. The jellies waved their wobbly goodbyes, and up the friends went, back toward the moon.`,
+   `The steps were slick and uneven, carved by no one, worn smooth by dripping water over long years. But at the very top hung a small ragged patch of night, freckled with the few stars still left in the sky. The jellies waved and wobbled goodbye, and up the friends climbed toward the open air.`]},
 ]},
 { n:'Part Four', title:'The Jelly River', chapters:[
- {t:'Out of the Dark', p:`They climbed out into moonlight and blinked like newborn owls. After the cave, the plain old night looked absolutely magnificent.`},
- {t:'The River of Jelly', p:`Before them ran a strange, slow river that wobbled instead of flowed — a whole river of pale, glowing jelly, humming softly to itself as it went.`},
- {t:'A Boat of Bark', p:`Rabbit peeled a great curl of birch bark and folded it into a little boat. Memo tested it with one careful paw and declared it "just barely acceptable."`},
- {t:'The Jellies Come Along', p:`To their delight, the river jellies came too, wobbling alongside the boat like a crowd of cheerful cushions, ready to catch anyone who tumbled in.`},
- {t:'Fishing for Stars', p:`Stars bobbed on the jelly-river like apples in a barrel. Rabbit leaned out with a net of thread and scooped them up, one plip at a time.`},
- {t:'Memo the Captain', p:`Memo took the tiller and grew very grand about it. "Steady as she goes," he ordered no one in particular, tail up like a flag. Rabbit tried hard not to giggle.`},
- {t:'The Waterfall Ahead', p:`A roar rose up ahead. The river fell away into a great wobbling waterfall, and the little boat began to hurry toward the edge.`},
- {t:'Steering to Shore', p:`"Paddle, paddle!" cried Memo, forgetting all about being grand. Together they dug at the jelly and swung the boat to the bank just in time, hearts thumping like drums.`},
- {t:'The Kingfisher', p:`On the bank perched a kingfisher with a star clutched in its claws. "Mine," it said. "A jewel. The finest in all my collection."`},
- {t:'Sharing', p:`"It isn't a jewel," said Rabbit gently. "It's a light the whole meadow needs." The kingfisher thought hard, for it did love shiny things very much.`},
- {t:'A Star for a Song', p:`In the end they traded: the star for a smooth silver pebble, and a song about a bird whose feathers were the colour of rivers. The kingfisher liked the song even better than the star.`},
- {t:'The Rainshower', p:`A warm rain began to patter down. They tucked under a broad leaf and watched the drops make little crowns upon the river.`},
- {t:'Rainbows at Night', p:`When the rain thinned, the moon caught it and hung a moonbow across the sky — a rainbow made all of silver and grey. At its far end, something twinkled.`},
- {t:'Chasing the Moonbow', p:`They ran along the bank after the moonbow's end, which kept politely moving, the way rainbow-ends always do, just to make the game more fun.`},
- {t:'The Star at the End', p:`At last the moonbow rested its foot on a mossy rock, and there sat the star it had been guarding. Rabbit thanked the moonbow, which bowed and faded shyly away.`},
- {t:'Drying Off', p:`A glowworm invited them into its cozy nook to dry off. In its soft green light they warmed their toes and felt, for a little while, entirely at home.`},
- {t:'The Far Bank', p:`Rested and dry, they found the road again. It left the river behind and began, gently at first, to climb up and up toward the clouds.`},
+ {t:'Out of the Dark', p:[
+   `They climbed out into moonlight and blinked like newborn owls. After the cave, the plain old night looked absolutely magnificent.`,
+   `They came up blinking into the moonlight and gulped the cool clean air like water. After the close, grumbling cave, the open night felt enormous and kind. Rabbit turned in a slow circle just to see the whole sky at once, small as it was tonight.`]},
+ {t:'The River of Jelly', p:[
+   `Before them ran a strange, slow river that wobbled instead of flowed — a whole river of pale, glowing jelly, humming softly to itself as it went.`,
+   `It wobbled along between its banks in slow, shining waves, humming a wobbly sort of tune. Now and then a bubble rose to the top and popped with a cheerful bloop. "Everything up here," Memo observed, "seems to jiggle."`]},
+ {t:'A Boat of Bark', p:[
+   `Rabbit peeled a great curl of birch bark and folded it into a little boat. Memo tested it with one careful paw and declared it "just barely acceptable."`,
+   `He chose a big curl of fallen birch bark, white as paper, and turned up its ends into a snug little boat. He lined the bottom with soft moss so the jar would ride safe and dry. Memo inspected every single seam twice before he would set one paw aboard.`]},
+ {t:'The Jellies Come Along', p:[
+   `To their delight, the river jellies came too, wobbling alongside the boat like a crowd of cheerful cushions, ready to catch anyone who tumbled in.`,
+   `A whole crowd of them floated at the boat's edges, bobbing like a flotilla of friendly pillows. "If you tip, we'll catch you!" they promised. It was a great comfort to sail a wobbly river knowing you were surrounded by things far too soft to let you sink.`]},
+ {t:'Fishing for Stars', p:[
+   `Stars bobbed on the jelly-river like apples in a barrel. Rabbit leaned out with a net of thread and scooped them up, one plip at a time.`,
+   `They drifted along on the current, glinting, easy to miss and easy to love. Rabbit dipped his little net of thread and lifted them out one plip at a time, and each one dripped warm light back into the jar. It was, he thought, the nicest fishing anyone had ever done.`]},
+ {t:'Memo the Captain', p:[
+   `Memo took the tiller and grew very grand about it. "Steady as she goes," he ordered no one in particular, tail up like a flag. Rabbit tried hard not to giggle.`,
+   `He'd found a twig for a tiller and would not be parted from it. "A captain must be dignified," he informed them, sitting up very straight. Just then a jelly bumped the boat and nearly tipped him over; his dignity wobbled dangerously, but he clung to both the twig and his pride.`]},
+ {t:'The Waterfall Ahead', p:[
+   `A roar rose up ahead. The river fell away into a great wobbling waterfall, and the little boat began to hurry toward the edge.`,
+   `The hum of the river deepened to a rumble, and the rumble grew to a roar. Ahead, the jelly simply ended, pouring over an edge into a foaming, glowing drop. The current quickened, tugging the little boat faster and faster toward the brink.`]},
+ {t:'Steering to Shore', p:[
+   `"Paddle, paddle!" cried Memo, forgetting all about being grand. Together they dug at the jelly and swung the boat to the bank just in time, hearts thumping like drums.`,
+   `There was no time for dignity now. They dug their paws into the jelly and hauled with all their might, and the jellies pushed from behind, and the little boat swung sideways and bumped the bank just steps from the edge. They tumbled onto solid ground in a breathless, grateful heap.`]},
+ {t:'The Kingfisher', p:[
+   `On the bank perched a kingfisher with a star clutched in its claws. "Mine," it said. "A jewel. The finest in all my collection."`,
+   `It was a splendid bird, all blue and orange, and it turned the star this way and that to admire its own reflection. "I found it, so it's mine," it said firmly. "The brightest treasure in my whole collection, and I shan't give it up for anybody."`]},
+ {t:'Sharing', p:[
+   `"It isn't a jewel," said Rabbit gently. "It's a light the whole meadow needs." The kingfisher thought hard, for it did love shiny things very much.`,
+   `The kingfisher clutched the star tighter, torn between wanting to keep it and knowing, deep down, that a light meant for the whole sky did not belong in a nest. "But it's so pretty," it said in a smaller voice. "I know," Rabbit answered gently. "That's exactly why the meadow needs it back."`]},
+ {t:'A Star for a Song', p:[
+   `In the end they traded: the star for a smooth silver pebble, and a song about a bird whose feathers were the colour of rivers. The kingfisher liked the song even better than the star.`,
+   `Rabbit sang about a bird with feathers the colour of rivers, brave and beautiful and free, and the kingfisher was so charmed it quite forgot to be sad. "Keep the pebble," it said proudly, tucking the shiny stone into its nest. "But teach me that song once more before you go."`]},
+ {t:'The Rainshower', p:[
+   `A warm rain began to patter down. They tucked under a broad leaf and watched the drops make little crowns upon the river.`,
+   `It was a soft, warm summer rain, the kind that smells green and hushes the whole world. They ducked beneath a broad dock leaf and watched the drops stitch silver rings across the river. It was cozy under there, all three of them squeezed close, and no one was in any hurry to move.`]},
+ {t:'Rainbows at Night', p:[
+   `When the rain thinned, the moon caught it and hung a moonbow across the sky — a rainbow made all of silver and grey. At its far end, something twinkled.`,
+   `The friends had never heard of such a thing — a rainbow made of moonlight, pale and ghostly and lovely. It arched right over the river in soft bands of silver and grey. And there, exactly where its far foot touched the earth, something small and bright was winking at them.`]},
+ {t:'Chasing the Moonbow', p:[
+   `They ran along the bank after the moonbow's end, which kept politely moving, the way rainbow-ends do, just to make the game more fun.`,
+   `Every time they drew close, the moonbow's end drifted politely a little further on, as rainbow-ends always do. But it was a gentle game, not a mean one, and it led them along the softest part of the bank. Blink zipped ahead, laughing, and even careful Memo broke into a trot.`]},
+ {t:'The Star at the End', p:[
+   `At last the moonbow rested its foot on a mossy rock, and there sat the star it had been guarding. Rabbit thanked the moonbow, which bowed and faded shyly away.`,
+   `The moonbow finally set its foot on a cushion of moss and held quite still, as if it had only ever wanted to be followed. There sat the star, glowing softly on the green. Rabbit gave a little bow of thanks, and the moonbow faded shyly into the mist, its game happily won.`]},
+ {t:'Drying Off', p:[
+   `A glowworm invited them into its cozy nook to dry off. In its soft green light they warmed their toes and felt, for a little while, entirely at home.`,
+   `The glowworm's nook was tucked under a root, warm and green and snug. It hung its own soft light above them like a night-lamp while they wrung out their ears and tails. For a little while, sipping the warmth, the great journey felt as safe and small as home.`]},
+ {t:'The Far Bank', p:[
+   `Rested and dry, they found the road again. It left the river behind and began, gently at first, to climb up and up toward the clouds.`,
+   `When they were dry and rested, they thanked the glowworm and set off once more. The road left the singing river behind and began to rise, gently at first and then in earnest, winding up and up toward a place where the clouds hung low enough to touch.`]},
 ]},
 { n:'Part Five', title:'The Cloudstair', chapters:[
- {t:'The Stair of Clouds', p:`The road ended at the foot of a staircase — but the stairs were made of clouds, soft and white and floating up into the dark.`},
- {t:'Testing the First Step', p:`"Can you truly stand on a cloud?" wondered Rabbit. Blink flew down and landed on the first step. It held. "Well," said Memo, "only one way to find out for certain."`},
- {t:'Up We Go', p:`Step by careful step they climbed, and each cloud held them like a great soft cushion. Below, the river shrank to a thin silver thread.`},
- {t:"Memo Doesn't Look Down", p:`Memo, it turned out, did not love high places. He climbed with his eyes fixed straight ahead. "I am not looking down," he announced. "I am simply looking forward. Forever."`},
- {t:'The Wind Sprites', p:`Halfway up, giggling wind sprites came whirling around them, tugging ears and tails and trying to snatch the map away.`},
- {t:'A Game of Tag', p:`Rather than shoo them, Rabbit invited them to play tag. The sprites had never once been asked to play, and they loved it so much they forgot all about mischief.`},
- {t:"The Sprites' Gift", p:`To say thank you, the sprites blew the clouds apart here and there, uncovering stars tucked inside like coins in a cushion. The jar drank up their light greedily.`},
- {t:'Cloud Sheep', p:`On a wide cloud-meadow grazed a flock of cloud sheep, soft as steam. One had a star tangled deep in its wool.`},
- {t:'Shearing a Little Light', p:`Very gently, Rabbit combed the wool with his paws until the star came loose. The sheep baaed a thank-you and drifted off, one shade whiter than before.`},
- {t:'The Thunder Cousin', p:`A small dark cloud rumbled by itself in a corner, grumpy and alone. It was a baby thundercloud, and it did not know how to be anything but loud.`},
- {t:'Calming the Thunder', p:`"A soft rumble is friendlier than a loud one," said Rabbit, and he showed it how to purr its thunder low, the way Memo did. The little cloud tried, and gave a gentle, happy roll.`},
- {t:'A Star in the Rain Barrel', p:`The thundercloud, pleased, tipped up its rain-barrel to show them a star floating inside. They fished it out and thanked their new grey friend.`},
- {t:'Higher and Colder', p:`The higher they climbed, the colder it grew. Rabbit shared out the blanket, and they walked wrapped up together like one lumpy, three-headed traveller.`},
- {t:'The Halfway Cloud', p:`They rested on a flat cloud and looked back down the whole long way — the snowy peaks ahead, the woods, the river, the tiny far meadow. "We've come so far," Rabbit whispered.`},
- {t:'Blink Grows Tired', p:`Small lights tire, and Blink's glow began to flutter and fade. Without a word, Memo scooped the firefly into his warm paws and carried it, so it might rest.`},
- {t:'Sharing the Warmth', p:`They held the jar close to Blink, and the gathered stars poured out their warmth. Slowly the little firefly brightened again. "You carried me," Blink said, amazed. "Of course," said Rabbit. "That's what friends are for."`},
- {t:'The Top of the Stair', p:`At last the cloud-stair reached a high white plateau — and there, on the far side, a great dark forest waited, hung with a thousand unlit lanterns.`},
+ {t:'The Stair of Clouds', p:[
+   `The road ended at the foot of a staircase — but the stairs were made of clouds, soft and white and floating up into the dark.`,
+   `Each step was a puff of cloud, round and soft and faintly glowing, floating one above the next up into the night. It looked impossible. It looked wonderful. Rabbit reached out and pressed the lowest one, half expecting his paw to go straight through.`]},
+ {t:'Testing the First Step', p:[
+   `"Can you truly stand on a cloud?" wondered Rabbit. Blink flew down and landed on the first step. It held. "Well," said Memo, "only one way to find out for certain."`,
+   `The little firefly settled onto the cloud and gave a hop, and another, and it held him up like a feather bed. "It's springy!" Blink reported. Rabbit put one foot on, then the other, and found himself standing on the sky. Memo took a great deal more convincing.`]},
+ {t:'Up We Go', p:[
+   `Step by careful step they climbed, and each cloud held them like a great soft cushion. Below, the river shrank to a thin silver thread.`,
+   `The clouds sank and rose gently under their weight, like the world's largest cushions. Below them the river dwindled to a bright silver ribbon, and the caves and the meadow shrank to a dark green quilt. Up and up they went, into the great hush of the high air.`]},
+ {t:"Memo Doesn't Look Down", p:[
+   `Memo, it turned out, did not love high places. He climbed with his eyes fixed straight ahead. "I am not looking down," he announced. "I am simply looking forward. Forever."`,
+   `His fur stood on end and his tail was stiff as a poker. Rabbit walked close beside him, chatting cheerfully about nothing at all, so Memo would have something to listen to besides the enormous drop. "Just keep your eyes on my ears," Rabbit said, and Memo, gratefully, did.`]},
+ {t:'The Wind Sprites', p:[
+   `Halfway up, giggling wind sprites came whirling around them, tugging ears and tails and trying to snatch the map away.`,
+   `They were quick little swirls of air, half-seen, giggling as they tugged and teased. One snatched at the map; another blew Rabbit's ears inside out. They didn't seem cruel, exactly — only bored, and looking for someone to bother.`]},
+ {t:'A Game of Tag', p:[
+   `Rather than shoo them, Rabbit invited them to play tag. The sprites had never once been asked to play, and they loved it so much they forgot all about mischief.`,
+   `"You're it!" Rabbit called, tapping the nearest swirl, and darted away across the clouds. The sprites froze in astonishment — no one had ever played with them before — then whooped and gave chase. Round and round they all went, until nobody could remember who was it and everybody was friends.`]},
+ {t:"The Sprites' Gift", p:[
+   `To say thank you, the sprites blew the clouds apart here and there, uncovering stars tucked inside like coins in a cushion. The jar drank up their light greedily.`,
+   `They puffed the clouds open in little windows, and inside each one glimmered a hidden star. "We've been sitting on these for ages," they admitted, "and never even knew." Rabbit gathered them one by one, and the jar glowed warmer with every light it swallowed.`]},
+ {t:'Cloud Sheep', p:[
+   `On a wide cloud-meadow grazed a flock of cloud sheep, soft as steam. One had a star tangled deep in its wool.`,
+   `They drifted across the cloud-meadow, grazing on mist and baaing softly to themselves. One old ewe had a star hopelessly tangled in the wool of her back, and she couldn't reach it however she twisted. She gave the friends a hopeful, patient look.`]},
+ {t:'Shearing a Little Light', p:[
+   `Very gently, Rabbit combed the wool with his paws until the star came loose. The sheep baaed a thank-you and drifted off, one shade whiter than before.`,
+   `He worked his paws through the soft cloud-wool, teasing the tangles loose strand by strand, until at last the star slipped free into his palm. The ewe baaed her thanks and ambled off a little lighter, and a little whiter, than before. "There now," said Rabbit. "All better."`]},
+ {t:'The Thunder Cousin', p:[
+   `A small dark cloud rumbled by itself in a corner, grumpy and alone. It was a baby thundercloud, and it did not know how to be anything but loud.`,
+   `It sat apart from all the fluffy clouds, small and dark and rumbling crossly to itself, and the others gave it a wide berth. It didn't mean to be frightening. It simply knew only one voice — a loud one — and being loud had left it very lonely.`]},
+ {t:'Calming the Thunder', p:[
+   `"A soft rumble is friendlier than a loud one," said Rabbit, and he showed it how to purr its thunder low, the way Memo did. The little cloud tried, and gave a gentle, happy roll.`,
+   `The thundercloud practised, low and warm and rolling, and its first gentle rumble surprised even itself. It rumbled again, softer still, and something in it seemed to unknot. "Oh," it said, in a voice like distant, friendly weather. "That's much nicer."`]},
+ {t:'A Star in the Rain Barrel', p:[
+   `The thundercloud, pleased, tipped up its rain-barrel to show them a star floating inside. They fished it out and thanked their new grey friend.`,
+   `Grateful for the kindness, the little cloud tipped up the barrel it carried and let them peek in. There, floating on the collected rain, bobbed a star. They lifted it out gently, and the thundercloud gave a soft, proud roll of thunder to see it safely stored away.`]},
+ {t:'Higher and Colder', p:[
+   `The higher they climbed, the colder it grew. Rabbit shared out the blanket, and they walked wrapped up together like one lumpy, three-headed traveller.`,
+   `The air grew thin and sharp, and their breath came out in little clouds of its own. Rabbit unfolded the blanket and drew everyone under it, and they shuffled onward as one warm, huddled bundle. Even Blink crept in close, glowing between them like a tiny hearth.`]},
+ {t:'The Halfway Cloud', p:[
+   `They rested on a flat cloud and looked back down the whole long way — the snowy peaks ahead, the woods, the river, the tiny far meadow. "We've come so far," Rabbit whispered.`,
+   `Far, far below lay the woods and the river and the meadow, no bigger now than a thumbprint, and ahead rose the snow-tipped peaks they had yet to cross. "Look how far," Rabbit whispered, half proud and half amazed. "We really did all of that."`]},
+ {t:'Blink Grows Tired', p:[
+   `Small lights tire, and Blink's glow began to flutter and fade. Without a word, Memo scooped the firefly into his warm paws and carried it, so it might rest.`,
+   `Its glow began to flicker like a candle in a draught, dimming and catching and dimming again. Blink never once complained, but its little flights grew slower and lower. Without a single word, Memo opened his warm paws and gathered the firefly gently inside to rest.`]},
+ {t:'Sharing the Warmth', p:[
+   `They held the jar close to Blink, and the gathered stars poured out their warmth. Slowly the little firefly brightened again. "You carried me," Blink said, amazed. "Of course," said Rabbit. "That's what friends are for."`,
+   `They cupped the jar right up against the little firefly, and all the gathered stars poured out their gathered warmth. Bit by bit Blink's light steadied and brightened and came fully back. "You carried me," it said, blinking up in wonder. "Of course we did," said Rabbit. "You've been carrying us all night."`]},
+ {t:'The Top of the Stair', p:[
+   `At last the cloud-stair reached a high white plateau — and there, on the far side, a great dark forest waited, hung with a thousand unlit lanterns.`,
+   `The last cloud-step set them down on a high, pale plateau where the wind was still and the air smelled of cold pine. Ahead, spilling down the far slope, waited a vast dark forest — and hanging in its every tree were lanterns, thousands of them, every single one unlit.`]},
 ]},
 { n:'Part Six', title:'The Lantern Woods', chapters:[
- {t:'A Forest of Lanterns', p:`The Lantern Woods spread out before them, tree after tree strung with paper lanterns — and every single one was dark.`},
- {t:'Why the Woods Went Dark', p:`"The lanterns hold star-lights," Blink explained, "the very ones that fell. Without them, the woods forget how to be woods, and grow lonely and grey."`},
- {t:'Relighting the First Lantern', p:`Rabbit lifted a star from the jar and set it inside the nearest lantern. It caught, and glowed, and a warm gold circle bloomed in the dark.`},
- {t:'The Woods Wake Up', p:`As the lantern glowed, the wood around it seemed to breathe. Leaves rustled awake, a stream remembered to trickle, and somewhere a sleepy voice grumbled, "Who turned the lights on?"`},
- {t:'Bram the Badger', p:`Out of a den stomped Bram the badger, big and cross and bristling. "Go away," he growled. "I like the dark. I have always liked the dark. Now shoo."`},
- {t:"Bram's Real Problem", p:`But Memo, who understood grumpiness better than most, looked closer. Bram's paws were trembling. It was not the light he minded — it was that, deep down, the badger was afraid of the dark, and far too proud to say so.`},
- {t:"A Light for Bram's Den", p:`So Rabbit hung a small star just inside Bram's den, where its glow would keep the shadows soft all night long. Bram opened his mouth to argue, then shut it, and looked away.`},
- {t:'Bram Joins', p:`"I'll come with you," Bram muttered at last, "only to make sure you don't break anything. Not because I want to. Certainly not." And he fell into step behind them, secretly glad.`},
- {t:'The Lantern Map', p:`As more lanterns lit, they made a map of glowing dots through the trees, showing exactly where the last woodland stars still hid.`},
- {t:"The Spider's Web of Light", p:`In a silver web hung with dew glimmered a star like the biggest bead of all. At its centre sat a very polite spider.`},
- {t:'Asking the Spider', p:`"May we borrow the star?" asked Rabbit. "You may keep it," said the spider kindly, "if you promise to leave me one dewdrop to shine in its place." And so they did.`},
- {t:'The Owl Librarian', p:`In the oldest tree lived an owl who kept a great book. "This," she hooted, "is the book of every star's name. A named star always shines the brightest."`},
- {t:'Finding the Names', p:`She read the names aloud — Pim, Fenn, Marigold, Little Sim — and as each name was spoken, its star flared up joyfully and floated down into the waiting jar.`},
- {t:'The Hundredth Light', p:`And then, with a soft chime, the hundredth star lit. All at once the whole forest blazed gold, lantern after lantern, until the night looked like a city of tiny suns.`},
- {t:'A Celebration', p:`The woodland creatures came out to dance in the new light — mice and moths and the polite spider, the owl and the badger and the bobbing jellies who had followed all this way.`},
- {t:'Bram Laughs', p:`And in the middle of it all, Bram the badger threw back his head and laughed — a great rusty laugh, as if he had not used it in years. Perhaps he hadn't.`},
- {t:'The Path Onward', p:`When the dancing was done, they shouldered their basket, now heavy with light, and set off once more — toward a cold white shine on the far horizon.`},
+ {t:'A Forest of Lanterns', p:[
+   `The Lantern Woods spread out before them, tree after tree strung with paper lanterns — and every single one was dark.`,
+   `Lanterns of every shape swung from every branch as far as they could see — round ones and star-shaped ones and long ones like sleeping moons. Not one of them glowed. The whole wood stood grey and hushed, waiting in the dark for someone to bring the light back.`]},
+ {t:'Why the Woods Went Dark', p:[
+   `"The lanterns hold star-lights," Blink explained, "the very ones that fell. Without them, the woods forget how to be woods, and grow lonely and grey."`,
+   `"When the lanterns shine, the wood remembers itself," Blink went on quietly. "The streams remember to sing, the flowers remember to open, and every creature remembers it's not alone. Without them, it all just forgets, and goes still, and sad." Rabbit looked at the jar of gathered light and knew what to do.`]},
+ {t:'Relighting the First Lantern', p:[
+   `Rabbit lifted a star from the jar and set it inside the nearest lantern. It caught, and glowed, and a warm gold circle bloomed in the dark.`,
+   `He opened the little paper door, tucked a star gently inside, and closed it again. For a heartbeat nothing happened. Then the star caught, and warmed, and the lantern bloomed a soft gold, throwing a ring of warm light out across the dark forest floor.`]},
+ {t:'The Woods Wake Up', p:[
+   `As the lantern glowed, the wood around it seemed to breathe. Leaves rustled awake, a stream remembered to trickle, and somewhere a sleepy voice grumbled, "Who turned the lights on?"`,
+   `In the glow, the whole wood seemed to breathe out and stretch. A nearby fern uncurled; a stream remembered how to trickle; a cluster of night-flowers blinked open one by one. And from somewhere down among the roots, a low and very grumpy voice demanded again, "Who — turned — the lights on?"`]},
+ {t:'Bram the Badger', p:[
+   `Out of a den stomped Bram the badger, big and cross and bristling. "Go away," he growled. "I like the dark. I have always liked the dark. Now shoo."`,
+   `He was broad and grey-striped and altogether cross, and he squinted at the new light as if it had personally offended him. "I was perfectly comfortable," he grumbled, "in the dark. So take your glowing and your gathering and your cheerful little faces somewhere else."`]},
+ {t:"Bram's Real Problem", p:[
+   `But Memo, who understood grumpiness better than most, looked closer. Bram's paws were trembling. It was not the light he minded — it was that, deep down, the badger was afraid of the dark, and far too proud to say so.`,
+   `Memo had spent a good deal of his own life pretending not to be scared of things, so he knew the signs. He watched how Bram's big paws shook, and how he kept his back always to the deepest shadows. It wasn't the light the badger hated at all. It was the dark — and how terribly alone it made him feel.`]},
+ {t:"A Light for Bram's Den", p:[
+   `So Rabbit hung a small star just inside Bram's den, where its glow would keep the shadows soft all night. Bram opened his mouth to argue, then shut it, and looked away.`,
+   `He made no fuss about it, just tucked the little star where it would keep the corners of the den soft and gold until morning. Bram opened his mouth to protest. Then he looked at the warm glow, and at the shadows it had gently chased away, and slowly, quietly, closed his mouth again.`]},
+ {t:'Bram Joins', p:[
+   `"I'll come with you," Bram muttered at last, "only to make sure you don't break anything. Not because I want to. Certainly not." And he fell into step behind them, secretly glad.`,
+   `He grumbled the whole time he rolled up his blanket and laced on his boots, insisting he was only coming to keep an eye on his lantern. Nobody believed him, and nobody said so. He fell into step at the very back — and though he'd never in a hundred years admit it, he walked a little taller for the company.`]},
+ {t:'The Lantern Map', p:[
+   `As more lanterns lit, they made a map of glowing dots through the trees, showing exactly where the last woodland stars still hid.`,
+   `The lit lanterns spread out through the trees like a map drawn in warm gold dots. "Follow the dark ones," said Blink, "and we'll find the stars that are still missing." And so, lantern by lantern, they read their way deeper into the slowly waking wood.`]},
+ {t:"The Spider's Web of Light", p:[
+   `In a silver web hung with dew glimmered a star like the biggest bead of all. At its centre sat a very polite spider.`,
+   `The web stretched between two branches, strung all over with dew that caught the lantern-light, and dead in the middle, glowing like the finest bead of all, hung a star, turning slowly on its thread. And there in the centre of it sat a small, neat, very polite spider.`]},
+ {t:'Asking the Spider', p:[
+   `"May we borrow the star?" asked Rabbit. "You may keep it," said the spider kindly, "if you promise to leave me one dewdrop to shine in its place." And so they did.`,
+   `"It wandered into my web three nights ago," the spider explained, "and I've been ever so careful not to let it fall." "May we take it home to the sky?" asked Rabbit. "Of course," said the spider, "if you'll leave me one bright dewdrop, so my web still sparkles." And that seemed only fair.`]},
+ {t:'The Owl Librarian', p:[
+   `In the oldest tree lived an owl who kept a great book. "This," she hooted, "is the book of every star's name. A named star always shines the brightest."`,
+   `She lived in the hollow of the oldest tree of all, surrounded by shelves of bark-bound books, with a pair of spectacles perched on her beak. "Every star has a name," she hooted, tapping the greatest book, "and a named star always burns the brightest. Shall I read you a few?"`]},
+ {t:'Finding the Names', p:[
+   `She read the names aloud — Pim, Fenn, Marigold, Little Sim — and as each name was spoken, its star flared up joyfully and floated down into the waiting jar.`,
+   `She read them out in her soft, wise voice — "Pim... Fenn... Marigold... Little Sim..." — and with each name, high up in the branches, a hidden star flared awake with joy. One after another they came floating gently down, glad to be remembered, and settled into the jar.`]},
+ {t:'The Hundredth Light', p:[
+   `And then, with a soft chime, the hundredth star lit. All at once the whole forest blazed gold, lantern after lantern, until the night looked like a city of tiny suns.`,
+   `As the hundredth star dropped into the jar there came a soft, silvery chime, like a bell rung far away. And all at once the whole forest answered — lantern after lantern flaring gold, a wave of light rolling out through the trees. The friends stood still and breathless in the middle of it all.`]},
+ {t:'A Celebration', p:[
+   `The woodland creatures came out to dance in the new light — mice and moths and the polite spider, the owl and the badger and the bobbing jellies who had followed all this way.`,
+   `Out they came, all the creatures of the wood, blinking and glad — the mice and the moths, the polite spider, the wise old owl, the badger, and the jellies who had wobbled so faithfully after them. Somebody struck up a tune, and somebody started a dance, and soon the whole glowing wood was twirling.`]},
+ {t:'Bram Laughs', p:[
+   `And in the middle of it all, Bram the badger threw back his head and laughed — a great rusty laugh, as if he had not used it in years. Perhaps he hadn't.`,
+   `It burst out of him all at once, a great rusty rumble of a laugh, as though it had been stuck inside for years and only just shaken loose. He clapped his big paws and stamped his big feet and laughed until he had to sit down. "Well," he wheezed, wiping his eyes, "I suppose light isn't so bad after all."`]},
+ {t:'The Path Onward', p:[
+   `When the dancing was done, they shouldered their basket, now heavy with light, and set off once more — toward a cold white shine on the far horizon.`,
+   `When the last dance was danced, they gathered up the basket, heavy and warm with light, and said their goodbyes to the wood. Far off on the horizon a cold white shine had appeared. "Snow," said Bram, pulling his scarf tight. "That'll be the snowfields. Best keep close, all of you."`]},
 ]},
 { n:'Part Seven', title:'The Quiet Snowfields', chapters:[
- {t:'First Snow', p:`The first snowflake landed on Rabbit's nose. Then another, and another, until the whole world went soft and white and wonderfully quiet.`},
- {t:'Footprints', p:`Theirs were the first footprints in the fresh snow — little round rabbit prints, neat cat prints, a firefly's shadow, and Bram's big deep paws behind.`},
- {t:'The Cold Jar', p:`The cold pressed close, but the jar of stars stayed warm as a hearth. They walked with their paws near it, taking turns to thaw their whiskers.`},
- {t:'The Snow Hare', p:`A shape moved in the whiteness — a snow hare, so white she was nearly invisible, watching them with shy, dark eyes.`},
- {t:"The Hare's Secret Valley", p:`"You're seeking the fallen lights," she whispered. "I know where many landed. Follow me." And she led them into a hidden valley, dimpled all over with snow.`},
- {t:'Digging Gently', p:`Under each dimple lay a buried star, sleeping in the snow. They dug them out with soft paws, brushing them off like treasure, and dropped them glowing into the jar.`},
- {t:"Memo's Cold Paws", p:`"My paws," Memo complained, "have turned to little blocks of ice." So Rabbit unwound his ball of thread and knitted four small paw-warmers on the spot. Memo pretended not to be grateful, and wore them everywhere after.`},
- {t:'The Frozen Pond Stars', p:`They came upon a frozen pond, and under the clear ice glowed a scatter of stars, trapped like fish beneath glass.`},
- {t:'Warming the Ice', p:`They breathed and hummed against the ice until a small warm hole opened, just big enough to lift one star out at a time.`},
- {t:'Bram Breaks the Ice', p:`Where the ice was thick, big Bram tapped it — gently, gently — with one careful paw, cracking neat little doors for the stars to rise through. Strength, it turned out, could be tender too.`},
- {t:'The Snow Storm', p:`Then the wind gathered up the snow and flung it, and the world vanished into a roaring white. They could not see paw in front of face.`},
- {t:'The Rope of Thread', p:`"Nobody let go!" cried Rabbit, and he tied them all together with his last long thread — Rabbit to Memo to Blink to Bram — one small brave chain in the storm.`},
- {t:'Following Blink', p:`Only Blink's light could be seen at all, a faint green spark ahead. They fixed their eyes upon it and trusted it, step by frozen step, through the howling white.`},
- {t:'The Snow Cave', p:`Blink led them to a hollow beneath a drift, a snug snow cave out of the wind. They tumbled in, breathless, and the storm shut its door behind them.`},
- {t:'Stories in the Snow Cave', p:`Warm at last, they shared out the final carrot and told, each in turn, why they had come. Even Bram admitted, very quietly, that he had come because being brave with friends beat being grumpy alone.`},
- {t:'The Storm Passes', p:`By morning the storm had blown itself out. They crawled up into a hushed, sparkling world — and a sky with dark, empty gaps where stars still needed to go.`},
- {t:'Almost There', p:`And there, far across the snowfields, something glittered against the night: a bridge of light, thin as a thread, leading up to a lonely tower. "Almost there," breathed Rabbit.`},
+ {t:'First Snow', p:[
+   `The first snowflake landed on Rabbit's nose. Then another, and another, until the whole world went soft and white and wonderfully quiet.`,
+   `It drifted down slow and enormous, each flake turning lazily in the still air. Rabbit caught one on his tongue and one on the very tip of his nose. Within minutes the whole world had gone soft and white and so quiet you could hear the snow landing.`]},
+ {t:'Footprints', p:[
+   `Theirs were the first footprints in the fresh snow — little round rabbit prints, neat cat prints, a firefly's shadow, and Bram's big deep paws behind.`,
+   `Behind them stretched a neat little trail — round rabbit prints, tidy cat prints, the faint shadow of a firefly, and Bram's great deep paw-holes stamping along at the rear. It was oddly lovely, being the very first to mark the clean white. "Nobody's been here before us," Rabbit said. "Not tonight."`]},
+ {t:'The Cold Jar', p:[
+   `The cold pressed close, but the jar of stars stayed warm as a hearth. They walked with their paws near it, taking turns to thaw their whiskers.`,
+   `The cold pressed in from every side, but the jar of a hundred stars glowed like a little stove, and they took turns cupping their paws around it. "Good thing we've been collecting hot-water bottles all night," said Memo, holding his cold nose to the glass. Even Bram admitted the light was welcome now.`]},
+ {t:'The Snow Hare', p:[
+   `A shape moved in the whiteness — a snow hare, so white she was nearly invisible, watching them with shy, dark eyes.`,
+   `At first they took her for a drift shifting in the wind — a white shape against the white ground, almost impossible to see. Then she turned her head, and two dark eyes and the tips of two long ears gave her away. She watched them, shy and still, poised to bolt at the slightest sound.`]},
+ {t:"The Hare's Secret Valley", p:[
+   `"You're seeking the fallen lights," she whispered. "I know where many landed. Follow me." And she led them into a hidden valley, dimpled all over with snow.`,
+   `"I've been guarding them," she whispered, "waiting for someone kind to come along." She turned and bounded off, pausing every few leaps to be sure they followed, and led them over a rise into a hidden valley. Its snow was dimpled all over with little hollows, and in each hollow shone a faint, buried glow.`]},
+ {t:'Digging Gently', p:[
+   `Under each dimple lay a buried star, sleeping in the snow. They dug them out with soft paws, brushing them off like treasure, and dropped them glowing into the jar.`,
+   `They knelt at each dimple and dug with careful paws, brushing the snow away as if uncovering treasure. Under every one lay a star, half asleep and cold, which woke and warmed the very moment it was lifted into the light. By the time they finished, the whole valley had gone dark, and the jar was blazing.`]},
+ {t:"Memo's Cold Paws", p:[
+   `"My paws," Memo complained, "have turned to little blocks of ice." So Rabbit unwound his ball of thread and knitted four small paw-warmers on the spot. Memo pretended not to be grateful, and wore them everywhere after.`,
+   `He held up all four frozen paws in dismay. So Rabbit sat him down on a rock, unwound a length of his good strong thread, and knitted four snug little paw-warmers right there on the spot. Memo sniffed that he certainly didn't need them — and then wore them for the rest of the journey, and long after it was over.`]},
+ {t:'The Frozen Pond Stars', p:[
+   `They came upon a frozen pond, and under the clear ice glowed a scatter of stars, trapped like fish beneath glass.`,
+   `The pond had frozen clear as glass, and beneath the ice a scatter of stars glimmered up at them, trapped like a shoal of shining fish. They pressed their paws to the cold surface, and the stars seemed to press back — so near, and so out of reach. "How do we free them," wondered Rabbit, "without cracking the whole pond?"`]},
+ {t:'Warming the Ice', p:[
+   `They breathed and hummed against the ice until a small warm hole opened, just big enough to lift one star out at a time.`,
+   `They knelt in a ring and breathed on the ice, warm breath after warm breath, while Memo hummed his low, warm hum. Slowly a small round hole melted through, just wide enough for a paw. One by one they eased the trapped stars up into the night air, cold and dripping and glad to be out.`]},
+ {t:'Bram Breaks the Ice', p:[
+   `Where the ice was thick, big Bram tapped it — gently, gently — with one careful paw, cracking neat little doors for the stars to rise through. Strength, it turned out, could be tender too.`,
+   `Where the ice lay too thick to melt, big Bram lent a paw, tapping ever so gently in exactly the right spot, so it split into neat little doors instead of shattering. "Strong doesn't have to mean rough," he said, almost shyly, cracking another. It was the gentlest thing anyone had ever seen a badger do.`]},
+ {t:'The Snow Storm', p:[
+   `Then the wind gathered up the snow and flung it, and the world vanished into a roaring white. They could not see paw in front of face.`,
+   `Without any warning the wind swept up the fallen snow and hurled it in great blinding sheets, until the whole world vanished into a roaring, whirling white. They could not see a paw held up before their own faces. "Stay together!" Rabbit shouted, but the wind tore the words away as fast as he could say them.`]},
+ {t:'The Rope of Thread', p:[
+   `"Nobody let go!" cried Rabbit, and he tied them all together with his last long thread — Rabbit to Memo to Blink to Bram — one small brave chain in the storm.`,
+   `As quick as he could he knotted them all together with the last long length of his thread — himself to Memo, Memo to Blink's little jar, and everyone to big Bram at the back like an anchor. "Now nobody can be lost," he panted. It was a thin thread against a great storm — but it held, and so did they.`]},
+ {t:'Following Blink', p:[
+   `Only Blink's light could be seen at all, a faint green spark ahead. They fixed their eyes upon it and trusted it, step by frozen step, through the howling white.`,
+   `In all that howling white, only one thing could be seen: Blink, glowing faint and green and brave at the head of the line. "Follow my light!" the little firefly called back. So they fixed their eyes on that small spark and trusted it completely, and step by frozen step it led them through the very heart of the storm.`]},
+ {t:'The Snow Cave', p:[
+   `Blink led them to a hollow beneath a drift, a snug snow cave out of the wind. They tumbled in, breathless, and the storm shut its door behind them.`,
+   `It was a hollow scooped out beneath a great drift, out of the wind's reach, and they tumbled inside one after another. All at once the roaring was outside, and they were safely within. They lay in a panting, snow-dusted heap, and slowly began to laugh, the way you do when a frightening thing is finally over.`]},
+ {t:'Stories in the Snow Cave', p:[
+   `Warm at last, they shared out the final carrot and told, each in turn, why they had come. Even Bram admitted, very quietly, that he had come because being brave with friends beat being grumpy alone.`,
+   `They divided the very last carrot into careful bites, and in the warm dark they told their reasons for coming. Rabbit had come to keep a promise; Memo, to keep Rabbit company; Blink, to matter. And Bram admitted, so softly they nearly missed it, that he'd come because being brave beside friends beat being grumpy all alone.`]},
+ {t:'The Storm Passes', p:[
+   `By morning the storm had blown itself out. They crawled up into a hushed, sparkling world — and a sky with dark, empty gaps where stars still needed to go.`,
+   `They woke to silence. The storm had blown itself out in the night, and the world lay new and sparkling and utterly still beneath a sky just beginning to pale. But that sky still had dark, empty patches here and there, where stars ought to be and weren't. There was work left to do.`]},
+ {t:'Almost There', p:[
+   `And there, far across the snowfields, something glittered against the night: a bridge of light, thin as a thread, leading up to a lonely tower. "Almost there," breathed Rabbit.`,
+   `Then Rabbit saw it, far across the glittering snow: a thread of light arching up into the fading dark, and at its top, a single lonely tower. "That's it," he breathed. "That's where we're going." It looked impossibly far away — and, for the very first time, impossibly close.`]},
 ]},
 { n:'Part Eight', title:'The Star Bridge', chapters:[
- {t:'The Bridge of Light', p:`The Star Bridge arched up into the dark, built plank by plank of glowing stars. But many planks were missing or gone dark, leaving gaps that fell away into nothing.`},
- {t:'Counting the Gaps', p:`Memo counted the dark places, nose twitching. "We have just enough stars to mend it," he said slowly, "if we don't drop a single one."`},
- {t:'Placing the Planks', p:`So they walked out onto the bridge, and where a plank was missing, Rabbit fitted a star from the jar. Each one caught and glowed and grew firm beneath their feet.`},
- {t:'The Wobble', p:`But one gap was wider than a single star could fill, and the bridge wobbled over a great dark drop. Everyone went very still.`},
- {t:'Jelly Fills the Gap', p:`Then blub — the faithful jellies, who had wobbled along the whole way, stretched themselves across the gap into a bouncy, glowing bridge of their own. "Cross quick," they giggled, "we're ticklish!"`},
- {t:'Memo Leads', p:`Sure-footed Memo went first, testing each plank with a careful paw, calling back which were solid and which to skip. For once, nobody teased him for being fussy.`},
- {t:'Halfway on the Bridge', p:`Halfway across, they stood over an enormous darkness, the whole night yawning below. Rabbit's knees shook — but Blink glowed at his ear and whispered, "Look up, not down," and he did.`},
- {t:'The Wind Returns', p:`Then a familiar cold gust came screaming up the bridge — the cross wind from the meadow, back for one last try at knocking them down.`},
- {t:'Bram the Windbreak', p:`Big Bram planted himself sideways and spread his broad body wide. "Get behind me," he rumbled, and he stood like a warm wall while the others crept safely past.`},
- {t:'A Star Blows Loose', p:`But one gust slipped by and plucked a star from the jar. It tumbled out over the edge, spinning down into the dark, its little light shrinking away.`},
- {t:"Blink's Big Moment", p:`Quick as a thought, tiny Blink dove after it — down, down into the black — caught the falling star, beat its small wings, and struggled it back up to safety. The smallest friend had saved them all.`},
- {t:'The Far Tower', p:`Ahead now stood the tower plainly, dark and tall, the great empty jar just visible at its very top. They were so close.`},
- {t:'The Last Long Stretch', p:`But the last stretch of bridge was the longest and the darkest, with more gaps than planks. It would take every last light they carried.`},
- {t:'Holding the Line', p:`"Link up," said Memo, and they made a chain again — paw in paw in claw in wing — and edged forward together. Nobody would cross this part alone.`},
- {t:'One Plank Left', p:`At last only one gap remained, a single missing plank between them and the tower door. The jar, they saw with a jolt, was nearly empty.`},
- {t:"Everyone's Light", p:`So each friend gave the smallest light they had — Blink's glow, Bram's den-star, the jellies' shine — and together the little lights made one last plank, just strong enough to hold.`},
- {t:'Across at Last', p:`They stepped off the bridge onto solid stone and stood, trembling and triumphant, at the foot of the Night Lantern's tower. The door creaked slowly open.`},
+ {t:'The Bridge of Light', p:[
+   `The Star Bridge arched up into the dark, built plank by plank of glowing stars. But many planks were missing or gone dark, leaving gaps that fell away into nothing.`,
+   `Up close, they saw it was built entirely of stars, plank by glowing plank, arching high over a valley so deep it had no bottom anyone could see. But many planks had gone dark, or vanished altogether, leaving black gaps where the bridge simply wasn't. It was beautiful, and it was broken.`]},
+ {t:'Counting the Gaps', p:[
+   `Memo counted the dark places, nose twitching. "We have just enough stars to mend it," he said slowly, "if we don't drop a single one."`,
+   `He walked to the very edge and counted under his breath, his nose twitching with the sums. "Every gap needs a star," he said at last, "and we have almost exactly enough — so long as we don't lose a single one between here and the far side." It was going to be very, very close.`]},
+ {t:'Placing the Planks', p:[
+   `So they walked out onto the bridge, and where a plank was missing, Rabbit fitted a star from the jar. Each one caught and glowed and grew firm beneath their feet.`,
+   `They edged out onto the span, and wherever a plank was gone Rabbit knelt and set a star into the empty place. Each one caught the light of its neighbours, glowed, and grew firm underfoot. Step by step, star by star, they built the path forward even as they walked it.`]},
+ {t:'The Wobble', p:[
+   `But one gap was wider than a single star could fill, and the bridge wobbled over a great dark drop. Everyone went very still.`,
+   `They came to a gap too wide for any one star to bridge, and the whole span shivered and swayed beneath them over the great dark drop. Everyone froze. Nobody breathed. A single loosened pebble fell and fell and made no sound at all when it landed — if it ever landed at all.`]},
+ {t:'Jelly Fills the Gap', p:[
+   `Then blub — the faithful jellies, who had wobbled along the whole way, stretched themselves across the gap into a bouncy, glowing bridge of their own. "Cross quick," they giggled, "we're ticklish!"`,
+   `Blub! Up they popped, the jellies who had followed all this way and simply refused to be left behind. They linked themselves together and stretched clear across the gap into a wobbling, glowing little bridge. "Quick, quick, hop across!" they giggled. "We're terribly ticklish, and we can't hold still forever!"`]},
+ {t:'Memo Leads', p:[
+   `Sure-footed Memo went first, testing each plank with a careful paw, calling back which were solid and which to skip. For once, nobody teased him for being fussy.`,
+   `For this stretch, sure-footed Memo went first, setting each paw down with a cat's perfect care and calling back which planks were solid and which to skip. "Left one's good — mind the next — now jump." Nobody teased him for being fussy now. Fussy, it turned out, was exactly what kept them all alive.`]},
+ {t:'Halfway on the Bridge', p:[
+   `Halfway across, they stood over an enormous darkness, the whole night yawning below. Rabbit's knees shook — but Blink glowed at his ear and whispered, "Look up, not down," and he did.`,
+   `At the very middle they hung suspended over an ocean of darkness, the whole night gaping silently beneath their feet. Rabbit's knees turned to jelly and his ears went cold. But Blink flew close to his cheek and whispered it again — "Look up, not down; keep your eyes on the tower" — and Rabbit looked up, and his feet remembered how to move.`]},
+ {t:'The Wind Returns', p:[
+   `Then a familiar cold gust came screaming up the bridge — the cross wind from the meadow, back for one last try at knocking them down.`,
+   `It came shrieking up out of the valley — the very same cross wind from the meadow, that mean and shoving gust, back for one last attempt at knocking them off. It buffeted the bridge and clawed at the basket. "Not you again," groaned Memo, flattening his ears. "Everyone — hold on to everything!"`]},
+ {t:'Bram the Windbreak', p:[
+   `Big Bram planted himself sideways and spread his broad body wide. "Get behind me," he rumbled, and he stood like a warm wall while the others crept safely past.`,
+   `He dug in his claws and stood firm as a boulder, sideways across the bridge. "Get behind me," he rumbled, and the others tucked in close while the wind broke and split around him. All his life his great size had felt like too much of him; tonight it was exactly, wonderfully, enough.`]},
+ {t:'A Star Blows Loose', p:[
+   `But one gust slipped by and plucked a star from the jar. It tumbled out over the edge, spinning down into the dark, its little light shrinking away.`,
+   `One vicious gust slipped past Bram's flank and plucked a star clean out of the jar. It spun out over the railing and dropped, its little light tumbling down and down into the black — to a spark, to a speck, to almost nothing. Rabbit cried out and lunged, far, far too late.`]},
+ {t:"Blink's Big Moment", p:[
+   `Quick as a thought, tiny Blink dove after it — down, down into the black — caught the falling star, beat its small wings, and struggled it back up to safety. The smallest friend had saved them all.`,
+   `Quicker than thought, the little firefly folded its wings and dove straight off the bridge into the roaring dark, until its own glow was only a pinprick far below. Then, impossibly, the pinprick began to climb — Blink, beating its small wings with all its might, the lost star clutched safe in its grasp. The smallest of them had saved them all.`]},
+ {t:'The Far Tower', p:[
+   `Ahead now stood the tower plainly, dark and tall, the great empty jar just visible at its very top. They were so close.`,
+   `It rose plain before them now, tall and dark against the paling sky, the great glass jar just visible at its peak. After the caves and the clouds and the snow, after everything, it was almost too much to believe. "There," whispered Rabbit. "We're almost there."`]},
+ {t:'The Last Long Stretch', p:[
+   `But the last stretch of bridge was the longest and the darkest, with more gaps than planks. It would take every last light they carried.`,
+   `It was the worst stretch of all — more gaps than planks, more dark than light, a broken ladder laid flat across the sky. It would take nearly every star they had left to cross it. Rabbit peered into the jar and swallowed hard. There was not one single light to spare.`]},
+ {t:'Holding the Line', p:[
+   `"Link up," said Memo, and they made a chain again — paw in paw in claw in wing — and edged forward together. Nobody would cross this part alone.`,
+   `They made themselves into a chain once more — paw in paw in claw in wing, with Bram anchoring the very end. Together they inched forward, each one holding the next steady above the drop. Nobody would cross this part alone — and so, somehow, all of them could.`]},
+ {t:'One Plank Left', p:[
+   `At last only one gap remained, a single missing plank between them and the tower door. The jar, they saw with a jolt, was nearly empty.`,
+   `At last only a single gap remained, one missing plank between them and the tower door. Rabbit reached into the jar for a star to fill it — and his paw closed on nothing at all. The jar, but for the faintest glow, was empty. They had come all this way, and fallen exactly one plank short.`]},
+ {t:"Everyone's Light", p:[
+   `So each friend gave the smallest light they had — Blink's glow, Bram's den-star, the jellies' shine — and together the little lights made one last plank, just strong enough to hold.`,
+   `So they gave what little they had. Blink offered its own small glow; Bram brought out the star from his den; the jellies lent their shine. All the little lights pressed together into one last plank — thin, and trembling, but just strong enough to bear them. "Together," said Rabbit, "or not at all."`]},
+ {t:'Across at Last', p:[
+   `They stepped off the bridge onto solid stone and stood, trembling and triumphant, at the foot of the Night Lantern's tower. The door creaked slowly open.`,
+   `One by one they crossed the last plank and stepped down onto the tower's cold, solid stone. Behind them the star-bridge glittered all the way back across the impossible dark. Ahead, the great door stood shut and silent — and then, with a long slow creak, as if it had been waiting just for them, it swung open.`]},
 ]},
 { n:'Part Nine', title:'The Top of the Night', chapters:[
- {t:'The Dark Tower', p:`Inside, the tower was cold and still. At its top hung the great glass jar — the one that holds every star in the sky — and it was utterly, silently dark.`},
- {t:'The Night Lantern Sleeps', p:`Curled beside the jar was the Night Lantern itself: a great soft moth, keeper of all the lights, faded now to the palest, dimmest grey. It barely stirred.`},
- {t:'Why the Lights Fell', p:`"I grew so tired," the Lantern breathed, no louder than a moth's wing. "So tired I could not hold the jar, and it slipped, and every light spilled out across the world. I am sorry. I am so very sorry."`},
- {t:'Waking the Keeper', p:`"We found them," said Rabbit softly. "We brought them home." And one by one they poured their gathered stars into the great jar, and it began, faintly, to glow.`},
- {t:'One Light Short', p:`But when the last star was in, the Lantern counted, and its dim face fell. "One hundred and fifty-two," it whispered. "One is still missing. Without all one hundred and fifty-three, the sky cannot wake."`},
- {t:'Where Is the Last Star?', p:`They searched the basket, the blanket, every pocket and paw. They shook out the thread and turned the jar upside down. Nothing. The very last star was nowhere to be found.`},
- {t:"Memo's Secret", p:`Then Memo went quiet. Slowly, from under his grey fur — close to his heart, where he had kept it warm this whole long way — he drew out a small, dim, familiar star: the very first one, the cold little star from the cabbage patch.`},
- {t:"Memo's Gift", p:`"I kept it safe," Memo said, "the one that started everything. I wanted to carry it all the way home myself." He gazed at it a moment longer — then held it out. "Here. It was always meant for the jar."`},
- {t:'The Hundred-and-Fifty-Third', p:`Rabbit took the little star, warm from Memo's keeping, lifted it high, and set it gently among the others — the one hundred and fifty-third light, home at last.`},
- {t:'The Jar Blazes', p:`For a heartbeat, nothing. Then the great jar bloomed with light — all one hundred and fifty-three stars blazing together — until the whole tower shone like the inside of the sun.`},
- {t:'The Lantern Wakes', p:`The Night Lantern lifted its head, and its wings unfolded, brighter and brighter, silver and gold and every gentle colour. "You have given the night back its stars," it said, and its voice was strong again.`},
- {t:'The Sky Refills', p:`Then the Lantern opened the jar to the window, and the stars rose up one by one to take their old places, until the whole dark roof of the world sparkled just as it should.`},
- {t:'Naming the Friends', p:`The Lantern thanked each of them by name — brave Rabbit, clever Memo, tiny bright Blink, big kind Bram, the wobbling jellies, the shy snow hare — and every name it spoke lit a new star, just for them.`},
- {t:'A Light to Keep', p:`"Each of you must keep one light of your own," said the Lantern, and it gave to every friend a small warm star to carry always, so none of them need ever fear the dark again.`},
- {t:'The Long Way Home', p:`Then down the mended bridge and home they went, beneath a sky so full and bright it seemed to smile. The way that had taken so long going out felt gentle and short coming back.`},
- {t:'The Burrow Again', p:`Dawn was turning the hills pink when they reached the little burrow at last. Pip and Pop and Pud waved from their hollow; the meadow whispered welcome, and this time it was surely, warmly kind.`},
- {t:'Goodnight, Meadow', p:`Rabbit and Memo curled up in their own soft beds, their two little keeping-stars glowing on the sill. Outside, every star was home, and the meadow remembered the way. "Goodnight, Memo," yawned Rabbit. "Goodnight, Rabbit," purred Memo. And the whole bright night said goodnight to them both.`},
+ {t:'The Dark Tower', p:[
+   `Inside, the tower was cold and still. At its top hung the great glass jar — the one that holds every star in the sky — and it was utterly, silently dark.`,
+   `It was colder in there than the snowfields, and stiller than the deepest cave, and their footsteps echoed up and up. Far overhead, at the very top of a winding stair, hung the great glass jar that holds every star in the sky. It was black, and empty, and silent.`]},
+ {t:'The Night Lantern Sleeps', p:[
+   `Curled beside the jar was the Night Lantern itself: a great soft moth, keeper of all the lights, faded now to the palest, dimmest grey. It barely stirred.`,
+   `It was not a lamp at all, but a great soft moth with wings like folded moonlight, the keeper of every star. Its wings had faded to the palest grey, and its breathing was so faint they had to hold their own to hear it. It was, they slowly realised, very nearly gone.`]},
+ {t:'Why the Lights Fell', p:[
+   `"I grew so tired," the Lantern breathed, no louder than a moth's wing. "So tired I could not hold the jar, and it slipped, and every light spilled out across the world. I am sorry. I am so very sorry."`,
+   `"Night after night after night," it whispered, "and no one to help, until at last my wings would not hold. The jar slipped from me, and all the lights spilled out across the whole wide world." A silver tear rolled down its cheek. "I thought they were lost for good. I am so very sorry."`]},
+ {t:'Waking the Keeper', p:[
+   `"We found them," said Rabbit softly. "We brought them home." And one by one they poured their gathered stars into the great jar, and it began, faintly, to glow.`,
+   `"They're not lost," said Rabbit softly. "We found them. We brought them home — every single one we could." And gently, one after another, they tipped their gathered stars into the great glass jar. A faint glow woke inside it, and grew, and the Lantern lifted its heavy head to watch, hardly daring to hope.`]},
+ {t:'One Light Short', p:[
+   `But when the last star was in, the Lantern counted, and its dim face fell. "One hundred and fifty-two," it whispered. "One is still missing. Without all one hundred and fifty-three, the sky cannot wake."`,
+   `When the very last star had rolled from the basket, the Lantern counted them with its dim old eyes, and its wings sank. "One hundred and fifty-two. There is one still missing — and without all one hundred and fifty-three together, the jar cannot blaze, and the sky cannot wake." A terrible quiet settled over the tower.`]},
+ {t:'Where Is the Last Star?', p:[
+   `They searched the basket, the blanket, every pocket and paw. They shook out the thread and turned the jar upside down. Nothing. The very last star was nowhere to be found.`,
+   `They turned the basket inside out and shook the blanket and unravelled the very last of the thread. They peered into every pocket and under every paw and into the empty jar three times over. But the hundred-and-fifty-third star was simply, impossibly, not there. Rabbit's eyes began to sting.`]},
+ {t:"Memo's Secret", p:[
+   `Then Memo went quiet. Slowly, from under his grey fur — close to his heart, where he had kept it warm this whole long way — he drew out a small, dim, familiar star: the very first one, the cold little star from the cabbage patch.`,
+   `Into the silence, Memo made a small sound. Slowly, from deep in the fold of his scarf — close against his heart, where he had kept it warm and hidden this whole long, cold way — he drew something out. It was a star: small, and dim, and terribly familiar. The very first one, the cold little star from the cabbage patch.`]},
+ {t:"Memo's Gift", p:[
+   `"I kept it safe," Memo said, "the one that started everything. I wanted to carry it all the way home myself." He gazed at it a moment longer — then held it out. "Here. It was always meant for the jar."`,
+   `"I told myself I'd carry it the whole way home," he said quietly, "that it was mine, a little — the one that started everything." He looked at it for one long moment, warm and glowing in his grey paws. Then he held it out. "But it was never really mine. It was always meant for the jar."`]},
+ {t:'The Hundred-and-Fifty-Third', p:[
+   `Rabbit took the little star, warm from Memo's keeping, lifted it high, and set it gently among the others — the one hundred and fifty-third light, home at last.`,
+   `Rabbit took it, still warm from Memo's keeping, and climbed the last of the winding stair. Up on the very tips of his toes he reached, and set the little star gently among all its brothers and sisters — the one hundred and fifty-third light, the last lost thing, come home at last. Then he stepped back and held his breath.`]},
+ {t:'The Jar Blazes', p:[
+   `For a heartbeat, nothing. Then the great jar bloomed with light — all one hundred and fifty-three stars blazing together — until the whole tower shone like the inside of the sun.`,
+   `For a heartbeat, nothing happened at all. Then, all together, every star in the jar caught fire — one hundred and fifty-three of them blazing as one — brighter and brighter until the whole tower shone like the inside of the sun, and the friends had to shield their eyes and laugh for the sheer glory of it.`]},
+ {t:'The Lantern Wakes', p:[
+   `The Night Lantern lifted its head, and its wings unfolded, brighter and brighter, silver and gold and every gentle colour. "You have given the night back its stars," it said, and its voice was strong again.`,
+   `In that flood of light the Night Lantern stirred, and lifted, and unfolded its wings — no longer grey, but silver and gold and shot through with every gentle colour of the dawn. It rose into the air on a soft beat of moth-wings, whole and strong once more. "You have given the night back its stars," it said, and its voice rang like a bell.`]},
+ {t:'The Sky Refills', p:[
+   `Then the Lantern opened the jar to the window, and the stars rose up one by one to take their old places, until the whole dark roof of the world sparkled just as it should.`,
+   `It swung the great jar toward the tall window and opened it to the dark. Out the stars rose, one after another after another, floating up and drifting each to its own old place — until the whole vast roof of the world was freckled and sparkling and exactly as it should be. The friends watched with their necks craned and their mouths open, saying nothing at all.`]},
+ {t:'Naming the Friends', p:[
+   `The Lantern thanked each of them by name — brave Rabbit, clever Memo, tiny bright Blink, big kind Bram, the wobbling jellies, the shy snow hare — and every name it spoke lit a new star, just for them.`,
+   `It spoke each name slow and warm, like a blessing: brave Rabbit, clever Memo, tiny bright Blink, big kind Bram, the wobbling faithful jellies, the shy white snow hare. And as each name was spoken, a brand-new star kindled high above — one apiece, forever, just for them.`]},
+ {t:'A Light to Keep', p:[
+   `"Each of you must keep one light of your own," said the Lantern, and it gave to every friend a small warm star to carry always, so none of them need ever fear the dark again.`,
+   `"You have carried my lights so far, and so gently," it said, "that now you must each keep one of your own." And to every friend it gave a small warm star, to hold and to keep always. "So that none of you," it said, "need ever be afraid of the dark again." Rabbit cupped his close, and it glowed like a promise.`]},
+ {t:'The Long Way Home', p:[
+   `Then down the mended bridge and home they went, beneath a sky so full and bright it seemed to smile. The way that had taken so long going out felt gentle and short coming back.`,
+   `Down the mended bridge they went, every plank whole and shining now, and down through the snow and the woods and along the singing river. Strange, how the way that had taken all night going out felt so short and gentle coming home, beneath a sky so full and bright it seemed to smile down at them.`]},
+ {t:'The Burrow Again', p:[
+   `Dawn was turning the hills pink when they reached the little burrow at last. Pip and Pop and Pud waved from their hollow; the meadow whispered welcome, and this time it was surely, warmly kind.`,
+   `The sky was turning soft and pink at its edges when the little round burrow came into view. Pip and Pop and Pud waved from their clover hollow; the crickets struck up a welcome; and the whole meadow whispered — warmly, surely, kindly this time — glad to have its travellers home. One by one the friends said their goodnights and slipped away to their own warm beds.`]},
+ {t:'Goodnight, Meadow', p:[
+   `Rabbit and Memo curled up at last in their own soft beds, side by side, their two little keeping-stars glowing gold upon the windowsill. Outside, every star hung safe and shining in its place, and the meadow remembered the way home for every lost and weary thing.`,
+   `"Goodnight, Memo," yawned Rabbit, pulling his blanket to his chin. "Goodnight, Rabbit," purred Memo. And the whole bright, peaceful night breathed softly back over the meadow and the burrow and the two little keeping-stars on the sill — goodnight, goodnight, goodnight.`]},
 ]},
 ];
 
@@ -364,7 +671,8 @@ function render(dir){
   $('partlabel').textContent = `${c.part} · ${c.partTitle}`;
   $('kicker').textContent = `Chapter ${idx+1}`;
   $('ctitle').textContent = c.t;
-  $('ctext').innerHTML = `<p>${c.p}</p>` + (last ? `<p class="theend">✦ The End ✦</p>` : '');
+  const paras = Array.isArray(c.p) ? c.p : [c.p];
+  $('ctext').innerHTML = paras.map(x=>`<p>${x}</p>`).join('') + (last ? `<p class="theend">✦ The End ✦</p>` : '');
   $('idx').textContent = idx+1;
   $('prev').disabled = idx===0;
   $('next').disabled = last;
@@ -415,7 +723,8 @@ function startReading(){
   $('readBtn').classList.add('stop');
   $('readBtn').innerHTML='⏹ Stop reading';
   const c = CH[idx];
-  const u = new SpeechSynthesisUtterance(`Chapter ${idx+1}. ${c.t}. ${c.p}`);
+  const body = Array.isArray(c.p) ? c.p.join(' ') : c.p;
+  const u = new SpeechSynthesisUtterance(`Chapter ${idx+1}. ${c.t}. ${body}`);
   u.rate=1.05; u.pitch=1.05;
   u.onend = ()=>{ if(reading && idx<TOTAL-1){ go(idx+1); startReading(); } else stopReading(); };
   window.speechSynthesis.cancel();
