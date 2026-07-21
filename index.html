@@ -50,7 +50,7 @@
   .hero p{margin:0;font-size:17px;color:var(--muted);}
 
   /* ---------- cards ---------- */
-  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;}
   .card{display:flex;flex-direction:column;text-decoration:none;color:inherit;
     background:var(--cream);border-radius:28px;padding:24px 22px 20px;
     box-shadow:0 20px 44px -22px rgba(180,120,160,.55);
@@ -66,8 +66,10 @@
   .card.book1 .badge{background:#e3f6e8;}
   .card.book2 .badge{background:#f1e6fb;}
   .card.book3 .badge{background:#fff0d6;}
+  .card.book4 .badge{background:#ffe1ec;}
   .card.book2 .go{background:linear-gradient(180deg,var(--lav),var(--lav2));box-shadow:0 9px 18px -8px var(--lav2);}
   .card.book3 .go{background:linear-gradient(180deg,var(--mint),#6fc389);box-shadow:0 9px 18px -8px #6fc389;}
+  .card.book4 .go{background:linear-gradient(180deg,var(--amber),#f59a2e);box-shadow:0 9px 18px -8px #f59a2e;}
 
   .foot{text-align:center;margin-top:26px;font-size:13px;color:var(--muted);line-height:1.5;}
 
@@ -85,6 +87,7 @@
     <a class="pill" href="game.html">🎮 Game</a>
     <a class="pill" href="picture-book.html">🔤 Picture Book</a>
     <a class="pill" href="chapter-book.html">📚 Chapter Book</a>
+    <a class="pill" href="age.html">🎂 Age</a>
   </div>
 </nav>
 <div class="site">
@@ -114,6 +117,13 @@
       <h2>The 153 Stars</h2>
       <p>A bedtime chapter book: one big adventure in 153 short, illustrated chapters. Your place is saved as you read.</p>
       <span class="go">Read →</span>
+    </a>
+
+    <a class="card book4" href="age.html">
+      <div class="badge">🎂</div>
+      <h2>Choose Age</h2>
+      <p>Pick an age from 1 to 100. A younger age makes the game easier; an older age makes everything harder!</p>
+      <span class="go">Set →</span>
     </a>
   </div>
 
