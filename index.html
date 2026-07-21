@@ -19,10 +19,29 @@
       radial-gradient(1000px 500px at 110% 0%, #e6ecfb 0%, transparent 55%),
       #f4e2f7;
     color:var(--ink);
-    display:flex;align-items:center;justify-content:center;
-    padding:26px 16px;min-height:100vh;
+    display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+    padding:18px 16px 32px;min-height:100vh;gap:22px;
   }
   .site{width:100%;max-width:960px;}
+
+  /* ---------- top navigation ---------- */
+  .nav{width:100%;max-width:960px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+    background:var(--cream);border-radius:22px;padding:11px 16px;
+    border:3px solid rgba(255,255,255,.7);box-shadow:0 14px 34px -22px rgba(180,120,160,.55);}
+  .nav .brand{font-weight:800;font-size:18px;color:var(--pink2);text-decoration:none;
+    margin-right:auto;display:flex;align-items:center;gap:6px;white-space:nowrap;}
+  .nav .links{display:flex;gap:8px;flex-wrap:wrap;}
+  .nav a.pill{text-decoration:none;font-weight:800;font-size:14px;color:var(--muted);
+    background:var(--cream2);border-radius:14px;padding:9px 14px;transition:transform .12s ease, color .12s ease;}
+  .nav a.pill:hover{color:var(--ink);transform:translateY(-1px);}
+  .nav a.pill.active{color:#fff;background:linear-gradient(180deg,var(--lav),var(--lav2));
+    box-shadow:0 8px 16px -8px var(--lav2);}
+  .nav a:focus-visible{outline:3px solid var(--lav2);outline-offset:2px;}
+  @media(max-width:560px){
+    .nav{justify-content:center;}
+    .nav .brand{margin-right:0;width:100%;justify-content:center;}
+    .nav .links{justify-content:center;}
+  }
 
   /* ---------- hero ---------- */
   .hero{text-align:center;margin-bottom:26px;}
@@ -59,6 +78,15 @@
 </style>
 </head>
 <body>
+<nav class="nav">
+  <a class="brand" href="index.html">🐰 Rabbit &amp; Memo</a>
+  <div class="links">
+    <a class="pill active" href="index.html">Home</a>
+    <a class="pill" href="game.html">🎮 Game</a>
+    <a class="pill" href="picture-book.html">🔤 Picture Book</a>
+    <a class="pill" href="chapter-book.html">📚 Chapter Book</a>
+  </div>
+</nav>
 <div class="site">
   <div class="hero">
     <div class="mascots">🐰&nbsp;🐱</div>
