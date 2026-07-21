@@ -32,6 +32,20 @@ highlighted.
 
 Just open `picture-book.html` in any browser — same as the game, no setup needed.
 
+## 📚 Bonus: Chapter Book — *Rabbit & Memo and the 153 Stars*
+For older readers there's a full **bedtime chapter book** in `chapter-book.html`:
+a complete story told in **153 short chapters**, organised into 9 parts. Rabbit,
+Memo, and their friends journey across the meadow, caves, clouds, and snowfields
+to gather 153 fallen star-lights and give the night sky back its stars.
+
+- **Table of Contents** to jump to any chapter, grouped by part.
+- **Turn pages** with the ◀ ▶ buttons, the arrow keys, or a swipe on touch.
+- Your place is **saved automatically**, so you can close the book and pick up
+  right where you left off.
+- Optional **Read this chapter aloud** button reads the current chapter to you.
+
+Open `chapter-book.html` in any browser — no setup needed.
+
 ## Run it locally
 Just open `index.html` in any web browser (double-click it).
 
