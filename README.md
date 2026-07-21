@@ -38,6 +38,7 @@ a complete story told in **153 short chapters**, organised into 9 parts. Rabbit,
 Memo, and their friends journey across the meadow, caves, clouds, and snowfields
 to gather 153 fallen star-lights and give the night sky back its stars.
 
+- Every chapter has its own little **picture** above the words.
 - **Table of Contents** to jump to any chapter, grouped by part.
 - **Turn pages** with the ◀ ▶ buttons, the arrow keys, or a swipe on touch.
 - Your place is **saved automatically**, so you can close the book and pick up

@@ -66,17 +66,22 @@
     box-shadow:0 22px 48px -20px rgba(180,120,160,.55);overflow:hidden;}
   .page::after{content:"";position:absolute;inset:0;border-radius:30px;
     border:3px solid rgba(255,255,255,.7);pointer-events:none;}
-  .partlabel{font-size:13px;font-weight:800;color:var(--lav2);letter-spacing:.4px;}
+  .pic{margin:0 auto 10px;width:118px;height:118px;border-radius:50%;display:grid;place-items:center;
+    cursor:pointer;transition:transform .12s ease;
+    box-shadow:inset 0 5px 18px rgba(0,0,0,.05),0 12px 26px -16px rgba(120,80,120,.5);}
+  .pic:active{transform:scale(.94);}
+  .pic .emoji{font-size:64px;line-height:1;filter:drop-shadow(0 6px 8px rgba(120,80,120,.28));}
+  .partlabel{font-size:13px;font-weight:800;color:var(--lav2);letter-spacing:.4px;text-align:center;}
   .kicker{margin-top:4px;font-size:13px;font-weight:800;color:var(--pink2);
-    text-transform:uppercase;letter-spacing:1.2px;}
-  .ctitle{margin:2px 0 4px;font-size:30px;font-weight:800;line-height:1.15;}
-  .ornament{color:var(--pink);font-size:20px;letter-spacing:6px;margin-bottom:10px;}
+    text-transform:uppercase;letter-spacing:1.2px;text-align:center;}
+  .ctitle{margin:2px 0 4px;font-size:30px;font-weight:800;line-height:1.15;text-align:center;}
+  .ornament{color:var(--pink);font-size:20px;letter-spacing:6px;margin-bottom:12px;text-align:center;}
   .ctext{font-size:18.5px;line-height:1.75;color:#6a5860;}
   .ctext p{margin:0 0 14px;}
   .ctext p:last-child{margin-bottom:0;}
   .theend{text-align:center;font-weight:800;color:var(--pink2);font-size:20px;margin-top:8px;}
-  .page.turn{animation:turn .34s ease;}
-  @keyframes turn{0%{opacity:0;transform:translateX(var(--dir,26px));}100%{opacity:1;transform:none;}}
+  .page.turn{animation:turn .15s ease;}
+  @keyframes turn{0%{opacity:0;transform:translateX(var(--dir,20px));}100%{opacity:1;transform:none;}}
 
   /* ---------- controls ---------- */
   .nav{display:flex;align-items:center;gap:12px;}
@@ -121,6 +126,7 @@
   </div>
 
   <div class="page" id="page">
+    <div class="pic" id="pic"><span class="emoji" id="emoji">✨</span></div>
     <div class="partlabel" id="partlabel"></div>
     <div class="kicker" id="kicker">Chapter 1</div>
     <h2 class="ctitle" id="ctitle"></h2>
@@ -316,10 +322,26 @@ const PARTS = [
 ]},
 ];
 
+// ---------- one little picture per chapter (1..153) ----------
+const EMOJI = [
+ '✨','🐱','🌟','💫','🫙','🐢','🧺','💡','🌿','🤲','🔒','🐾','🤞','🍃','🌊','🐸','🏡',
+ '🌾','💡','🦔','🕯️','🍄','🤗','🦗','🎼','🪺','🌬️','🪨','🌼','💦','⭐','🐭','🌙','🪧',
+ '🕳️','🌑','🥕','😋','🔊','👂','🐭','🎵','💎','👆','🌊','🟠','🟠','🦘','🌟','✨','⬆️',
+ '🌙','🌊','🛶','🟠','🎣','⚓','💦','🛶','🐦','🤝','🎵','🌧️','🌈','🏃','⭐','🔥','⛰️',
+ '☁️','👣','⬆️','🙈','🌬️','🏃','⭐','🐑','✂️','⛈️','🌥️','💧','🧣','☁️','😴','🤗','🏔️',
+ '🏮','🌲','🏮','🍃','🦡','😟','🏮','🦡','🗺️','🕸️','🕷️','🦉','📖','🌟','🎉','😄','🚶',
+ '❄️','👣','🫙','🐇','🏞️','⛏️','🧤','🧊','😮‍💨','🦡','🌨️','🧵','💡','⛄','💬','🌤️','🌉',
+ '🌉','🔢','⭐','😰','🟠','🐾','🌌','🌬️','🦡','💫','💡','🗼','🌉','🤝','⭐','✨','🚪',
+ '🗼','🦋','😢','🫙','🕯️','🔍','🐱','🤲','⭐','🌟','🦋','🌌','🫂','🌟','🌙','🏡','😴',
+];
+const TINTS = ['#ffe1ec','#e7ecfb','#e3f6e8','#fff0d6','#f1e6fb','#ffe6de','#dff3f6'];
+
 // ---------- flatten to 153 chapters ----------
 const CH = [];
-PARTS.forEach(part=>part.chapters.forEach(c=>
-  CH.push({part:part.n, partTitle:part.title, t:c.t, p:c.p})));
+let _k = 0;
+PARTS.forEach(part=>part.chapters.forEach(c=>{
+  CH.push({part:part.n, partTitle:part.title, t:c.t, p:c.p, e:EMOJI[_k]||'✨'}); _k++;
+}));
 const TOTAL = CH.length;
 
 const $ = id=>document.getElementById(id);
@@ -334,6 +356,8 @@ const pageEl = $('page');
 
 function render(dir){
   const c = CH[idx], last = idx===TOTAL-1;
+  $('emoji').textContent = c.e;
+  $('pic').style.background = `radial-gradient(circle at 50% 38%, #ffffff 0%, ${TINTS[idx%TINTS.length]} 78%)`;
   $('partlabel').textContent = `${c.part} · ${c.partTitle}`;
   $('kicker').textContent = `Chapter ${idx+1}`;
   $('ctitle').textContent = c.t;
@@ -389,12 +413,13 @@ function startReading(){
   $('readBtn').innerHTML='⏹ Stop reading';
   const c = CH[idx];
   const u = new SpeechSynthesisUtterance(`Chapter ${idx+1}. ${c.t}. ${c.p}`);
-  u.rate=.9; u.pitch=1.05;
+  u.rate=1.05; u.pitch=1.05;
   u.onend = ()=>{ if(reading && idx<TOTAL-1){ go(idx+1); startReading(); } else stopReading(); };
   window.speechSynthesis.cancel();
   window.speechSynthesis.speak(u);
 }
 $('readBtn').onclick = ()=> reading ? stopReading() : startReading();
+$('pic').onclick = ()=> reading ? stopReading() : startReading();
 if(!('speechSynthesis' in window)){ $('readBtn').style.display='none'; }
 
 // ---------- table of contents ----------
@@ -410,7 +435,7 @@ PARTS.forEach(part=>{
     const g=gi++;
     const b=document.createElement('button');
     b.dataset.i=g;
-    b.innerHTML=`<span class="n">${g+1}</span><span>${c.t}</span>`;
+    b.innerHTML=`<span class="n">${g+1}</span><span>${EMOJI[g]||'✨'} ${c.t}</span>`;
     b.onclick=()=>{ go(g); $('toc').classList.remove('open'); };
     list.appendChild(b);
   });
