@@ -13,6 +13,18 @@ no internet required.
 4. Earn coins for every enemy popped; lose a life if one reaches the base.
 5. Tap a placed defender to sell it and rework your setup.
 
+## 📖 Bonus: Picture Word Book
+There's also a cute **picture-and-word book** for little learners in
+`picture-book.html`. Flip through the alphabet from **A to Z** — each page shows
+a big picture, the letter, and the word (with the first letter highlighted).
+
+- **Tap a picture** (or press <kbd>Space</kbd>) to hear the word read aloud.
+- **Turn pages** with the ◀ ▶ buttons, the arrow keys, or a swipe on touch.
+- Press **Read to me** to auto-play through every page, or tap a letter in the
+  strip to jump straight to it.
+
+Just open `picture-book.html` in any browser — same as the game, no setup needed.
+
 ## Run it locally
 Just open `index.html` in any web browser (double-click it).
 

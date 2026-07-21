@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Rabbit &amp; Memo — Picture Word Book</title>
+<style>
+  :root{
+    --cream:#fff6ee; --cream2:#ffe9dc; --ink:#5b4a52; --muted:#a58e98;
+    --pink:#f7b6c8; --pink2:#f194ac; --lav:#cdb0ec; --lav2:#b8a5ee;
+    --mint:#8ed0a0; --amber:#ffb24d;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;}
+  body{
+    font-family:'Nunito',ui-rounded,'Segoe UI',system-ui,sans-serif;
+    background:
+      radial-gradient(1200px 500px at 15% -10%, #fde4ef 0%, transparent 60%),
+      radial-gradient(1000px 500px at 110% 0%, #e6ecfb 0%, transparent 55%),
+      #f4e2f7;
+    color:var(--ink);
+    display:flex;align-items:center;justify-content:center;
+    padding:14px;min-height:100%;
+  }
+  .book{width:100%;max-width:560px;display:flex;flex-direction:column;gap:14px;}
+
+  /* ---------- header ---------- */
+  .head{display:flex;align-items:center;gap:10px;justify-content:center;
+    text-align:center;flex-wrap:wrap;}
+  .head h1{margin:0;font-size:23px;font-weight:800;color:var(--pink2);letter-spacing:.2px;}
+  .head .mascot{font-size:30px;line-height:1;filter:drop-shadow(0 3px 4px rgba(180,120,160,.35));}
+  .sub{margin:-4px 0 0;text-align:center;font-size:13.5px;color:var(--muted);}
+
+  /* ---------- the page ---------- */
+  .page{position:relative;background:var(--cream);border-radius:30px;
+    padding:22px 22px 20px;box-shadow:0 22px 48px -20px rgba(180,120,160,.55);
+    overflow:hidden;}
+  .page::after{content:"";position:absolute;inset:0;border-radius:30px;
+    border:3px solid rgba(255,255,255,.7);pointer-events:none;}
+  .letter{display:flex;align-items:baseline;justify-content:center;gap:6px;
+    font-weight:800;line-height:1;margin-bottom:6px;}
+  .letter .big{font-size:56px;}
+  .letter .small{font-size:34px;opacity:.65;}
+
+  .pic{margin:6px auto 4px;width:210px;height:210px;border-radius:50%;
+    display:grid;place-items:center;cursor:pointer;user-select:none;
+    box-shadow:inset 0 6px 22px rgba(0,0,0,.05), 0 14px 30px -16px rgba(120,80,120,.5);
+    transition:transform .16s ease;}
+  .pic:active{transform:scale(.95);}
+  .pic .emoji{font-size:118px;line-height:1;filter:drop-shadow(0 8px 10px rgba(120,80,120,.28));}
+
+  .word{text-align:center;margin:8px 0 2px;font-size:44px;font-weight:800;letter-spacing:.5px;}
+  .word .first{color:var(--pink2);}
+  .sayrow{display:flex;justify-content:center;margin-top:8px;}
+  .say{border:none;border-radius:18px;padding:11px 20px;font-family:inherit;
+    font-weight:800;font-size:16px;color:#fff;cursor:pointer;display:flex;align-items:center;gap:8px;
+    background:linear-gradient(180deg,var(--lav),var(--lav2));
+    box-shadow:0 9px 18px -8px var(--lav2);transition:.12s;}
+  .say:hover{filter:brightness(1.05);transform:translateY(-1px);}
+  .say:active{transform:translateY(0);}
+
+  .page.turn{animation:turn .34s ease;}
+  @keyframes turn{0%{opacity:0;transform:translateX(var(--dir,26px)) scale(.985);}100%{opacity:1;transform:none;}}
+
+  /* sparkles on the picture */
+  .spark{position:absolute;font-size:22px;pointer-events:none;animation:pop .7s ease forwards;}
+  @keyframes pop{0%{opacity:0;transform:scale(.2) translateY(0);}
+    30%{opacity:1;}100%{opacity:0;transform:scale(1.2) translateY(-26px);}}
+
+  /* ---------- controls ---------- */
+  .nav{display:flex;align-items:center;gap:12px;}
+  .arrow{flex:0 0 auto;width:58px;height:58px;border:none;border-radius:20px;cursor:pointer;
+    font-size:24px;font-weight:800;color:#fff;
+    background:linear-gradient(180deg,var(--pink),var(--pink2));
+    box-shadow:0 9px 18px -8px var(--pink2);transition:.12s;}
+  .arrow:hover{filter:brightness(1.05);transform:translateY(-1px);}
+  .arrow:disabled{opacity:.4;cursor:default;transform:none;filter:none;}
+  .counter{flex:1;text-align:center;font-weight:800;font-size:16px;color:var(--muted);
+    background:var(--cream);border-radius:18px;padding:14px;
+    box-shadow:0 10px 24px -18px rgba(180,120,160,.6);}
+  .counter b{color:var(--ink);font-size:19px;}
+
+  .read{border:none;border-radius:18px;padding:12px;font-family:inherit;font-weight:800;
+    font-size:16px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+    background:linear-gradient(180deg,var(--mint),#6fc389);
+    box-shadow:0 9px 18px -8px #6fc389;transition:.12s;}
+  .read:hover{filter:brightness(1.04);transform:translateY(-1px);}
+  .read.stop{background:linear-gradient(180deg,var(--amber),#f59a2e);box-shadow:0 9px 18px -8px #f59a2e;}
+
+  /* ---------- alphabet strip ---------- */
+  .strip{display:grid;grid-template-columns:repeat(13,1fr);gap:5px;
+    background:var(--cream);border-radius:20px;padding:12px;
+    box-shadow:0 10px 24px -18px rgba(180,120,160,.6);}
+  .strip button{border:none;border-radius:11px;padding:0;aspect-ratio:1;cursor:pointer;
+    font-family:inherit;font-weight:800;font-size:14px;color:var(--muted);
+    background:var(--cream2);transition:.1s;}
+  .strip button:hover{color:var(--ink);transform:translateY(-1px);}
+  .strip button.on{color:#fff;background:linear-gradient(180deg,var(--lav),var(--lav2));
+    box-shadow:0 5px 12px -5px var(--lav2);}
+
+  .note{text-align:center;font-size:12px;color:var(--muted);margin:2px 0 0;line-height:1.4;}
+
+  @media(max-width:520px){
+    .head h1{font-size:19px;} .word{font-size:38px;}
+    .pic{width:180px;height:180px;} .pic .emoji{font-size:100px;}
+    .strip{grid-template-columns:repeat(9,1fr);}
+    .arrow{width:52px;height:52px;}
+  }
+</style>
+</head>
+<body>
+<div class="book">
+  <div class="head">
+    <span class="mascot">🐰</span>
+    <h1>Rabbit &amp; Memo's Picture Word Book</h1>
+    <span class="mascot">🐱</span>
+  </div>
+  <p class="sub">Tap a picture to hear the word. Learn your ABCs from A to Z!</p>
+
+  <div class="page" id="page">
+    <div class="letter"><span class="big" id="lBig">Aa</span></div>
+    <div class="pic" id="pic"><span class="emoji" id="emoji">🍎</span></div>
+    <div class="word" id="word">Apple</div>
+    <div class="sayrow"><button class="say" id="sayBtn">🔊 Say it</button></div>
+  </div>
+
+  <div class="nav">
+    <button class="arrow" id="prev" aria-label="Previous">◀</button>
+    <div class="counter">Page <b id="idx">1</b> of <b id="total">26</b></div>
+    <button class="arrow" id="next" aria-label="Next">▶</button>
+  </div>
+
+  <button class="read" id="readBtn">▶️ Read to me</button>
+
+  <div class="strip" id="strip"></div>
+
+  <p class="note" id="note">Use ◀ ▶ or your arrow keys to turn the page.</p>
+</div>
+
+<script>
+// ---------- the picture words (A to Z) ----------
+const WORDS = [
+  {l:'A', word:'Apple',     emoji:'🍎'},
+  {l:'B', word:'Butterfly', emoji:'🦋'},
+  {l:'C', word:'Carrot',    emoji:'🥕'},
+  {l:'D', word:'Duck',      emoji:'🦆'},
+  {l:'E', word:'Elephant',  emoji:'🐘'},
+  {l:'F', word:'Flower',    emoji:'🌸'},
+  {l:'G', word:'Grapes',    emoji:'🍇'},
+  {l:'H', word:'House',     emoji:'🏠'},
+  {l:'I', word:'Ice cream', emoji:'🍦'},
+  {l:'J', word:'Jellyfish', emoji:'🪼'},
+  {l:'K', word:'Kite',      emoji:'🪁'},
+  {l:'L', word:'Lemon',     emoji:'🍋'},
+  {l:'M', word:'Moon',      emoji:'🌙'},
+  {l:'N', word:'Nest',      emoji:'🪺'},
+  {l:'O', word:'Orange',    emoji:'🍊'},
+  {l:'P', word:'Penguin',   emoji:'🐧'},
+  {l:'Q', word:'Queen',     emoji:'👑'},
+  {l:'R', word:'Rabbit',    emoji:'🐰'},
+  {l:'S', word:'Star',      emoji:'⭐'},
+  {l:'T', word:'Tree',      emoji:'🌳'},
+  {l:'U', word:'Umbrella',  emoji:'☂️'},
+  {l:'V', word:'Violin',    emoji:'🎻'},
+  {l:'W', word:'Whale',     emoji:'🐳'},
+  {l:'X', word:'Xylophone', emoji:'🎼'},
+  {l:'Y', word:'Yarn',      emoji:'🧶'},
+  {l:'Z', word:'Zebra',     emoji:'🦓'},
+];
+
+// soft pastel backgrounds cycled per page
+const TINTS = ['#ffe1ec','#e7ecfb','#e3f6e8','#fff0d6','#f1e6fb','#ffe6de','#dff3f6'];
+
+const $ = id=>document.getElementById(id);
+let i = 0;               // current page index
+let reading = false;     // "read to me" mode
+let readTimer = null;
+
+const pageEl = $('page');
+
+function render(dir){
+  const w = WORDS[i];
+  $('lBig').textContent = w.l + w.l.toLowerCase();
+  $('emoji').textContent = w.emoji;
+  // word with a highlighted first letter
+  $('word').innerHTML = `<span class="first">${w.word[0]}</span>${w.word.slice(1)}`;
+  $('pic').style.background =
+    `radial-gradient(circle at 50% 38%, #ffffff 0%, ${TINTS[i%TINTS.length]} 78%)`;
+  $('idx').textContent = i+1;
+  $('prev').disabled = i===0;
+  $('next').disabled = i===WORDS.length-1;
+  // alphabet strip highlight
+  [...$('strip').children].forEach((b,k)=>b.classList.toggle('on',k===i));
+  // page-turn animation
+  if(dir!==undefined){
+    pageEl.style.setProperty('--dir', dir>=0 ? '26px' : '-26px');
+    pageEl.classList.remove('turn'); void pageEl.offsetWidth; pageEl.classList.add('turn');
+  }
+}
+
+// ---------- speech ----------
+function speak(text, after){
+  if(!('speechSynthesis' in window)){ if(after) after(); return; }
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = .85; u.pitch = 1.15;
+  if(after) u.onend = after;
+  window.speechSynthesis.speak(u);
+}
+function sayCurrent(after){
+  const w = WORDS[i];
+  speak(`${w.l}. ${w.word}.`, after);
+  sparkle();
+}
+
+// tap picture / say button
+$('pic').onclick = ()=>sayCurrent();
+$('sayBtn').onclick = ()=>sayCurrent();
+
+// ---------- sparkle burst ----------
+function sparkle(){
+  const chars = ['✨','⭐','💛','🌟'];
+  const rect = $('pic');
+  for(let n=0;n<5;n++){
+    const s = document.createElement('span');
+    s.className = 'spark'; s.textContent = chars[n%chars.length];
+    s.style.left = (30+Math.random()*60)+'%';
+    s.style.top  = (20+Math.random()*40)+'%';
+    rect.appendChild(s);
+    setTimeout(()=>s.remove(), 720);
+  }
+}
+
+// ---------- navigation ----------
+function go(n){
+  const dir = n - i;
+  if(n<0||n>=WORDS.length) return;
+  i = n; render(dir);
+}
+$('next').onclick = ()=>go(i+1);
+$('prev').onclick = ()=>go(i-1);
+document.addEventListener('keydown', e=>{
+  if(e.key==='ArrowRight') go(i+1);
+  else if(e.key==='ArrowLeft') go(i-1);
+  else if(e.key===' '){ e.preventDefault(); sayCurrent(); }
+});
+
+// swipe on touch
+let sx=null;
+pageEl.addEventListener('touchstart', e=>{ sx=e.touches[0].clientX; }, {passive:true});
+pageEl.addEventListener('touchend', e=>{
+  if(sx===null) return;
+  const dx = e.changedTouches[0].clientX - sx; sx=null;
+  if(Math.abs(dx)>45){ dx<0 ? go(i+1) : go(i-1); }
+});
+
+// ---------- read to me ----------
+function stopReading(){
+  reading=false; clearTimeout(readTimer);
+  if('speechSynthesis' in window) window.speechSynthesis.cancel();
+  $('readBtn').classList.remove('stop');
+  $('readBtn').innerHTML = '▶️ Read to me';
+}
+function startReading(){
+  reading=true;
+  $('readBtn').classList.add('stop');
+  $('readBtn').innerHTML = '⏹ Stop reading';
+  const step = ()=>{
+    if(!reading) return;
+    sayCurrent(()=>{
+      if(!reading) return;
+      if(i < WORDS.length-1){ readTimer=setTimeout(()=>{ go(i+1); step(); }, 550); }
+      else { stopReading(); }
+    });
+  };
+  step();
+}
+$('readBtn').onclick = ()=> reading ? stopReading() : startReading();
+
+// ---------- build alphabet strip ----------
+const stripEl = $('strip');
+WORDS.forEach((w,k)=>{
+  const b=document.createElement('button');
+  b.textContent=w.l; b.title=w.word;
+  b.onclick=()=>{ if(reading) stopReading(); go(k); };
+  stripEl.appendChild(b);
+});
+
+// ---------- init ----------
+$('total').textContent = WORDS.length;
+if(!('speechSynthesis' in window)){
+  $('note').textContent = 'Turn the page with ◀ ▶ or the arrow keys. (Voice not available in this browser.)';
+}
+render();
+</script>
+</body>
+</html>
