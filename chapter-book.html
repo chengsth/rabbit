@@ -100,6 +100,16 @@
   .read.stop{background:linear-gradient(180deg,var(--amber),#f59a2e);box-shadow:0 9px 18px -8px #f59a2e;}
   .note{text-align:center;font-size:12px;color:var(--muted);margin:2px 0 4px;line-height:1.4;}
 
+  /* ---------- voice picker ---------- */
+  .voicebar{display:flex;align-items:center;gap:10px;justify-content:center;flex-wrap:wrap;
+    background:var(--cream);border-radius:16px;padding:9px 14px;
+    box-shadow:0 10px 24px -18px rgba(180,120,160,.6);}
+  .voicebar label{font-weight:800;font-size:13px;color:var(--muted);white-space:nowrap;}
+  .voicebar select{font-family:inherit;font-weight:700;font-size:13.5px;color:var(--ink);
+    border:2px solid var(--cream2);border-radius:12px;padding:8px 10px;background:#fffdfb;
+    max-width:100%;cursor:pointer;}
+  .voicebar.hide{display:none;}
+
   @media(max-width:520px){.ctitle{font-size:25px;}.ctext{font-size:17.5px;}.arrow{width:52px;height:52px;}}
 </style>
 </head>
@@ -144,6 +154,10 @@
   </div>
 
   <button class="read" id="readBtn">🔊 Read this chapter aloud</button>
+  <div class="voicebar" id="voicebar">
+    <label for="voiceSel">🎙️ Reading voice</label>
+    <select id="voiceSel" aria-label="Reading voice"></select>
+  </div>
   <p class="note" id="note">Use ◀ ▶ or your arrow keys to turn the page. Your place is saved automatically.</p>
 </div>
 
@@ -725,14 +739,68 @@ function startReading(){
   const c = CH[idx];
   const body = Array.isArray(c.p) ? c.p.join(' ') : c.p;
   const u = new SpeechSynthesisUtterance(`Chapter ${idx+1}. ${c.t}. ${body}`);
-  u.rate=1.05; u.pitch=1.05;
+  if(chosenVoice){ u.voice = chosenVoice; u.lang = chosenVoice.lang; }
+  u.rate=0.96; u.pitch=1.02;
   u.onend = ()=>{ if(reading && idx<TOTAL-1){ go(idx+1); startReading(); } else stopReading(); };
   window.speechSynthesis.cancel();
   window.speechSynthesis.speak(u);
 }
 $('readBtn').onclick = ()=> reading ? stopReading() : startReading();
 $('pic').onclick = ()=> reading ? stopReading() : startReading();
-if(!('speechSynthesis' in window)){ $('readBtn').style.display='none'; }
+
+// ---------- choose a nicer reading voice ----------
+let VOICES = [], chosenVoice = null;
+const VKEY = 'rm-voice';
+// friendlier, more natural voices to prefer (Apple / Google / Microsoft)
+const NICE = ['Samantha','Ava','Allison','Susan','Karen','Serena','Moira','Tessa','Fiona','Nicky','Aaron',
+  'Daniel','Arthur','Google US English','Google UK English Female','Google UK English Male',
+  'Microsoft Aria','Microsoft Jenny','Microsoft Libby','Microsoft Sonia','Microsoft Zira'];
+function vScore(v){
+  let s = 0; const n = v.name;
+  if(/^en/i.test(v.lang)) s += 100;
+  if(/enhanced|premium|natural|neural/i.test(n)) s += 45;   // downloaded high-quality voices
+  if(v.localService) s += 8;
+  const i = NICE.findIndex(x => n.indexOf(x) === 0);
+  if(i >= 0) s += 40 - i;
+  if(/eloquence|compact|novelty|zarvox|trinoids|bells|boing|bubbles|bad news|good news|whisper|deranged|hysterical|cellos|organ|wobble|jester|superstar|bahh|albert/i.test(n)) s -= 100;
+  return s;
+}
+function buildVoices(){
+  const all = window.speechSynthesis.getVoices();
+  if(!all.length) return;
+  const en = all.filter(v => /^en/i.test(v.lang));
+  VOICES = (en.length ? en : all).slice().sort((a,b) => vScore(b) - vScore(a));
+  const saved = localStorage.getItem(VKEY);
+  chosenVoice = VOICES.find(v => v.name === saved) || VOICES[0] || null;
+  const sel = $('voiceSel');
+  sel.innerHTML = '';
+  VOICES.forEach(v => {
+    const o = document.createElement('option');
+    o.value = v.name;
+    o.textContent = v.name + (/enhanced|premium|natural|neural/i.test(v.name) ? ' ✨' : '');
+    sel.appendChild(o);
+  });
+  if(chosenVoice) sel.value = chosenVoice.name;
+}
+function previewVoice(){
+  if(!chosenVoice) return;
+  const u = new SpeechSynthesisUtterance('Once upon a time...');
+  u.voice = chosenVoice; u.lang = chosenVoice.lang; u.rate = 0.96; u.pitch = 1.02;
+  window.speechSynthesis.cancel(); window.speechSynthesis.speak(u);
+}
+if('speechSynthesis' in window){
+  buildVoices();
+  window.speechSynthesis.onvoiceschanged = buildVoices;
+  $('voiceSel').onchange = ()=>{
+    if(reading) stopReading();
+    chosenVoice = VOICES.find(v => v.name === $('voiceSel').value) || chosenVoice;
+    if(chosenVoice) localStorage.setItem(VKEY, chosenVoice.name);
+    previewVoice();
+  };
+} else {
+  $('readBtn').style.display = 'none';
+  $('voicebar').classList.add('hide');
+}
 
 // ---------- table of contents ----------
 const tocBody = $('tocBody');
