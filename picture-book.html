@@ -109,6 +109,12 @@
   .strip button.emoji{font-size:19px;}
 
   .note{text-align:center;font-size:12px;color:var(--muted);margin:2px 0 0;line-height:1.4;}
+  .voicebar{display:flex;align-items:center;gap:10px;justify-content:center;flex-wrap:wrap;
+    background:var(--cream);border-radius:16px;padding:9px 14px;box-shadow:0 10px 24px -18px rgba(180,120,160,.6);}
+  .voicebar label{font-weight:800;font-size:13px;color:var(--muted);white-space:nowrap;}
+  .voicebar select{font-family:inherit;font-weight:700;font-size:13.5px;color:var(--ink);
+    border:2px solid var(--cream2);border-radius:12px;padding:8px 10px;background:#fffdfb;max-width:100%;cursor:pointer;}
+  .voicebar.hide{display:none;}
 
   @media(max-width:520px){
     .head h1{font-size:18px;} .word{font-size:36px;}
@@ -148,6 +154,11 @@
   <button class="read" id="readBtn">▶️ Read to me</button>
 
   <div class="strip" id="strip"></div>
+
+  <div class="voicebar" id="voicebar">
+    <label for="voiceSel">🎙️ Voice</label>
+    <select id="voiceSel" aria-label="Reading voice"></select>
+  </div>
 
   <p class="note" id="note">Use ◀ ▶ or your arrow keys to turn the page.</p>
 </div>
@@ -252,12 +263,47 @@ function render(dir){
   }
 }
 
+// ---------- choose a nicer reading voice ----------
+let VOICES = [], chosenVoice = null;
+const VKEY = 'rm-voice';
+const NICE = ['Samantha','Ava','Allison','Susan','Karen','Serena','Moira','Tessa','Fiona','Nicky','Aaron',
+  'Daniel','Arthur','Google US English','Google UK English Female','Google UK English Male',
+  'Microsoft Aria','Microsoft Jenny','Microsoft Libby','Microsoft Sonia','Microsoft Zira'];
+function vScore(v){
+  let s = 0; const n = v.name;
+  if(/^en/i.test(v.lang)) s += 100;
+  if(/enhanced|premium|natural|neural/i.test(n)) s += 45;
+  if(v.localService) s += 8;
+  const i = NICE.findIndex(x => n.indexOf(x) === 0);
+  if(i >= 0) s += 40 - i;
+  if(/eloquence|compact|novelty|zarvox|trinoids|bells|boing|bubbles|bad news|good news|whisper|deranged|hysterical|cellos|organ|wobble|jester|superstar|bahh|albert/i.test(n)) s -= 100;
+  return s;
+}
+function buildVoices(){
+  const all = window.speechSynthesis.getVoices();
+  if(!all.length) return;
+  const en = all.filter(v => /^en/i.test(v.lang));
+  VOICES = (en.length ? en : all).slice().sort((a,b) => vScore(b) - vScore(a));
+  const saved = localStorage.getItem(VKEY);
+  chosenVoice = VOICES.find(v => v.name === saved) || VOICES[0] || null;
+  const sel = $('voiceSel');
+  sel.innerHTML = '';
+  VOICES.forEach(v => {
+    const o = document.createElement('option');
+    o.value = v.name;
+    o.textContent = v.name + (/enhanced|premium|natural|neural/i.test(v.name) ? ' ✨' : '');
+    sel.appendChild(o);
+  });
+  if(chosenVoice) sel.value = chosenVoice.name;
+}
+
 // ---------- speech ----------
 function speak(text, after){
   if(!('speechSynthesis' in window)){ if(after) after(); return; }
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
-  u.rate = .85; u.pitch = 1.15;
+  if(chosenVoice){ u.voice = chosenVoice; u.lang = chosenVoice.lang; }
+  u.rate = .9; u.pitch = 1.1;
   if(after) u.onend = after;
   window.speechSynthesis.speak(u);
 }
@@ -363,6 +409,20 @@ ORDER.forEach(key=>{
   b.onclick=()=>selectCollection(key);
   tabsEl.appendChild(b);
 });
+
+// ---------- voice picker wiring ----------
+if('speechSynthesis' in window){
+  buildVoices();
+  window.speechSynthesis.onvoiceschanged = buildVoices;
+  $('voiceSel').onchange = ()=>{
+    if(reading) stopReading();
+    chosenVoice = VOICES.find(v => v.name === $('voiceSel').value) || chosenVoice;
+    if(chosenVoice) localStorage.setItem(VKEY, chosenVoice.name);
+    speak(chosenVoice ? chosenVoice.name.split(' ')[0] : 'Hello', null);  // quick preview
+  };
+} else {
+  $('voicebar').classList.add('hide');
+}
 
 // ---------- init ----------
 if(!('speechSynthesis' in window)){
