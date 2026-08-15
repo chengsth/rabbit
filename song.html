@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Rabbit &amp; Memo — The Pancake Song</title>
+<style>
+  :root{
+    --cream:#fff6ee; --cream2:#ffe9dc; --ink:#5b4a52; --muted:#a58e98;
+    --pink:#f7b6c8; --pink2:#f194ac; --lav:#cdb0ec; --lav2:#b8a5ee;
+    --mint:#8ed0a0; --amber:#ffb24d;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;min-height:100%;}
+  body{
+    font-family:'Nunito',ui-rounded,'Segoe UI',system-ui,sans-serif;
+    background:
+      radial-gradient(1200px 500px at 15% -10%, #fde4ef 0%, transparent 60%),
+      radial-gradient(1000px 500px at 110% 0%, #e6ecfb 0%, transparent 55%),
+      #f4e2f7;
+    color:var(--ink);
+    display:flex;align-items:flex-start;justify-content:center;
+    padding:14px 14px 30px;min-height:100vh;
+  }
+  .song{width:100%;max-width:600px;display:flex;flex-direction:column;gap:13px;}
+
+  /* ---------- header ---------- */
+  .head{display:flex;align-items:center;gap:10px;justify-content:center;
+    text-align:center;flex-wrap:wrap;}
+  .head h1{margin:0;font-size:22px;font-weight:800;color:var(--pink2);letter-spacing:.2px;}
+  .head .mascot{font-size:29px;line-height:1;filter:drop-shadow(0 3px 4px rgba(180,120,160,.35));}
+  .sub{margin:-4px 0 0;text-align:center;font-size:13.5px;color:var(--muted);}
+
+  /* ---------- style chips ---------- */
+  .tabs{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;}
+  .tab{border:none;border-radius:15px;padding:9px 15px;font-family:inherit;font-weight:800;
+    font-size:14px;color:var(--muted);background:var(--cream);cursor:pointer;transition:.12s;
+    display:flex;align-items:center;gap:6px;box-shadow:0 8px 20px -16px rgba(180,120,160,.6);}
+  .tab:hover{transform:translateY(-1px);color:var(--ink);}
+  .tab.on{color:#fff;background:linear-gradient(180deg,var(--pink),var(--pink2));
+    box-shadow:0 8px 16px -8px var(--pink2);}
+  .tab[data-style="jazz"].on{background:linear-gradient(180deg,var(--lav),var(--lav2));
+    box-shadow:0 8px 16px -8px var(--lav2);}
+  .styleNote{text-align:center;font-size:12.5px;color:var(--muted);margin:-4px 0 0;min-height:17px;}
+
+  /* ---------- the stage ---------- */
+  .stage{position:relative;background:var(--cream);border-radius:30px;
+    padding:16px 20px 18px;box-shadow:0 22px 48px -20px rgba(180,120,160,.55);
+    overflow:hidden;text-align:center;}
+  .stage::after{content:"";position:absolute;inset:0;border-radius:30px;
+    border:3px solid rgba(255,255,255,.7);pointer-events:none;}
+  body.jazzy .stage{background:#fff4fb;}
+
+  .chip{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.6px;
+    text-transform:uppercase;color:#fff;background:linear-gradient(180deg,var(--lav),var(--lav2));
+    border-radius:11px;padding:4px 12px;box-shadow:0 7px 14px -8px var(--lav2);}
+
+  .plate{position:relative;height:150px;display:flex;align-items:flex-end;justify-content:center;
+    margin:6px 0 2px;}
+  .cake{display:flex;flex-direction:column;align-items:center;line-height:.56;
+    font-size:40px;user-select:none;transform-origin:50% 80%;
+    filter:drop-shadow(0 10px 10px rgba(150,100,140,.3));transition:transform .12s ease;}
+  .cake span{display:block;}
+  .cake .butter{font-size:26px;margin-bottom:2px;line-height:1;}
+  .cake.pulse{transform:scale(1.07);}
+  .cake.flip{animation:flip .5s ease;}
+  @keyframes flip{
+    0%{transform:translateY(0) rotate(0);}
+    45%{transform:translateY(-28px) rotate(190deg);}
+    100%{transform:translateY(0) rotate(360deg);}
+  }
+  .fx{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+  .fx b{position:absolute;bottom:12px;font-size:19px;animation:rise 1.5s ease-out forwards;}
+  @keyframes rise{
+    0%{opacity:0;transform:translateY(0) scale(.6);}
+    18%{opacity:1;}
+    100%{opacity:0;transform:translateY(-108px) scale(1.15) rotate(var(--spin,25deg));}
+  }
+
+  /* ---------- karaoke line ---------- */
+  .line{margin:14px 4px 2px;min-height:70px;display:flex;align-items:center;justify-content:center;}
+  .lyric{font-size:26px;font-weight:800;line-height:1.5;}
+  .syl{padding:1px 1px;border-radius:9px;transition:color .1s ease, background .1s ease;
+    color:#c8b4c0;}
+  .syl.done{color:var(--ink);}
+  .syl.on{color:#fff;background:linear-gradient(180deg,var(--pink),var(--pink2));
+    padding:1px 7px;box-shadow:0 7px 14px -8px var(--pink2);}
+  body.jazzy .syl.on{background:linear-gradient(180deg,var(--lav),var(--lav2));
+    box-shadow:0 7px 14px -8px var(--lav2);}
+  .peek{font-size:15px;color:var(--muted);min-height:21px;margin-bottom:6px;}
+
+  .beats{display:flex;gap:8px;justify-content:center;margin-top:4px;}
+  .beats i{width:9px;height:9px;border-radius:50%;background:var(--cream2);
+    transition:transform .09s ease, background .09s ease;}
+  .beats i.on{background:var(--pink2);transform:scale(1.5);}
+  body.jazzy .beats i.on{background:var(--lav2);}
+
+  /* ---------- controls ---------- */
+  .controls{display:flex;align-items:center;gap:11px;}
+  .play{flex:0 0 auto;border:none;cursor:pointer;font-family:inherit;font-weight:800;
+    font-size:16px;color:#fff;border-radius:18px;padding:13px 22px;
+    background:linear-gradient(180deg,var(--mint),#6fc389);box-shadow:0 11px 20px -9px #6fc389;
+    transition:transform .12s ease;}
+  .play:hover{transform:translateY(-1px);}
+  .play.stop{background:linear-gradient(180deg,#f7a6a6,#ef8a8a);box-shadow:0 11px 20px -9px #ef8a8a;}
+  .progress{flex:1;height:12px;border-radius:9px;background:var(--cream);overflow:hidden;
+    box-shadow:inset 0 2px 6px rgba(180,120,160,.18);}
+  .progress i{display:block;height:100%;width:0;border-radius:9px;
+    background:linear-gradient(90deg,var(--pink),var(--lav2));transition:width .1s linear;}
+
+  /* ---------- options ---------- */
+  .optbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:center;
+    background:var(--cream);border-radius:18px;padding:9px 13px;font-size:13.5px;
+    color:var(--muted);box-shadow:0 10px 24px -18px rgba(180,120,160,.6);}
+  .optbar label{display:flex;align-items:center;gap:7px;font-weight:800;cursor:pointer;}
+  .optbar input[type=checkbox]{width:17px;height:17px;accent-color:var(--pink2);cursor:pointer;}
+  .optbar select{font-family:inherit;font-size:13px;font-weight:700;color:var(--ink);
+    background:var(--cream2);border:none;border-radius:11px;padding:7px 9px;max-width:190px;cursor:pointer;}
+
+  /* ---------- lyric sheet ---------- */
+  /* position:relative so a line's offsetTop is measured inside this scroller */
+  .sheet{position:relative;background:var(--cream);border-radius:26px;padding:14px 8px 14px 16px;
+    box-shadow:0 20px 44px -22px rgba(180,120,160,.55);max-height:290px;overflow-y:auto;}
+  .sheet h3{margin:14px 0 6px;font-size:12px;font-weight:800;letter-spacing:.8px;
+    text-transform:uppercase;color:var(--lav2);}
+  .sheet h3:first-child{margin-top:0;}
+  .sheet p{margin:0;padding:5px 10px;border-radius:12px;font-size:15px;font-weight:700;
+    color:#8b7681;cursor:pointer;line-height:1.4;transition:.12s;}
+  .sheet p:hover{background:var(--cream2);color:var(--ink);}
+  .sheet p.on{background:linear-gradient(90deg,#ffe1ec,#f1e6fb);color:var(--ink);}
+  .sheet p.inst{color:#c8b4c0;font-weight:800;letter-spacing:2px;}
+
+  .note{text-align:center;font-size:12.5px;color:var(--muted);line-height:1.6;margin:2px 0 0;}
+
+  @media(max-width:480px){
+    .lyric{font-size:22px;}
+    .head h1{font-size:19px;}
+    .cake{font-size:38px;}
+  }
+</style>
+</head>
+<body>
+<a href="index.html" title="Home" style="position:fixed;top:10px;left:10px;z-index:60;text-decoration:none;
+  width:40px;height:40px;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.92);
+  font-size:18px;box-shadow:0 8px 18px -8px rgba(180,120,160,.6);">🏠</a>
+
+<div class="song">
+  <div class="head">
+    <span class="mascot">🐰</span>
+    <h1>The Pancake Song</h1>
+    <span class="mascot">🥞</span>
+  </div>
+  <p class="sub">One song, two bands. Press play and sing along with Rabbit &amp; Memo!</p>
+
+  <div class="tabs">
+    <button class="tab on" data-style="pop">🎤 Pop</button>
+    <button class="tab" data-style="jazz">🎷 Jazz</button>
+  </div>
+  <p class="styleNote" id="styleNote"></p>
+
+  <div class="stage">
+    <span class="chip" id="secChip">Ready</span>
+    <div class="plate">
+      <div class="cake" id="cake"></div>
+      <div class="fx" id="fx"></div>
+    </div>
+    <div class="line"><div class="lyric" id="lyric"></div></div>
+    <div class="peek" id="peek"></div>
+    <div class="beats" id="beats"><i></i><i></i><i></i><i></i></div>
+  </div>
+
+  <div class="controls">
+    <button class="play" id="play">▶️ Play</button>
+    <div class="progress"><i id="bar"></i></div>
+  </div>
+
+  <div class="optbar">
+    <label><input type="checkbox" id="sing"/> 🎙️ Words out loud</label>
+    <select id="voiceSel" aria-label="Singing voice"></select>
+  </div>
+
+  <div class="sheet" id="sheet"></div>
+
+  <p class="note" id="note">
+    Tap any line in the words below to start from there.<br>
+    You can switch between 🎤 Pop and 🎷 Jazz while the song is playing!
+  </p>
+</div>
+
+<script>
+/* ============================================================
+   THE PANCAKE SONG — words, tune, and two arrangements
+   ------------------------------------------------------------
+   Each token is  syllable/note/beats  (beats defaults to 0.5).
+   "_" means no word (a rest, or an instrumental note), and a
+   leading "-" glues the syllable onto the word before it.
+   Every line adds up to 8 beats (two bars) unless noted.
+   ============================================================ */
+/*SONG-START*/
+const HOOK_A = "_/G4 _/A4 _/G4 _/E4 _/G4/2 _/C5 _/A4 _/G4 _/E4 _/D4/2";
+const HOOK_B = "_/E4 _/G4 _/A4 _/C5 _/A4/2 _/G4 _/E4 _/D4 _/E4 _/C4/2";
+
+const PRE = [
+  "Pour/G4 a/A4 cir/C5 -cle,/C5 nice/C5 and/A4 round,/G4/4 _/R/1",
+  "Watch/A4 the/C5 lit/D5 -tle/C5 bub/A4 -bles/G4 crowd!/A4/4 _/R/1",
+];
+
+const CHORUS = [
+  "Pan/C5 -cake,/A4 pan/G4 -cake,/A4 flip/C5 it/C5 in/A4 the/G4 air!/E4/3 _/R/1",
+  "Pan/C5 -cake,/A4 pan/G4 -cake,/A4 catch/C5 it/D5 if/C5 you/A4 dare!/G4/3 _/R/1",
+  "Stack/G4 'em/A4 up/C5 as/C5 high/D5 as/E5 high/G5 can/E5 be,/D5/3 _/R/1",
+  "Pan/C5 -cakes/A4 for/G4 Rab/A4 -bit,/C5/1.5 _/R/.5 " +
+  "pan/C5 -cakes/A4 for/G4 Me/E4 -mo,/G4/1.5 _/R/.5 " +
+  "pan/D5 -cakes/C5 for/A4 me!/C5/6.5",
+  HOOK_A,
+];
+
+const SONG = [
+  { name:'Intro', inst:true, lines:[ HOOK_A, HOOK_B ] },
+
+  { name:'Verse 1', lines:[
+    "Sun/E4 comes/G4 up/G4 and/G4 the/A4 pan/G4 gets/E4 hot!/G4/3.5 _/R/1",
+    "But/E4 -ter/G4 goes/G4 a/A4 siz/C5 -zle/A4 pop!/G4/4 _/R/1",
+    "Flour,/G4 milk,/G4 and/A4 one/G4 egg/E4 too,/E4/4.5 _/R/1",
+    "Stir/E4 it/E4 round/G4 a/E4 bub/D4 -bly/E4 goo!/C4/4 _/R/1",
+  ]},
+
+  { name:'Pre-Chorus', lines:PRE },
+  { name:'Chorus', hook:true, lines:CHORUS },
+
+  { name:'Verse 2', lines:[
+    "Blue/E4 -ber/G4 -ry/G4 drops/G4 go/A4 plip/G4 plop/E4 plink!/G4/3.5 _/R/1",
+    "Gold/E4 -en/G4 syr/G4 -up,/A4 slow/C5 as/A4 ink,/G4/4 _/R/1",
+    "Straw/G4 -ber/G4 -ry/A4 crown/G4 on/E4 top,/E4/4.5 _/R/1",
+    "Watch/E4 it/E4 wob/G4 -ble,/E4 don't/D4 you/E4 stop!/C4/4 _/R/1",
+  ]},
+
+  { name:'Pre-Chorus', lines:PRE },
+  { name:'Chorus', hook:true, lines:CHORUS },
+
+  { name:'Bridge', lines:[
+    "Flip!/G4/1 _/R/1 Flip!/G4/1 _/R/1 Flop!/E4/1 _/R/1 Flop!/E4/1 _/R/1",
+    "Round/A4 and/A4 round/C5 and/A4 nev/G4 -er/E4 stop,/G4/4 _/R/1",
+    "Doo/C5 ba/A4 doo/G4 ba,/E4 shoo/G4 -by/A4 doo!/G4/4 _/R/1",
+    "Pan/D5 -cakes,/C5 pan/D5 -cakes,/C5 hot/A4 for/G4 you!/A4/4 _/R/1",
+  ]},
+
+  { name:'Chorus', hook:true, lines:CHORUS },
+
+  { name:'The End', hook:true, lines:[
+    "Pan/D5 -cakes/C5 for/A4 me!/C5/6.5",
+  ]},
+];
+/*SONG-END*/
+
+/* ============================================================
+   Turn the song text into a flat list of notes + lyric lines
+   ============================================================ */
+function parseLine(str){
+  return str.trim().split(/\s+/).map(raw=>{
+    const p = raw.split('/');
+    let text = p[0], join = false;
+    if(text.charAt(0) === '-'){ join = true; text = text.slice(1); }
+    if(text === '_') text = '';
+    return { text, join, note: p[1] || 'R', dur: p[2] ? parseFloat(p[2]) : 0.5 };
+  });
+}
+
+const LINES = [];   // { sec, secName, hook, inst, beat, words, toks }
+let beatCursor = 0;
+SONG.forEach((sec, si)=>{
+  sec.lines.forEach(src=>{
+    const toks = parseLine(src);
+    let b = beatCursor, words = '';
+    toks.forEach(t=>{
+      t.beat = b; b += t.dur;
+      if(t.text) words += (words && !t.join ? ' ' : '') + t.text;
+    });
+    LINES.push({
+      sec: si, secName: sec.name, hook: !!sec.hook,
+      inst: !words, beat: beatCursor, end: b, words, toks,
+    });
+    beatCursor = b;
+  });
+});
+const TOTAL_BEATS = beatCursor;
+const TOTAL_BARS  = Math.ceil(TOTAL_BEATS / 4);
+
+// notes grouped by the bar they start in, so the scheduler stays cheap
+const BAR_NOTES = Array.from({length:TOTAL_BARS}, ()=>[]);
+LINES.forEach((ln, li)=>{
+  ln.toks.forEach((t, ti)=>{
+    const bar = Math.min(TOTAL_BARS-1, Math.floor(t.beat / 4));
+    BAR_NOTES[bar].push({ line:li, tok:ti, beat:t.beat, dur:t.dur, note:t.note, text:t.text });
+  });
+});
+
+/* ============================================================
+   The two bands
+   ============================================================ */
+const TEMPO = { pop:112, jazz:132 };
+// the jazz band plays softer, so it gets a little more volume — swapping
+// bands mid-song should change the feel, not the loudness
+const TRIM  = { pop:0.75, jazz:0.98 };
+const BLURB = {
+  pop:  '🎤 Pop band: bright synths, a clap on every 2 and 4, and a big shiny chorus.',
+  jazz: '🎷 Jazz band: swinging beat, brushes on the drums, walking bass and seventh chords.',
+};
+const CHORDS = {
+  pop: [
+    { name:'C',  root:'C2', notes:['C4','E4','G4'] },
+    { name:'G',  root:'G2', notes:['B3','D4','G4'] },
+    { name:'Am', root:'A2', notes:['A3','C4','E4'] },
+    { name:'F',  root:'F2', notes:['A3','C4','F4'] },
+  ],
+  jazz: [
+    { name:'Cmaj7', root:'C2', notes:['E3','G3','B3','D4'], walk:['C2','E2','G2','A#2'] },
+    { name:'Am7',   root:'A2', notes:['E3','G3','A3','C4'], walk:['A2','G2','F2','E2'] },
+    { name:'Dm7',   root:'D2', notes:['F3','A3','C4','E4'], walk:['D2','F2','A2','G#2'] },
+    { name:'G7',    root:'G2', notes:['F3','G3','B3','D4'], walk:['G2','F2','E2','D2'] },
+  ],
+};
+function chordAt(bar, st){
+  const prog = CHORDS[st];
+  if(bar >= TOTAL_BARS - 2) return prog[0];   // land the ending on the home chord
+  return prog[bar % 4];
+}
+
+const SEMI = {C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+function freq(n){
+  if(!n || n === 'R') return 0;
+  const m = /^([A-G])([#b]?)(-?\d)$/.exec(n);
+  if(!m) return 0;
+  const semi = SEMI[m[1]] + (m[2] === '#' ? 1 : m[2] === 'b' ? -1 : 0);
+  const midi = (parseInt(m[3],10) + 1) * 12 + semi;
+  return 440 * Math.pow(2, (midi - 69) / 12);
+}
+
+// swing: in jazz the "and" of each beat lands two-thirds of the way through
+function sw(x, st){
+  if(st !== 'jazz') return x;
+  const i = Math.floor(x), f = x - i;
+  return i + (f < 0.5 ? f * (4/3) : f * (2/3) + 1/3);
+}
+
+/* ============================================================
+   Web Audio: instruments
+   ============================================================ */
+let ac = null, master = null, echo = null, noiseBuf = null;
+
+function buildChain(){
+  master = ac.createGain();
+  master.gain.value = TRIM[style];
+  const comp = ac.createDynamicsCompressor();
+  comp.threshold.value = -15; comp.ratio.value = 4;
+  comp.attack.value = 0.004; comp.release.value = 0.2;
+  const delay = ac.createDelay(1.0);
+  const fb = ac.createGain(), wet = ac.createGain(), lp = ac.createBiquadFilter();
+  lp.type = 'lowpass'; lp.frequency.value = 2200;
+  delay.delayTime.value = 0.23; fb.gain.value = 0.22; wet.gain.value = 0.3;
+  delay.connect(lp); lp.connect(fb); fb.connect(delay); lp.connect(wet); wet.connect(master);
+  echo = delay;
+  master.connect(comp); comp.connect(ac.destination);
+}
+function ensureAudio(){
+  if(ac) return;
+  ac = new (window.AudioContext || window.webkitAudioContext)();
+  buildChain();
+  const n = ac.sampleRate * 2;
+  noiseBuf = ac.createBuffer(1, n, ac.sampleRate);
+  const d = noiseBuf.getChannelData(0);
+  for(let i=0;i<n;i++) d[i] = Math.random() * 2 - 1;
+}
+// throw away the current output chain — anything already scheduled goes quiet
+function killSound(){
+  if(!ac) return;
+  try{ master.disconnect(); echo.disconnect(); }catch(e){}
+  buildChain();
+}
+
+function noise(t, dur, hz, q, gain, type){
+  const src = ac.createBufferSource(); src.buffer = noiseBuf;
+  src.loop = true;
+  const f = ac.createBiquadFilter();
+  f.type = type || 'bandpass'; f.frequency.value = hz; f.Q.value = q;
+  const g = ac.createGain();
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(gain, t + 0.004);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  src.connect(f); f.connect(g); g.connect(master);
+  src.start(t); src.stop(t + dur + 0.02);
+}
+function kick(t, gain){
+  const o = ac.createOscillator(), g = ac.createGain();
+  o.type = 'sine';
+  o.frequency.setValueAtTime(150, t);
+  o.frequency.exponentialRampToValueAtTime(46, t + 0.11);
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(gain, t + 0.006);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.26);
+  o.connect(g); g.connect(master);
+  o.start(t); o.stop(t + 0.3);
+}
+function clap(t){
+  noise(t, 0.16, 1700, 1.1, 0.20);
+  noise(t + 0.012, 0.13, 2400, 1.4, 0.12);
+}
+function hat(t, gain){ noise(t, 0.045, 8500, 0.9, gain, 'highpass'); }
+function ride(t, gain){
+  noise(t, 0.24, 6200, 0.7, gain * 0.55, 'highpass');
+  const o = ac.createOscillator(), g = ac.createGain();
+  o.type = 'square'; o.frequency.value = 3150;
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(gain * 0.05, t + 0.004);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.3);
+  o.connect(g); g.connect(master);
+  o.start(t); o.stop(t + 0.32);
+}
+function brush(t){ noise(t, 0.19, 2100, 0.6, 0.085); }
+
+function bassNote(t, f, dur, st){
+  if(!f) return;
+  const o = ac.createOscillator(), o2 = ac.createOscillator(), g = ac.createGain();
+  const lp = ac.createBiquadFilter(); lp.type = 'lowpass';
+  lp.frequency.setValueAtTime(st === 'jazz' ? 900 : 1500, t);
+  lp.frequency.exponentialRampToValueAtTime(st === 'jazz' ? 230 : 420, t + dur);
+  o.type = st === 'jazz' ? 'triangle' : 'sawtooth'; o.frequency.value = f;
+  o2.type = 'sine'; o2.frequency.value = f / 2;
+  const g2 = ac.createGain(); g2.gain.value = 0.5;
+  const peak = st === 'jazz' ? 0.30 : 0.26;
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(peak, t + 0.014);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(lp); o2.connect(g2); g2.connect(lp); lp.connect(g); g.connect(master);
+  o.start(t); o2.start(t); o.stop(t + dur + 0.02); o2.stop(t + dur + 0.02);
+}
+function chordHit(t, notes, dur, st, gain){
+  notes.forEach((n, i)=>{
+    const f = freq(n); if(!f) return;
+    const o = ac.createOscillator(), g = ac.createGain();
+    const lp = ac.createBiquadFilter(); lp.type = 'lowpass';
+    lp.frequency.value = st === 'jazz' ? 2000 : 2600;
+    o.type = st === 'jazz' ? 'triangle' : 'sawtooth';
+    o.frequency.value = f;
+    o.detune.value = (i % 2 ? 5 : -5);
+    const peak = gain / notes.length;
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(peak, t + (st === 'jazz' ? 0.012 : 0.008));
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(lp); lp.connect(g); g.connect(master);
+    o.start(t); o.stop(t + dur + 0.02);
+  });
+}
+function leadNote(t, f, dur, st){
+  if(!f) return;
+  const gate = Math.max(0.09, dur * (st === 'jazz' ? 0.92 : 0.86));
+  const g = ac.createGain();
+  const lp = ac.createBiquadFilter(); lp.type = 'lowpass';
+  lp.frequency.setValueAtTime(st === 'jazz' ? 2600 : 4200, t);
+  lp.frequency.exponentialRampToValueAtTime(st === 'jazz' ? 1300 : 1800, t + gate);
+  const oscs = [];
+  if(st === 'pop'){
+    const a = ac.createOscillator(); a.type = 'square';   a.frequency.value = f; a.detune.value = -7;
+    const b = ac.createOscillator(); b.type = 'sawtooth'; b.frequency.value = f; b.detune.value = 8;
+    oscs.push(a, b);
+  } else {
+    const a = ac.createOscillator(); a.type = 'triangle'; a.frequency.value = f;
+    const b = ac.createOscillator(); b.type = 'sine';     b.frequency.value = f * 2.01;
+    oscs.push(a, b);
+  }
+  const mix = ac.createGain(); mix.gain.value = st === 'pop' ? 0.5 : 0.62;
+  const sub = ac.createGain(); sub.gain.value = st === 'pop' ? 0.5 : 0.16;
+  oscs[0].connect(mix); oscs[1].connect(sub);
+  mix.connect(lp); sub.connect(lp); lp.connect(g); g.connect(master);
+  if(st === 'jazz') g.connect(echo);
+
+  // a little wobble on the long jazz notes
+  let lfo = null, lfoG = null;
+  if(st === 'jazz' && gate > 0.5){
+    lfo = ac.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = 5.4;
+    lfoG = ac.createGain();
+    lfoG.gain.setValueAtTime(0, t);
+    lfoG.gain.linearRampToValueAtTime(9, t + Math.min(0.4, gate * 0.5));
+    lfo.connect(lfoG); lfoG.connect(oscs[0].detune);
+    lfo.start(t); lfo.stop(t + gate + 0.06);
+  }
+  const peak = st === 'jazz' ? 0.20 : 0.22;
+  const atk = st === 'jazz' ? 0.03 : 0.01;
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(peak, t + atk);
+  g.gain.linearRampToValueAtTime(peak * 0.72, t + Math.min(gate, atk + 0.12));
+  g.gain.setTargetAtTime(0.0001, t + gate, 0.045);
+  oscs.forEach(o=>{ o.start(t); o.stop(t + gate + 0.25); });
+}
+
+/* ============================================================
+   The band plays a bar
+   ============================================================ */
+function playBar(bar, t0, st, spb){
+  const ch = chordAt(bar, st);
+  const at = b => t0 + sw(b, st) * spb;
+
+  if(st === 'pop'){
+    for(let b=0;b<4;b++) kick(at(b), b === 0 ? 0.62 : 0.5);
+    clap(at(1)); clap(at(3));
+    for(let b=0;b<4;b+=0.5) hat(at(b), b % 1 ? 0.075 : 0.045);
+    // bass: root pulse with a lift into the next bar
+    for(let b=0;b<4;b++) bassNote(at(b), freq(ch.root), spb * 0.62, st);
+    bassNote(at(3.5), freq(ch.root) * 2, spb * 0.3, st);
+    // chords: soft pad plus offbeat stabs
+    chordHit(t0, ch.notes, spb * 3.6, st, 0.075);
+    [0.5, 1.5, 2.5, 3.5].forEach(b=> chordHit(at(b), ch.notes, spb * 0.42, st, 0.10));
+  } else {
+    [0, 1, 1.5, 2, 3, 3.5].forEach(b=> ride(at(b), b % 1 ? 0.09 : 0.13));
+    hat(at(1), 0.07); hat(at(3), 0.07);
+    brush(at(1)); brush(at(3));
+    kick(at(0), 0.16);
+    // walking bass, one note per beat
+    const walk = ch.walk || [ch.root, ch.root, ch.root, ch.root];
+    for(let b=0;b<4;b++) bassNote(at(b), freq(walk[b]), spb * 0.72, st);
+    // comping: a different little rhythm every other bar
+    const pat = (bar % 2) ? [0, 1.5, 3] : [0.5, 2, 3.5];
+    pat.forEach(b=> chordHit(at(b), ch.notes, spb * 1.05, st, 0.13));
+  }
+}
+
+/* ============================================================
+   Scheduler
+   ============================================================ */
+const $ = id => document.getElementById(id);
+let style = 'pop', playing = false, timer = null;
+let barIdx = 0, barTime = 0, endAt = 0;
+const uiQ = [];
+const spb = () => 60 / TEMPO[style];
+
+function scheduleBar(bar, t0, st){
+  const sp = spb();
+  playBar(bar, t0, st, sp);
+  const at = b => t0 + sw(b - bar * 4, st) * sp;
+  // the screen queue is read strictly front-to-back, so a bar's events have to
+  // go in in time order — words first, so a new line is on screen before the
+  // beat that starts it
+  const evs = [];
+  BAR_NOTES[bar].forEach(n=>{
+    const t = at(n.beat);
+    const dur = (sw(n.beat + n.dur - bar * 4, st) - sw(n.beat - bar * 4, st)) * sp;
+    leadNote(t, freq(n.note), dur, st);
+    if(n.text || n.tok === 0) evs.push({ t, line: n.line, tok: n.tok });
+  });
+  for(let b=0;b<4;b++) evs.push({ t: at(bar * 4 + b), beat: bar * 4 + b });
+  evs.sort((a, b)=> a.t - b.t);
+  uiQ.push.apply(uiQ, evs);
+}
+function tick(){
+  if(!playing) return;
+  while(barTime < ac.currentTime + 0.25){
+    if(barIdx >= TOTAL_BARS){
+      endAt = barTime + 2.4;
+      clearInterval(timer); timer = null;
+      return;
+    }
+    scheduleBar(barIdx, barTime, style);
+    barTime += 4 * spb();
+    barIdx++;
+  }
+}
+
+function start(fromBar){
+  ensureAudio();
+  if(ac.state === 'suspended') ac.resume();
+  stop(true);
+  playing = true;
+  barIdx = Math.max(0, fromBar || 0);
+  barTime = ac.currentTime + 0.14;
+  endAt = 0;
+  uiQ.length = 0;
+  $('play').textContent = '⏹ Stop';
+  $('play').classList.add('stop');
+  tick();
+  timer = setInterval(tick, 25);
+  requestAnimationFrame(uiLoop);
+}
+function stop(quiet){
+  playing = false;
+  if(timer){ clearInterval(timer); timer = null; }
+  killSound();
+  if('speechSynthesis' in window) window.speechSynthesis.cancel();
+  uiQ.length = 0;
+  $('play').textContent = '▶️ Play';
+  $('play').classList.remove('stop');
+  [...$('beats').children].forEach(d=>d.classList.remove('on'));
+  if(!quiet){ $('secChip').textContent = 'Ready'; $('bar').style.width = '0'; }
+}
+
+/* ============================================================
+   Karaoke screen
+   ============================================================ */
+let curLine = -1;
+function setStack(n){
+  const cake = $('cake');
+  let html = '<span class="butter">🧈</span>';
+  for(let i=0;i<n;i++) html += '<span>🥞</span>';
+  cake.innerHTML = html;
+}
+function renderLine(li){
+  curLine = li;
+  const ln = LINES[li];
+  $('secChip').textContent = ln.secName;
+  const box = $('lyric');
+  box.innerHTML = '';
+  if(ln.inst){
+    box.innerHTML = '<span class="syl done">🎵 🥞 🎵</span>';
+  } else {
+    ln.toks.forEach((t, i)=>{
+      if(!t.text) return;
+      if(i > 0 && !t.join && box.childNodes.length) box.appendChild(document.createTextNode(' '));
+      const s = document.createElement('span');
+      s.className = 'syl'; s.dataset.tok = i; s.textContent = t.text;
+      box.appendChild(s);
+    });
+  }
+  const nxt = LINES.slice(li + 1).find(l=>!l.inst);
+  $('peek').textContent = nxt ? nxt.words : '';
+  // stack grows through the chorus
+  const inSec = LINES.filter(l=>l.sec === ln.sec).indexOf(ln);
+  setStack(ln.hook ? Math.min(5, 3 + inSec) : 3);
+  // sheet
+  [...$('sheet').querySelectorAll('p')].forEach(p=>p.classList.remove('on'));
+  const p = $('sheet').querySelector('p[data-line="' + li + '"]');
+  if(p){
+    p.classList.add('on');
+    const box2 = $('sheet');
+    box2.scrollTop = p.offsetTop - box2.clientHeight / 2 + p.clientHeight / 2;
+  }
+  if(sayWords && ln.words) speak(ln.words);
+}
+function highlight(tok){
+  if(curLine < 0 || LINES[curLine].inst) return;
+  const box = $('lyric');
+  [...box.querySelectorAll('.syl')].forEach(s=>{
+    const k = parseInt(s.dataset.tok, 10);
+    s.classList.toggle('on', k === tok);
+    s.classList.toggle('done', k < tok);
+  });
+}
+function pop(emoji){
+  const b = document.createElement('b');
+  b.textContent = emoji;
+  b.style.left = (12 + Math.random() * 76) + '%';
+  b.style.setProperty('--spin', (Math.random() * 90 - 45) + 'deg');
+  $('fx').appendChild(b);
+  setTimeout(()=>b.remove(), 1600);
+}
+const TREATS = ['🥞','🫐','🍓','🧈','✨','🍯'];
+
+function uiLoop(){
+  if(!playing) return;
+  const now = ac.currentTime;
+  while(uiQ.length && uiQ[0].t <= now){
+    const e = uiQ.shift();
+    if(e.beat !== undefined){
+      const d = [...$('beats').children];
+      d.forEach((x,i)=> x.classList.toggle('on', i === e.beat % 4));
+      const cake = $('cake');
+      cake.classList.add('pulse');
+      setTimeout(()=>cake.classList.remove('pulse'), 95);
+      $('bar').style.width = Math.min(100, (e.beat / TOTAL_BEATS) * 100) + '%';
+      if(curLine >= 0 && LINES[curLine].hook && e.beat % 4 === 0){
+        pop(TREATS[Math.floor(Math.random() * TREATS.length)]);
+        pop(TREATS[Math.floor(Math.random() * TREATS.length)]);
+      }
+    } else {
+      if(e.line !== curLine) renderLine(e.line);
+      highlight(e.tok);
+      const t = LINES[e.line].toks[e.tok];
+      if(t && /flip/i.test(t.text)){
+        const cake = $('cake');
+        cake.classList.remove('flip'); void cake.offsetWidth; cake.classList.add('flip');
+      }
+    }
+  }
+  if(!timer && endAt && now > endAt){
+    $('bar').style.width = '100%';
+    stop(true);
+    $('secChip').textContent = 'The End 🥞';
+    $('lyric').innerHTML = '<span class="syl done">Thank you for singing! 💛</span>';
+    $('peek').textContent = '';
+    return;
+  }
+  requestAnimationFrame(uiLoop);
+}
+
+/* ============================================================
+   Lyric sheet
+   ============================================================ */
+(function buildSheet(){
+  const box = $('sheet');
+  let lastSec = -1;
+  LINES.forEach((ln, i)=>{
+    if(ln.sec !== lastSec){
+      const h = document.createElement('h3');
+      h.textContent = ln.secName;
+      box.appendChild(h);
+      lastSec = ln.sec;
+    }
+    const p = document.createElement('p');
+    p.dataset.line = i;
+    p.className = ln.inst ? 'inst' : '';
+    p.textContent = ln.inst ? '· · · 🎵 · · ·' : ln.words;
+    p.onclick = ()=> start(Math.floor(ln.beat / 4));
+    box.appendChild(p);
+  });
+})();
+
+/* ============================================================
+   Voice for "words out loud" (shares the site's voice choice)
+   ============================================================ */
+let VOICES = [], chosenVoice = null, sayWords = false;
+const VKEY = 'rm-voice';
+const NICE = ['Samantha','Ava','Allison','Susan','Karen','Serena','Moira','Tessa','Fiona','Nicky','Aaron',
+  'Daniel','Arthur','Google US English','Google UK English Female','Google UK English Male',
+  'Microsoft Aria','Microsoft Jenny','Microsoft Libby','Microsoft Sonia','Microsoft Zira'];
+function vScore(v){
+  let s = 0; const n = v.name;
+  if(/^en/i.test(v.lang)) s += 100;
+  if(/enhanced|premium|natural|neural/i.test(n)) s += 45;
+  if(v.localService) s += 8;
+  const i = NICE.findIndex(x => n.indexOf(x) === 0);
+  if(i >= 0) s += 40 - i;
+  if(/eloquence|compact|novelty|zarvox|trinoids|bells|boing|bubbles|bad news|good news|whisper|deranged|hysterical|cellos|organ|wobble|jester|superstar|bahh|albert/i.test(n)) s -= 100;
+  return s;
+}
+function buildVoices(){
+  const all = window.speechSynthesis.getVoices();
+  const sel = $('voiceSel');
+  if(!all.length){ sel.style.display = 'none'; return; }   // no voices on this device
+  sel.style.display = '';
+  const en = all.filter(v => /^en/i.test(v.lang));
+  VOICES = (en.length ? en : all).slice().sort((a,b) => vScore(b) - vScore(a));
+  const saved = localStorage.getItem(VKEY);
+  chosenVoice = VOICES.find(v => v.name === saved) || VOICES[0] || null;
+  sel.innerHTML = '';
+  VOICES.forEach(v=>{
+    const o = document.createElement('option');
+    o.value = v.name;
+    o.textContent = v.name + (/enhanced|premium|natural|neural/i.test(v.name) ? ' ✨' : '');
+    sel.appendChild(o);
+  });
+  if(chosenVoice) sel.value = chosenVoice.name;
+}
+function speak(text){
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  if(chosenVoice){ u.voice = chosenVoice; u.lang = chosenVoice.lang; }
+  u.rate = style === 'jazz' ? 1.0 : 0.95;
+  u.pitch = 1.15;
+  window.speechSynthesis.speak(u);
+}
+if('speechSynthesis' in window){
+  buildVoices();
+  window.speechSynthesis.onvoiceschanged = buildVoices;
+  $('voiceSel').onchange = e=>{
+    chosenVoice = VOICES.find(v => v.name === e.target.value) || null;
+    if(chosenVoice) localStorage.setItem(VKEY, chosenVoice.name);
+  };
+} else {
+  $('voiceSel').style.display = 'none';
+  $('sing').disabled = true;
+}
+$('sing').onchange = e=>{
+  sayWords = e.target.checked;
+  if(!sayWords && 'speechSynthesis' in window) window.speechSynthesis.cancel();
+};
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+$('play').onclick = ()=> playing ? stop() : start(0);
+
+[...document.querySelectorAll('.tab')].forEach(btn=>{
+  btn.onclick = ()=>{
+    style = btn.dataset.style;
+    document.querySelectorAll('.tab').forEach(b=> b.classList.toggle('on', b === btn));
+    document.body.classList.toggle('jazzy', style === 'jazz');
+    $('styleNote').textContent = BLURB[style];
+    // the new band takes over from the next bar — no need to stop the song
+    if(master) master.gain.setTargetAtTime(TRIM[style], ac.currentTime, 0.08);
+  };
+});
+
+document.addEventListener('keydown', e=>{
+  if(e.code === 'Space'){ e.preventDefault(); playing ? stop() : start(0); }
+});
+
+$('styleNote').textContent = BLURB.pop;
+setStack(3);
+renderLine(0);
+$('lyric').innerHTML = '<span class="syl done">🥞 Press play! 🥞</span>';
+$('secChip').textContent = 'Ready';
+$('peek').textContent = LINES.find(l=>!l.inst).words;
+curLine = -1;   // so the first note of the song draws its line fresh
+</script>
+</body>
+</html>
