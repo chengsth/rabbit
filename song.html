@@ -41,6 +41,8 @@
     box-shadow:0 8px 16px -8px var(--pink2);}
   .tab[data-style="jazz"].on{background:linear-gradient(180deg,var(--lav),var(--lav2));
     box-shadow:0 8px 16px -8px var(--lav2);}
+  .tab[data-style="both"].on{background:linear-gradient(180deg,#f59a2e,#f7b24d);
+    box-shadow:0 8px 16px -8px #f59a2e;}
   .styleNote{text-align:center;font-size:12.5px;color:var(--muted);margin:-4px 0 0;min-height:17px;}
 
   /* ---------- the stage ---------- */
@@ -155,6 +157,7 @@
   <div class="tabs">
     <button class="tab on" data-style="pop">🎤 Pop</button>
     <button class="tab" data-style="jazz">🎷 Jazz</button>
+    <button class="tab" data-style="both">🎵 Both</button>
   </div>
   <p class="styleNote" id="styleNote"></p>
 
@@ -298,13 +301,14 @@ LINES.forEach((ln, li)=>{
 /* ============================================================
    The two bands
    ============================================================ */
-const TEMPO = { pop:112, jazz:132 };
+const TEMPO = { pop:112, jazz:132, both:112 };
 // the jazz band plays softer, so it gets a little more volume — swapping
 // bands mid-song should change the feel, not the loudness
-const TRIM  = { pop:0.75, jazz:0.98 };
+const TRIM  = { pop:0.75, jazz:0.98, both:0.54 };
 const BLURB = {
   pop:  '🎤 Pop band: bright synths, a clap on every 2 and 4, and a big shiny chorus.',
   jazz: '🎷 Jazz band: swinging beat, brushes on the drums, walking bass and seventh chords.',
+  both: '🎵 Both bands: pop and jazz playing together in a musical mix.',
 };
 const CHORDS = {
   pop: [
@@ -535,16 +539,27 @@ const spb = () => 60 / TEMPO[style];
 
 function scheduleBar(bar, t0, st){
   const sp = spb();
-  playBar(bar, t0, st, sp);
-  const at = b => t0 + sw(b - bar * 4, st) * sp;
+  if(st === 'both'){
+    playBar(bar, t0, 'pop', sp);
+    playBar(bar, t0, 'jazz', sp);
+  } else {
+    playBar(bar, t0, st, sp);
+  }
+  const uiStyle = st === 'both' ? 'pop' : st;
+  const at = b => t0 + sw(b - bar * 4, uiStyle) * sp;
   // the screen queue is read strictly front-to-back, so a bar's events have to
   // go in in time order — words first, so a new line is on screen before the
   // beat that starts it
   const evs = [];
   BAR_NOTES[bar].forEach(n=>{
     const t = at(n.beat);
-    const dur = (sw(n.beat + n.dur - bar * 4, st) - sw(n.beat - bar * 4, st)) * sp;
-    leadNote(t, freq(n.note), dur, st);
+    const dur = (sw(n.beat + n.dur - bar * 4, uiStyle) - sw(n.beat - bar * 4, uiStyle)) * sp;
+    if(st === 'both'){
+      leadNote(t, freq(n.note), dur, 'pop');
+      leadNote(t, freq(n.note), dur, 'jazz');
+    } else {
+      leadNote(t, freq(n.note), dur, st);
+    }
     if(n.text || n.tok === 0) evs.push({ t, line: n.line, tok: n.tok });
   });
   for(let b=0;b<4;b++) evs.push({ t: at(bar * 4 + b), beat: bar * 4 + b });
@@ -782,7 +797,7 @@ $('play').onclick = ()=> playing ? stop() : start(0);
   btn.onclick = ()=>{
     style = btn.dataset.style;
     document.querySelectorAll('.tab').forEach(b=> b.classList.toggle('on', b === btn));
-    document.body.classList.toggle('jazzy', style === 'jazz');
+    document.body.classList.toggle('jazzy', style === 'jazz' || style === 'both');
     $('styleNote').textContent = BLURB[style];
     // the new band takes over from the next bar — no need to stop the song
     if(master) master.gain.setTargetAtTime(TRIM[style], ac.currentTime, 0.08);
