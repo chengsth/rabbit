@@ -8,6 +8,7 @@ Open `index.html` and you land on a home page with three things to do:
 | 🎮 **Tower Defense** | `game.html` | Buy guns, place defenders, survive 10 waves. |
 | 🔤 **Picture Word Book** | `picture-book.html` | Six mini word books; tap a picture to hear the word. |
 | 📚 **The 153 Stars** | `chapter-book.html` | A bedtime chapter book in 153 illustrated chapters. |
+| 🥞 **The Pancake Song** | `song.html` | A sing-along song the browser plays — as pop or as jazz. |
 
 Every page has a 🏠 button in the corner to hop back home. It's all plain
 self-contained HTML — no build step, no dependencies, no internet required once
@@ -43,6 +44,30 @@ caves, clouds, and snowfields to gather 153 fallen star-lights.
 - **Turn pages** with the ◀ ▶ buttons, the arrow keys, or a swipe on touch.
 - Your place is **saved automatically** — close the book and pick up where you left off.
 - Optional **Read this chapter aloud** button.
+
+## 🥞 The Pancake Song (`song.html`)
+A sing-along song about making pancakes. Nothing is downloaded and there is no
+audio file — the browser *plays the band itself* with the Web Audio API, so the
+page works offline like everything else here.
+
+The same tune comes with **two arrangements**, and you can swap between them
+whenever you like, even in the middle of the song:
+
+- 🎤 **Pop** — 112 beats a minute, straight eighths, bright synths, a clap on
+  every 2 and 4, and a four-on-the-floor kick drum.
+- 🎷 **Jazz** — 132 beats a minute with a **swung** beat, brushes and a ride
+  cymbal, a walking bass line, and seventh chords instead of plain triads.
+
+While it plays:
+- The words light up **one syllable at a time**, in time with the tune.
+- A stack of pancakes bounces on the beat, grows taller through the chorus, and
+  does a somersault every time the song says *flip*.
+- **Tap any line** in the words underneath to start singing from there.
+- Turn on **🎙️ Words out loud** to have the line read to you as it comes around
+  (it uses the same reading voice you picked in the other books).
+- <kbd>Space</kbd> starts and stops it.
+
+The song is about two and a half minutes long as pop, and a bit over two as jazz.
 
 ## Run it locally
 Double-click `index.html` to open the home page in Chrome (or any browser), then
