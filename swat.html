@@ -109,15 +109,18 @@
 
   <div class="panel">
     <h2 id="zoneName">Sector 1</h2>
-    <p class="hint" id="hint">Clear every creature out of the sector.</p>
+    <p class="hint" id="hint">Clear every creature out of the sector. Just move — you aim and fire by yourself.</p>
     <div class="kit" id="kit"></div>
     <button class="btn ghost on" id="aimbtn">🎯 Auto-aim: On</button>
+    <button class="btn ghost on" id="firebtn">🔥 Auto-fire: On</button>
     <button class="btn ghost" id="pausebtn">⏸️ Pause</button>
     <div class="legend">
-      <b>Move</b> <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or arrows<br>
-      <b>Fire</b> hold the mouse button (or <kbd>Space</kbd>)<br>
+      <b>Move</b> <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or arrows — with the
+      assists on that is all you do, the aiming and shooting happen for you.<br>
+      <b>Touch:</b> drag anywhere on the ground to move.<br>
       <b>Weapons</b> <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd> · <b>Pause</b> <kbd>P</kbd><br>
-      <b>Touch:</b> drag the left half to move, hold the right half to fire.<br>
+      Want to aim yourself? Turn the assists off and hold the mouse button
+      (or <kbd>Space</kbd>) to fire; on touch, the right half of the ground fires.<br>
       Walk over <b>supply crates</b> in the woods for ammo and medkits.
     </div>
   </div>
@@ -149,17 +152,17 @@ function mulberry32(a){ return function(){ a|=0; a=a+0x6D2B79F5|0;
 
 // ---------- difficulty ----------
 const TIERS = [
-  {id:'rookie',  name:'Rookie',  d:0.75, note:'More health, fewer creatures'},
+  {id:'rookie',  name:'Rookie',  d:0.55, note:'More health, fewer creatures'},
   {id:'officer', name:'Officer', d:1.25, note:'A fair fight'},
   {id:'veteran', name:'Veteran', d:2.00, note:'They hit hard and swarm'},
 ];
 // storage can be blocked entirely (private windows, embedded frames) — never let that stop the game
-function loadTier(){ try{ return localStorage.getItem('swat-tier'); }catch(e){ return null; } }
-function saveTier(id){ try{ localStorage.setItem('swat-tier', id); }catch(e){} }
-let tier = TIERS.find(t=>t.id===loadTier()) || TIERS[1];
+function loadPref(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function savePref(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+let tier = TIERS.find(t=>t.id===loadPref('swat-tier')) || TIERS[1];
 let DIFF=1, HP_SCALE=1, SPD_SCALE=1, HURT_SCALE=1, COUNT_SCALE=1;
 function applyTier(t){
-  tier=t; saveTier(t.id);
+  tier=t; savePref('swat-tier', t.id);
   DIFF=t.d;
   HP_SCALE   = 0.6 + 0.4*DIFF;
   SPD_SCALE  = 0.8 + 0.2*DIFF;
@@ -168,8 +171,6 @@ function applyTier(t){
   player.max = Math.round(100*(1.5-0.32*DIFF));
   player.hp  = Math.min(player.hp||player.max, player.max);
   $('diffchip').textContent = t.name;
-  autoAim = t.id==='rookie';
-  syncAim();
 }
 
 // ---------- weapons ----------
@@ -206,13 +207,14 @@ const ZONES = [
 ];
 
 // ---------- state ----------
-const player = {x:W/2, y:H/2, r:15, hp:0, max:100, spd:205, ang:-Math.PI/2, cool:0, inv:0, kick:0, hurt:0};
+const player = {x:W/2, y:H/2, r:15, hp:0, max:100, spd:230, ang:-Math.PI/2, cool:0, inv:0, kick:0, hurt:0};
 let zone=0, wp=0, score=0;
 let creatures=[], shots=[], acid=[], parts=[], texts=[], supplies=[], spawners=[];
 let queue=[], spawnTimer=0, obstacles=[], decor=[], spawnPts=[];
 let phase='title';                        // title | brief | play | done | over | won | paused
 let firing=false, shake=0;
-let autoAim=false;
+let autoAim  = loadPref('swat-autoaim')  !== 'off';   // assists are on unless turned off
+let autoFire = loadPref('swat-autofire') !== 'off';
 const keys=new Set();
 const mouse={x:W/2, y:H/2-200, down:false, seen:false};
 
@@ -246,9 +248,11 @@ function sync(){
   $('zone').textContent=zone+1;
   $('score').textContent=score;
 }
-function syncAim(){
+function syncAssist(){
   $('aimbtn').textContent='🎯 Auto-aim: '+(autoAim?'On':'Off');
   $('aimbtn').classList.toggle('on', autoAim);
+  $('firebtn').textContent='🔥 Auto-fire: '+(autoFire?'On':'Off');
+  $('firebtn').classList.toggle('on', autoFire);
 }
 
 // ---------- input ----------
@@ -283,7 +287,7 @@ cv.addEventListener('touchstart', e=>{
   e.preventDefault();
   for(const t of e.changedTouches){
     const p=toCanvas(t.clientX,t.clientY);
-    if(p.x<W*0.45 && touchMove.id===null){ touchMove.id=t.identifier; touchMove.ox=p.x; touchMove.oy=p.y; touchMove.x=p.x; touchMove.y=p.y; }
+    if(touchMove.id===null && (autoFire || p.x<W*0.45)){ touchMove.id=t.identifier; touchMove.ox=p.x; touchMove.oy=p.y; touchMove.x=p.x; touchMove.y=p.y; }
     else if(touchFire.id===null){ touchFire.id=t.identifier; touchFire.x=p.x; touchFire.y=p.y; firing=true; }
   }
 }, {passive:false});
@@ -304,7 +308,10 @@ function endTouch(e){
 cv.addEventListener('touchend', endTouch);
 cv.addEventListener('touchcancel', endTouch);
 
-$('aimbtn').onclick=()=>{ autoAim=!autoAim; syncAim(); };
+$('aimbtn').onclick=()=>{ autoAim=!autoAim; savePref('swat-autoaim', autoAim?'on':'off'); syncAssist();
+  say(autoAim?'Auto-aim on — you point at the closest creature by yourself.':'Auto-aim off — aim with the mouse.'); };
+$('firebtn').onclick=()=>{ autoFire=!autoFire; savePref('swat-autofire', autoFire?'on':'off'); syncAssist();
+  say(autoFire?'Auto-fire on — you shoot whenever something is in range.':'Auto-fire off — hold the mouse button to shoot.'); };
 $('pausebtn').onclick=togglePause;
 function togglePause(){
   if(phase==='play'){ phase='paused'; showCard('⏸️','Paused','Holding position.','Resume sweep'); }
@@ -440,7 +447,7 @@ function buildZone(){
   spawnTimer=.5;
 
   $('zoneName').textContent=`Sector ${zone+1} — ${ZONES[zone].name}`;
-  say('Clear every creature out of the sector.');
+  say(autoFire?'Just move — you aim and fire by yourself.':'Clear every creature out of the sector.');
   sync(); syncKit();
 }
 
@@ -540,21 +547,19 @@ function update(dt){
   player.x+=mx*player.spd*dt; player.y+=my*player.spd*dt;
   pushOut(player);
 
-  // aim
-  let target=null;
-  if(autoAim){
-    let best=1e9;
-    for(const c of creatures){
-      const d=Math.hypot(c.x-player.x,c.y-player.y);
-      if(d<best){ best=d; target=c; }
-    }
+  // nearest creature — both assists work off it
+  let target=null, tdist=1e9;
+  for(const c of creatures){
+    const d=Math.hypot(c.x-player.x,c.y-player.y);
+    if(d<tdist){ tdist=d; target=c; }
   }
-  if(target) player.ang=Math.atan2(target.y-player.y, target.x-player.x);
+  if(autoAim && target) player.ang=Math.atan2(target.y-player.y, target.x-player.x);
   else if(touchFire.id!==null) player.ang=Math.atan2(touchFire.y-player.y, touchFire.x-player.x);
   else if(mouse.seen) player.ang=Math.atan2(mouse.y-player.y, mouse.x-player.x);
 
   player.cool-=dt;
-  if(firing && player.cool<=0) fire();
+  const autoShot = autoFire && target && tdist<360;      // only when something is actually in range
+  if((firing||autoShot) && player.cool<=0) fire();
 
   // spawning
   if(queue.length){
@@ -688,7 +693,7 @@ function markTier(){ [...diffEl.children].forEach(b=>b.classList.toggle('on', b.
 function titleScreen(){
   phase='title';
   showCard('🛡️','S.W.A.T. — FOREST SWEEP',
-    'Something has infested the woods behind the ranger station. You are the entry team. Sweep all eight sectors and put every creature down. Supply crates are scattered through the trees — walk over them for ammo and medkits.',
+    'Something has infested the woods behind the ranger station. You are the entry team. Sweep all eight sectors and put every creature down. Just walk — your officer aims and fires on their own until you turn the assists off. Supply crates are scattered through the trees, so run over them for ammo and medkits.',
     'Deploy', null, true);
   markTier();
 }
@@ -1053,6 +1058,7 @@ window.addEventListener('error', e=>{
 });
 try{
   applyTier(tier);
+  syncAssist();
   player.hp=player.max;
   zone=0; buildZone();
   syncKit(); titleScreen();
