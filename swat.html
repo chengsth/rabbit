@@ -153,10 +153,13 @@ const TIERS = [
   {id:'officer', name:'Officer', d:1.25, note:'A fair fight'},
   {id:'veteran', name:'Veteran', d:2.00, note:'They hit hard and swarm'},
 ];
-let tier = TIERS.find(t=>t.id===localStorage.getItem('swat-tier')) || TIERS[1];
+// storage can be blocked entirely (private windows, embedded frames) — never let that stop the game
+function loadTier(){ try{ return localStorage.getItem('swat-tier'); }catch(e){ return null; } }
+function saveTier(id){ try{ localStorage.setItem('swat-tier', id); }catch(e){} }
+let tier = TIERS.find(t=>t.id===loadTier()) || TIERS[1];
 let DIFF=1, HP_SCALE=1, SPD_SCALE=1, HURT_SCALE=1, COUNT_SCALE=1;
 function applyTier(t){
-  tier=t; localStorage.setItem('swat-tier', t.id);
+  tier=t; saveTier(t.id);
   DIFF=t.d;
   HP_SCALE   = 0.6 + 0.4*DIFF;
   SPD_SCALE  = 0.8 + 0.2*DIFF;
