@@ -1,11 +1,12 @@
 # 🐰 Rabbit & Memo
 
 A tiny **website** of pastel games and stories starring Rabbit and Memo.
-Open `index.html` and you land on a home page with three things to do:
+Open `index.html` and you land on a home page with a handful of things to do:
 
 | Page | File | What it is |
 |------|------|------------|
 | 🎮 **Tower Defense** | `game.html` | Buy guns, place defenders, survive 10 waves. |
+| 🛡️ **S.W.A.T. Creature Cleanup** | `swat.html` | Walk, aim, and clear the creatures out of eight zones. |
 | 🔤 **Picture Word Book** | `picture-book.html` | Six mini word books; tap a picture to hear the word. |
 | 📚 **The 153 Stars** | `chapter-book.html` | A bedtime chapter book in 153 illustrated chapters. |
 | 🥞 **The Pancake Song** | `song.html` | A sing-along song the browser plays — as pop or as jazz. |
@@ -21,6 +22,29 @@ A cute pastel tower defense game.
 3. Press **Start Wave**. Defenders shoot enemies automatically.
 4. Earn coins for every enemy popped; lose a life if one reaches the base.
 5. Tap a placed defender to sell it and rework your setup.
+
+## 🛡️ S.W.A.T. Creature Cleanup (`swat.html`)
+You are **Officer Rabbit** of the S.W.A.T. squad, and wobbly slime creatures have
+moved into the building. Your mission is to clear every last one of them out of
+all **eight zones**, from The Lobby down to The Nest — and then face the crowned
+**Big One** herself. Creatures pop into a puff of bubbles when you get them.
+
+- **Walk** with <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or the arrow keys.
+- **Shoot** by holding the mouse button (or <kbd>Space</kbd>); <kbd>P</kbd> pauses.
+- **Four guns**, swapped with <kbd>1</kbd>–<kbd>4</kbd>: the Sidearm never runs out,
+  the Scatter fires six pellets, the Rapid is a stream of little darts, and the
+  Zapper punches straight through a whole line of creatures.
+- Popped creatures leave behind **ammo boxes** and sometimes a **health kit**.
+- **Auto-aim** is on by default for younger players — turn it off in the panel for
+  a proper challenge.
+- **On a tablet**, drag anywhere on the left half of the screen to walk and hold
+  the right half to shoot.
+
+Six kinds of creature turn up: green **blobs**, quick purple **zippers**, chunky
+blue **brutes**, orange **spitters** that lob slime from a distance, pink
+**splitters** that break into two splitlings, and the boss, who keeps calling for
+backup. Hide behind the crates — neither your shots nor their slime go through
+them. The game uses the age from the **Choose Age** page too.
 
 ## 🔤 Picture Word Book (`picture-book.html`)
 A picture-and-word book for little learners, with six mini-books you switch
