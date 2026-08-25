@@ -62,6 +62,8 @@
   .btn.ghost{background:var(--panel2);color:var(--text);border:1px solid var(--line);
     margin-top:7px;font-size:13px;padding:9px;letter-spacing:0;}
   .btn.ghost.on{background:#2e4a2b;border-color:var(--green);color:var(--green);}
+  .btn:disabled{opacity:.42;cursor:default;}
+  .btn:disabled:hover{border-color:var(--line);}
   .legend{margin-top:auto;padding-top:12px;font-size:11.5px;color:var(--muted);line-height:1.7;}
   .legend kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;
     padding:1px 5px;font-family:inherit;font-weight:700;font-size:10.5px;color:var(--text);}
@@ -100,6 +102,7 @@
       <span class="title">🛡️ S.W.A.T. · FOREST SWEEP</span>
       <span class="hpwrap">❤️<span class="hpbar"><i id="hpfill"></i></span></span>
       <span class="chip">👾 Left <b id="left">0</b></span>
+      <span class="chip" title="Officers you can post on watchtowers">👮 Squad <b id="squad">2</b></span>
       <span class="chip">🌲 Sector <b id="zone">1</b>/8</span>
       <span class="chip">⭐<b id="score">0</b></span>
       <span class="chip" id="diffchip">Officer</span>
@@ -111,6 +114,7 @@
     <h2 id="zoneName">Sector 1</h2>
     <p class="hint" id="hint">Clear every creature out of the sector. Just move — you aim and fire by yourself.</p>
     <div class="kit" id="kit"></div>
+    <button class="btn ghost" id="postbtn" disabled>👮 Post officer on tower  (E)</button>
     <button class="btn ghost on" id="aimbtn">🎯 Auto-aim: On</button>
     <button class="btn ghost on" id="firebtn">🔥 Auto-fire: On</button>
     <button class="btn ghost" id="pausebtn">⏸️ Pause</button>
@@ -119,6 +123,9 @@
       assists on that is all you do, the aiming and shooting happen for you.<br>
       <b>Touch:</b> drag anywhere on the ground to move.<br>
       <b>Weapons</b> <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd> · <b>Pause</b> <kbd>P</kbd><br>
+      <b>Watchtowers:</b> walk up to one and press <kbd>E</kbd> (or use the button)
+      to post an officer on it. They shoot creatures for you and nothing can reach
+      them up there. Press <kbd>E</kbd> again to bring them down and take them along.<br>
       Want to aim yourself? Turn the assists off and hold the mouse button
       (or <kbd>Space</kbd>) to fire; on touch, the right half of the ground fires.<br>
       Walk over <b>supply crates</b> in the woods for ammo and medkits.
@@ -211,6 +218,9 @@ const player = {x:W/2, y:H/2, r:15, hp:0, max:100, spd:230, ang:-Math.PI/2, cool
 let zone=0, wp=0, score=0;
 let creatures=[], shots=[], acid=[], parts=[], texts=[], supplies=[], spawners=[];
 let queue=[], spawnTimer=0, obstacles=[], decor=[], spawnPts=[];
+let towers=[], squad=2;
+const SQUAD_MAX=5;
+const TOWER={range:250, rate:.55, dmg:2.2, spd:600};
 let phase='title';                        // title | brief | play | done | over | won | paused
 let firing=false, shake=0;
 let autoAim  = loadPref('swat-autoaim')  !== 'off';   // assists are on unless turned off
@@ -242,11 +252,42 @@ function syncKit(){
   });
 }
 function say(t){ $('hint').textContent=t; }
+
+// ---------- squadmates on the watchtowers ----------
+function nearTower(){
+  let best=null, bd=1e9;
+  for(const t of towers){
+    const d=Math.hypot(t.x-player.x, t.y-player.y);
+    if(d < t.r+44 && d < bd){ bd=d; best=t; }
+  }
+  return best;
+}
+function postOrRecall(){
+  const t=nearTower();
+  if(!t){ say('Walk up to a watchtower first, then post an officer on it.'); return; }
+  if(t.manned){ t.manned=false; squad++; say('Officer back with you.'); }
+  else if(squad>0){ t.manned=true; squad--; t.cool=.3;
+    say('Officer posted — they will cover you from up there.'); }
+  else say('No officers left. Recall one from another tower, or clear a sector to get another.');
+  sync();
+}
+let postState='';
+function syncPost(){
+  const t=nearTower();
+  const st = !t ? 'far' : t.manned ? 'recall' : squad>0 ? 'post' : 'none';
+  if(st===postState) return;
+  postState=st;
+  const b=$('postbtn');
+  b.disabled = (st==='far'||st==='none');
+  b.textContent = st==='recall' ? '👮 Bring officer down  (E)' : '👮 Post officer on tower  (E)';
+}
 function sync(){
   $('hpfill').style.width=Math.max(0,player.hp/player.max*100)+'%';
   $('left').textContent=creatures.length+queue.length;
   $('zone').textContent=zone+1;
   $('score').textContent=score;
+  $('squad').textContent=squad;
+  syncPost();
 }
 function syncAssist(){
   $('aimbtn').textContent='🎯 Auto-aim: '+(autoAim?'On':'Off');
@@ -262,6 +303,7 @@ addEventListener('keydown', e=>{
   keys.add(k);
   if(k>='1'&&k<='4') pickWeapon(+k-1);
   if(k==='p') togglePause();
+  if(k==='e') postOrRecall();
   if(k===' ') firing=true;
 });
 addEventListener('keyup', e=>{
@@ -312,6 +354,7 @@ $('aimbtn').onclick=()=>{ autoAim=!autoAim; savePref('swat-autoaim', autoAim?'on
   say(autoAim?'Auto-aim on — you point at the closest creature by yourself.':'Auto-aim off — aim with the mouse.'); };
 $('firebtn').onclick=()=>{ autoFire=!autoFire; savePref('swat-autofire', autoFire?'on':'off'); syncAssist();
   say(autoFire?'Auto-fire on — you shoot whenever something is in range.':'Auto-fire off — hold the mouse button to shoot.'); };
+$('postbtn').onclick=postOrRecall;
 $('pausebtn').onclick=togglePause;
 function togglePause(){
   if(phase==='play'){ phase='paused'; showCard('⏸️','Paused','Holding position.','Resume sweep'); }
@@ -368,6 +411,8 @@ const RIM = [[70,70],[W/2,58],[W-70,70],[58,H/2],[W-58,H/2],[70,H-70],[W/2,H-58]
 
 function buildZone(){
   const R = mulberry32(1337 + zone*7919);
+  squad += towers.filter(t=>t.manned).length;   // posted officers come down and rejoin you
+  towers=[];
   obstacles=[]; decor=[];
   creatures=[]; shots=[]; acid=[]; parts=[]; texts=[]; supplies=[]; spawners=[];
   player.x=W/2; player.y=H/2; player.inv=1.4; player.hurt=0;
@@ -384,6 +429,18 @@ function buildZone(){
       obstacles.push(make(x,y,R)); i++;
     }
   };
+  // ranger watchtowers, sited before the trees so there is always room for them
+  for(const pad of [34,18,6]){
+    for(let guard=0; towers.length<3 && guard<300; guard++){
+      const x=64+R()*(W-128), y=64+R()*(H-128);
+      if(!clearOf(x,y,pad)) continue;
+      if(towers.some(t=>Math.hypot(t.x-x,t.y-y)<190)) continue;
+      const t={shape:'circle', kind:'tower', x, y, r:32, br:22, solid:true,
+               manned:false, cool:0, ang:-Math.PI/2, flash:0, seed:R()};
+      towers.push(t); obstacles.push(t);
+    }
+  }
+
   // trees are the backbone of the forest, then low cover and stacked supplies
   place(7+Math.floor(R()*4), (x,y,r)=>{
     const rad=30+r()*16;
@@ -447,7 +504,8 @@ function buildZone(){
   spawnTimer=.5;
 
   $('zoneName').textContent=`Sector ${zone+1} — ${ZONES[zone].name}`;
-  say(autoFire?'Just move — you aim and fire by yourself.':'Clear every creature out of the sector.');
+  say(autoFire?'Just move — you aim and fire by yourself. Post officers on the towers to help.'
+             :'Clear every creature out of the sector. Post officers on the towers to help.');
   sync(); syncKit();
 }
 
@@ -611,6 +669,28 @@ function update(dt){
     }
   }
 
+  // officers on the towers pick their own targets
+  for(const t of towers){
+    t.flash=Math.max(0,t.flash-dt*6);
+    if(!t.manned) continue;
+    t.cool-=dt;
+    let tg=null, bd=TOWER.range;
+    for(const c of creatures){
+      const d=Math.hypot(c.x-t.x, c.y-t.y);
+      if(d<bd){ bd=d; tg=c; }
+    }
+    if(tg){
+      t.ang=Math.atan2(tg.y-t.y, tg.x-t.x);
+      if(t.cool<=0){
+        t.cool=TOWER.rate; t.flash=1;
+        const d=t.br+12;                       // clear of their own tower
+        shots.push({x:t.x+Math.cos(t.ang)*d, y:t.y+Math.sin(t.ang)*d,
+          vx:Math.cos(t.ang)*TOWER.spd, vy:Math.sin(t.ang)*TOWER.spd,
+          dmg:TOWER.dmg, col:'#8fd0e8', life:1, pierce:false, hit:new Set(), r:3.5});
+      }
+    }
+  }
+
   // player shots
   for(const s of shots){
     s.x+=s.vx*dt; s.y+=s.vy*dt; s.life-=dt;
@@ -693,7 +773,7 @@ function markTier(){ [...diffEl.children].forEach(b=>b.classList.toggle('on', b.
 function titleScreen(){
   phase='title';
   showCard('🛡️','S.W.A.T. — FOREST SWEEP',
-    'Something has infested the woods behind the ranger station. You are the entry team. Sweep all eight sectors and put every creature down. Just walk — your officer aims and fires on their own until you turn the assists off. Supply crates are scattered through the trees, so run over them for ammo and medkits.',
+    'Something has infested the woods behind the ranger station. You are the entry team. Sweep all eight sectors and put every creature down. Just walk — your officer aims and fires on their own until you turn the assists off. Take your squad with you: walk up to any ranger watchtower and post an officer on it to cover that ground for you. Supply crates are scattered through the trees, so run over them for ammo and medkits.',
     'Deploy', null, true);
   markTier();
 }
@@ -723,12 +803,16 @@ function endZone(win){
     ammo[2]=Math.min(WEAPONS[2].cap,ammo[2]+30);
     ammo[3]=Math.min(WEAPONS[3].cap,ammo[3]+3);
     player.hp=Math.min(player.max, player.hp+30);
+    const grew = squad+towers.filter(t=>t.manned).length < SQUAD_MAX;
+    if(grew) squad++;
     syncKit(); sync();
-    showCard('✅','Sector clear',`+${bonus} points. Resupply drop received, +30 health. Next up: ${ZONES[zone+1].name}.`,'Next sector →');
+    showCard('✅','Sector clear',`+${bonus} points. Resupply drop received, +30 health.`
+      + (grew?' Another officer joined your squad.':'')
+      + ` Next up: ${ZONES[zone+1].name}.`,'Next sector →');
   }
 }
 $('ovBtn').onclick=()=>{
-  if(phase==='title'){ zone=0; score=0; player.hp=player.max; briefing(); }
+  if(phase==='title'){ zone=0; score=0; squad=2; towers=[]; player.hp=player.max; briefing(); }
   else if(phase==='brief'||phase==='paused'){ hideCard(); phase='play'; last=performance.now(); }
   else if(phase==='done'){ zone++; briefing(); }
   else if(phase==='over'){ player.hp=player.max; hideCard(); buildZone(); phase='play'; last=performance.now(); }
@@ -746,6 +830,7 @@ function draw(){
   for(const b of obstacles) if(b.kind==='barrel') drawBarrel(b);
   for(const b of obstacles) if(b.kind==='bush')   drawBush(b);
   for(const b of obstacles) if(b.kind==='tree')   drawTree(b);
+  for(const t of towers) drawTower(t);
   for(const p of supplies) drawSupply(p);
   drawTorch();
   for(const s of spawners) drawSpawner(s);
@@ -899,6 +984,71 @@ function drawBarrel(b){
   ctx.fillStyle='rgba(255,255,255,.14)';
   ctx.beginPath(); ctx.arc(b.x-b.r*.3,b.y-b.r*.3,b.r*.28,0,TAU); ctx.fill();
 }
+function drawTower(t){
+  const near = nearTower()===t, d=t.r*.72;
+  // sits high off the ground, so the shadow is thrown well clear of it
+  ctx.fillStyle='rgba(10,20,10,.34)';
+  ctx.beginPath(); ctx.ellipse(t.x+12,t.y+t.r*.86,t.r*.9,t.r*.4,0,0,TAU); ctx.fill();
+  // four corner posts, outside the deck so the frame reads from above
+  ctx.fillStyle='#4a3a26'; ctx.strokeStyle='#33281a'; ctx.lineWidth=2;
+  for(let i=0;i<4;i++){
+    const px=t.x+(i%2?d:-d), py=t.y+(i<2?-d:d);
+    ctx.beginPath(); ctx.arc(px,py,6,0,TAU); ctx.fill(); ctx.stroke();
+  }
+  // ladder down the near side
+  ctx.fillStyle='#6b5236'; ctx.strokeStyle='#4e3b26';
+  roundRect(t.x-9,t.y+d-2,18,20,3); ctx.fill(); ctx.stroke();
+  ctx.strokeStyle='#8a6c47'; ctx.lineWidth=2;
+  for(let i=1;i<4;i++){ const ry=t.y+d-2+20*i/4;
+    ctx.beginPath(); ctx.moveTo(t.x-7,ry); ctx.lineTo(t.x+7,ry); ctx.stroke(); }
+  // weathered grey deck — deliberately not the warm brown of the supply crates
+  ctx.fillStyle='#9a9276'; ctx.strokeStyle='#5f5940'; ctx.lineWidth=3;
+  roundRect(t.x-d,t.y-d,d*2,d*2,5); ctx.fill(); ctx.stroke();
+  ctx.strokeStyle='rgba(80,74,52,.75)'; ctx.lineWidth=1.5;
+  for(let i=1;i<5;i++){ const o=-d+d*2*i/5;
+    ctx.beginPath(); ctx.moveTo(t.x+o,t.y-d+2); ctx.lineTo(t.x+o,t.y+d-2); ctx.stroke(); }
+  ctx.strokeStyle='#b6ad8c'; ctx.lineWidth=2.5;         // railing highlight
+  roundRect(t.x-d+4,t.y-d+4,d*2-8,d*2-8,4); ctx.stroke();
+  // pennant, so a tower is obvious at a glance across the sector
+  ctx.strokeStyle='#3a3222'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(t.x+d,t.y-d); ctx.lineTo(t.x+d+3,t.y-d-16); ctx.stroke();
+  ctx.fillStyle= t.manned ? '#7dc47d' : '#e8a33d';
+  ctx.beginPath(); ctx.moveTo(t.x+d+3,t.y-d-16); ctx.lineTo(t.x+d+19,t.y-d-11);
+  ctx.lineTo(t.x+d+3,t.y-d-6); ctx.closePath(); ctx.fill();
+
+  if(t.manned){
+    // the officer up top, tracking whatever they are shooting at
+    ctx.save(); ctx.translate(t.x,t.y); ctx.rotate(t.ang+Math.PI/2);
+    ctx.fillStyle='#34445a'; ctx.strokeStyle='#212c3c'; ctx.lineWidth=2;
+    roundRect(-9,-6,18,16,6); ctx.fill(); ctx.stroke();
+    ctx.fillStyle='#4b525c'; ctx.strokeStyle='#333941'; ctx.lineWidth=1.4;
+    roundRect(-3,-23,6,17,2); ctx.fill(); ctx.stroke();                  // rifle
+    ctx.fillStyle='#28323f'; ctx.strokeStyle='#1a222c'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(0,-3,7.5,0,TAU); ctx.fill(); ctx.stroke();  // helmet
+    ctx.fillStyle='#7fd0e8'; roundRect(-6,-9,12,5,2.5); ctx.fill();      // goggles
+    if(t.flash>.45){
+      ctx.fillStyle='rgba(255,226,150,.92)';
+      ctx.beginPath(); ctx.moveTo(-7,-23); ctx.lineTo(0,-33); ctx.lineTo(7,-23); ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
+  } else {
+    // empty post: an amber hatch marker you can pick out from a distance
+    ctx.fillStyle='rgba(232,163,61,.22)';
+    ctx.beginPath(); ctx.arc(t.x,t.y,d*.62,0,TAU); ctx.fill();
+    ctx.strokeStyle='#e8a33d'; ctx.lineWidth=3; ctx.lineCap='round';
+    ctx.beginPath();
+    ctx.moveTo(t.x-7,t.y); ctx.lineTo(t.x+7,t.y);
+    ctx.moveTo(t.x,t.y-7); ctx.lineTo(t.x,t.y+7); ctx.stroke();
+  }
+  if(near && phase==='play'){
+    const pulse=.55+.45*Math.sin(performance.now()/220);
+    ctx.strokeStyle=`rgba(232,163,61,${pulse})`; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.arc(t.x,t.y,t.r+8,0,TAU); ctx.stroke();
+    ctx.fillStyle='#e8a33d'; ctx.font='800 13px ui-sans-serif, system-ui, sans-serif'; ctx.textAlign='center';
+    ctx.fillText(t.manned?'E — bring down':(squad>0?'E — post officer':'no officers left'), t.x, t.y-t.r-16);
+  }
+}
+
 function drawSupply(p){
   const bob=Math.sin(p.t*3+p.x)*2;
   const y=p.y+bob;
