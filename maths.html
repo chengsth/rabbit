@@ -189,6 +189,17 @@
       <button class="chip" data-mode="mul">✖️ Times</button>
       <button class="chip" data-mode="div">➗ Sharing</button>
     </div>
+
+    <h2>How hard?</h2>
+    <p class="hint">This sits on top of your age. Hard and Extreme throw in missing-number
+      puzzles, three-number sums and wrong answers that crowd right up to the right one.</p>
+    <div class="chips" id="hards">
+      <button class="chip" data-hard="0">🍼 Gentle</button>
+      <button class="chip" data-hard="1">🙂 Normal</button>
+      <button class="chip" data-hard="2">🔥 Hard</button>
+      <button class="chip" data-hard="3">💀 Extreme</button>
+    </div>
+
     <p class="center"><button class="btn" id="startBtn">Start 🎈</button></p>
     <p class="startfoot">
       You are playing as <b id="ageTxt">age 8</b> — <span id="tierTxt">🌱 Easy</span>.
@@ -274,8 +285,19 @@ let correctCount=0, tries=0, running=false, question=null;
 let balloons=[], lastT=0, raf=0;
 let resolving=false;   // true between questions, so late taps don't count
 
-/* how hard right now: age difficulty, ramped up by the level */
-function power(){ return DIFF * (1 + (level-1)*0.12); }
+/* extra challenge chosen on the start screen, on top of the age */
+const HARD_KEY = 'rm-maths-hard';
+const HARDS = [
+  {mul:0.70, label:'🍼 Gentle'},
+  {mul:1.00, label:'🙂 Normal'},
+  {mul:1.55, label:'🔥 Hard'},
+  {mul:2.20, label:'💀 Extreme'}
+];
+let HARD = parseInt(localStorage.getItem(HARD_KEY), 10);
+if(isNaN(HARD) || HARD<0 || HARD>3) HARD = 1;
+
+/* how hard right now: age × extra challenge, ramped up by the level */
+function power(){ return DIFF * HARDS[HARD].mul * (1 + (level-1)*0.18); }
 
 /* ---------- sound (made by the browser, no files) ---------- */
 let actx=null, sndOn=true;
@@ -321,7 +343,7 @@ const WORD = {'+':'plus','−':'take away','×':'times','÷':'shared by'};
 function sayQuestion(q){
   if(!sayOn || !('speechSynthesis' in window)) return;
   speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(`${q.a} ${WORD[q.op]} ${q.b}?`);
+  const u = new SpeechSynthesisUtterance(q.say);
   if(voice){ u.voice = voice; u.lang = voice.lang; }
   u.rate = 0.9; u.pitch = 1.15;
   speechSynthesis.speak(u);
@@ -331,8 +353,8 @@ function sayQuestion(q){
 function opsAllowed(){
   if(mode!=='mix') return [mode];
   const P = power(), list = ['add','sub'];
-  if(P >= 0.85) list.push('mul');
-  if(P >= 1.25) list.push('div');
+  if(P >= 0.80) list.push('mul');
+  if(P >= 1.15) list.push('div');
   return list;
 }
 function makeQuestion(){
@@ -341,31 +363,54 @@ function makeQuestion(){
   const kind = ops[rnd(ops.length)];
 
   // how big the numbers get
-  let R = Math.max(3, Math.round(2 + P*11));           // adding / taking away
-  let T = Math.min(20, Math.max(2, Math.round(1 + P*4.5)));  // times / sharing tables
-  if(AGE<=5){ R = Math.min(R, 3+level); T = Math.min(T, 2+Math.floor(level/2)); }
+  let R = Math.max(3, Math.round(2 + P*13));                 // adding / taking away
+  let T = Math.min(24, Math.max(2, Math.round(1 + P*5.5)));  // times / sharing tables
+  if(AGE<=5 && HARD<=1){ R = Math.min(R, 3+level); T = Math.min(T, 2+Math.floor(level/2)); }
 
-  let a,b,op,answer;
+  // a ? b = out
+  let a,b,op,out;
   if(kind==='add'){
-    op='+'; a=between(1,R); b=between(1,R); answer=a+b;
+    op='+'; a=between(1,R); b=between(1,R); out=a+b;
   }else if(kind==='sub'){
-    op='−'; a=between(2,Math.round(R*1.5)); b=between(1,a); answer=a-b;
+    op='−'; a=between(2,Math.round(R*1.5)); b=between(1,a); out=a-b;
   }else if(kind==='mul'){
-    op='×'; a=between(2,T); b=between(2,T); answer=a*b;
+    op='×'; a=between(2,T); b=between(2,T); out=a*b;
   }else{
-    op='÷'; b=between(2,T); answer=between(2,T); a=b*answer;
+    op='÷'; b=between(2,T); out=between(2,T); a=b*out;
   }
-  return {a,b,op,answer,P};
+
+  // three numbers at once, once plain sums stop being a challenge
+  if(P>=1.45 && op==='+' && Math.random()<0.25){
+    const c = between(1,R);
+    return {form:'triple', a, b, c, op, out:a+b+c, answer:a+b+c, P,
+      html:`${a} + ${b} + ${c} = <span class="q">?</span>`,
+      say:`${a} plus ${b} plus ${c}?`};
+  }
+  // the missing number: you have to work backwards
+  if(P>=1.0 && Math.random()<0.4){
+    return {form:'missing', a, b, c:null, op, out, answer:b, P,
+      html:`${a} ${op} <span class="q">?</span> = ${out}`,
+      say:`${a} ${WORD[op]} what makes ${out}?`};
+  }
+  return {form:'basic', a, b, c:null, op, out, answer:out, P,
+    html:`${a} ${op} ${b} = <span class="q">?</span>`,
+    say:`${a} ${WORD[op]} ${b}?`};
 }
 
 /* three wrong answers that look tempting but are clearly wrong */
 function wrongOnes(q){
   const set = new Set(), add = v => { if(Number.isInteger(v) && v>=0 && v!==q.answer) set.add(v); };
   add(q.answer+1); add(q.answer-1); add(q.answer+2); add(q.answer-2);
-  if(q.op==='+'){ add(q.a+q.b+10); if(q.a!==q.b) add(Math.abs(q.a-q.b)); }
-  if(q.op==='−'){ add(q.a+q.b); add(q.answer+10); }
-  if(q.op==='×'){ add(q.answer+q.a); add(q.answer-q.b); add(q.a+q.b); }
-  if(q.op==='÷'){ add(q.a-q.b); add(q.b); add(q.answer+q.b); }
+  if(q.P >= 1.6){
+    // hard enough that the wrong answers all crowd around the right one
+    add(q.answer+3); add(q.answer-3); add(q.answer+4); add(q.answer-4);
+  }else if(q.form==='basic'){
+    // gentler levels also offer a "wrong method" answer, which is good to spot
+    if(q.op==='+'){ add(q.a+q.b+10); if(q.a!==q.b) add(Math.abs(q.a-q.b)); }
+    if(q.op==='−'){ add(q.a+q.b); add(q.answer+10); }
+    if(q.op==='×'){ add(q.answer+q.a); add(q.answer-q.b); add(q.a+q.b); }
+    if(q.op==='÷'){ add(q.a-q.b); add(q.b); add(q.answer+q.b); }
+  }
   let guard=0;
   while(set.size<3 && guard++<80) add(q.answer + between(-5,5));
   while(set.size<3 && guard++<160) add(between(0, q.answer+7));
@@ -375,7 +420,7 @@ function wrongOnes(q){
 /* the little picture under the sum — only while the numbers are small */
 function drawDots(q){
   const box = $('dots');
-  const small = q.P < 1.05;
+  const small = q.P < 1.05 && q.form === 'basic';
   if(!small){ box.innerHTML=''; return; }
   const rep = (n,ch,cls='') => `<span class="${cls}">${ch.repeat(n)}</span>`;
   if(q.op==='+' && q.a<=10 && q.b<=10){
@@ -409,7 +454,7 @@ function nextQuestion(){
   clearField();
   resolving = false;
   question = makeQuestion();
-  $('sum').innerHTML = `${question.a} ${question.op} ${question.b} = <span class="q">?</span>`;
+  $('sum').innerHTML = question.html;
   drawDots(question);
   sayQuestion(question);
 
@@ -417,7 +462,7 @@ function nextQuestion(){
   const lanes = shuffle([...LANES]);
   const field = $('field');
   const h = field.clientHeight;
-  const cross = Math.max(4.2, 19 - power()*5.4);        // seconds to float all the way up
+  const cross = Math.max(3.0, 17 - power()*5.6);        // seconds to float all the way up
   vals.forEach((v,i)=>{
     const el = document.createElement('button');
     el.className = 'balloon';
@@ -506,7 +551,7 @@ function popBalloon(b){
     sfx.good(streak);
     if(streak>0 && streak%3===0) banner(`${'🔥'.repeat(Math.min(streak/3,3))} ${streak} in a row!`, `+${Math.min(streak,10)*2} bonus`);
     paint();
-    const levelUp = correctCount % 5 === 0;
+    const levelUp = correctCount % 4 === 0;
     if(levelUp){ level++; sfx.up(); banner(`⭐ Level ${level}!`, 'The balloons float faster now'); paint(); }
     setTimeout(nextQuestion, levelUp ? 1150 : 480);
   }else{
@@ -523,7 +568,7 @@ function missed(){
   tries++;
   sfx.miss(); cheer(false);
   streak = 0;
-  loseHeart(`It floated away! ${question.a} ${question.op} ${question.b} = ${question.answer}`);
+  loseHeart(`It floated away — the answer was ${question.answer}`);
   if(hearts>0) setTimeout(nextQuestion, 1400);
 }
 function loseHeart(why){
@@ -577,6 +622,12 @@ $('modes').onclick = e=>{
   mode = b.dataset.mode;
   [...$('modes').children].forEach(c=>c.classList.toggle('on', c===b));
 };
+$('hards').onclick = e=>{
+  const b = e.target.closest('.chip'); if(!b) return;
+  HARD = +b.dataset.hard;
+  localStorage.setItem(HARD_KEY, HARD);
+  refreshStart();
+};
 $('startBtn').onclick = ()=>{ audio(); startGame(); };
 $('againBtn').onclick = startGame;
 $('backBtn').onclick  = ()=>{ $('overCard').hidden = true; $('startCard').hidden = false; showBest(); };
@@ -612,9 +663,16 @@ document.addEventListener('visibilitychange', ()=>{
 function showBest(){
   $('bestTxt').textContent = best ? `Your best score so far: ${best} 🏆` : 'No score yet — pop some balloons!';
 }
+function refreshStart(){
+  $('tierTxt').textContent = `${tierOf(AGE)} · ${HARDS[HARD].label}`;
+  [...$('hards').children].forEach(c=>c.classList.toggle('on', +c.dataset.hard===HARD));
+  $('modeHint').textContent = (DIFF*HARDS[HARD].mul < 0.80)
+    ? 'Choose what you want to practise. Times and sharing sums unlock as you climb the levels.'
+    : 'Choose what you want to practise, then start popping.';
+}
 (function init(){
   $('ageTxt').textContent = 'age ' + AGE;
-  $('tierTxt').textContent = tierOf(AGE);
+  refreshStart();
   showBest();
   // little ones get the sums read out loud from the start
   const savedSay = localStorage.getItem('rm-maths-say');
@@ -628,8 +686,6 @@ function showBest(){
     c.style.left = l+'%'; c.style.top = t+'%';
     field.appendChild(c);
   });
-  if(mode==='mix' && DIFF < 0.85)
-    $('modeHint').textContent = 'Choose what you want to practise. Times and sharing sums unlock as you climb the levels.';
 })();
 </script>
 </body>

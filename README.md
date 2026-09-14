@@ -30,10 +30,17 @@ before it sails off the sky.
 
 - Pick what to practise: **🎲 Mix**, **➕ Adding**, **➖ Taking away**, **✖️ Times**
   or **➗ Sharing**.
+- Pick **how hard** you want it: **🍼 Gentle**, **🙂 Normal**, **🔥 Hard** or
+  **💀 Extreme**. This sits on top of your age, so you can crank the game up
+  without pretending to be older, and your choice is remembered.
 - You have **three hearts**. A wrong pop costs one, and so does letting the right
   balloon escape — but the sum stays up so you can try again.
-- Every 5 right answers is a **new level**: bigger numbers and faster balloons.
+- Every 4 right answers is a **new level**: bigger numbers and faster balloons.
   In Mix, times sums join in once you get going, and sharing sums after that.
+- Once the plain sums stop being a challenge, harder shapes appear: **missing
+  number** puzzles like `7 + ? = 12` that you have to work backwards, and
+  **three-number** sums like `4 + 5 + 2`. Higher up, the wrong answers stop being
+  obvious and crowd in right next to the right one.
 - A **streak** of right answers in a row is worth bonus points, and your best
   score is saved.
 - For little ones the sum is also drawn in **carrots, strawberries and flowers**
@@ -42,7 +49,10 @@ before it sails off the sky.
 
 The sums start where the **🎂 Choose Age** page says they should — age 5 gets
 small adding and taking away, age 45 gets times tables, age 100 gets big numbers
-fast.
+fast — and the **How hard?** setting multiplies that. Age 8 on Normal starts with
+sums to about 10 and a leisurely 13 seconds a balloon; the same age on Extreme
+starts with times and sharing sums and 9 seconds, and by level 10 you are down to
+under 8 seconds.
 
 ## 🔤 Picture Word Book (`picture-book.html`)
 A picture-and-word book for little learners, with six mini-books you switch
