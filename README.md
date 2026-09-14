@@ -6,6 +6,7 @@ Open `index.html` and you land on a home page with three things to do:
 | Page | File | What it is |
 |------|------|------------|
 | 🎮 **Tower Defense** | `game.html` | Buy guns, place defenders, survive 10 waves. |
+| 🎈 **Number Balloons** | `maths.html` | Pop the balloon with the right answer to the sum. |
 | 🔤 **Picture Word Book** | `picture-book.html` | Six mini word books; tap a picture to hear the word. |
 | 📚 **The 153 Stars** | `chapter-book.html` | A bedtime chapter book in 153 illustrated chapters. |
 | 🥞 **The Pancake Song** | `song.html` | A sing-along song the browser plays — as pop or as jazz. |
@@ -21,6 +22,27 @@ A cute pastel tower defense game.
 3. Press **Start Wave**. Defenders shoot enemies automatically.
 4. Earn coins for every enemy popped; lose a life if one reaches the base.
 5. Tap a placed defender to sell it and rework your setup.
+
+## 🎈 Number Balloons (`maths.html`)
+A maths game where every answer floats by on a balloon. A sum appears at the top,
+four balloons drift up from the grass, and you pop the one with the right answer
+before it sails off the sky.
+
+- Pick what to practise: **🎲 Mix**, **➕ Adding**, **➖ Taking away**, **✖️ Times**
+  or **➗ Sharing**.
+- You have **three hearts**. A wrong pop costs one, and so does letting the right
+  balloon escape — but the sum stays up so you can try again.
+- Every 5 right answers is a **new level**: bigger numbers and faster balloons.
+  In Mix, times sums join in once you get going, and sharing sums after that.
+- A **streak** of right answers in a row is worth bonus points, and your best
+  score is saved.
+- For little ones the sum is also drawn in **carrots, strawberries and flowers**
+  to count, and 🗣️ reads the sum aloud (on by default for ages 7 and under).
+- Tap a balloon, or press <kbd>1</kbd>–<kbd>4</kbd> for the balloons left to right.
+
+The sums start where the **🎂 Choose Age** page says they should — age 5 gets
+small adding and taking away, age 45 gets times tables, age 100 gets big numbers
+fast.
 
 ## 🔤 Picture Word Book (`picture-book.html`)
 A picture-and-word book for little learners, with six mini-books you switch
