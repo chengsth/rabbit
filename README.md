@@ -1,12 +1,13 @@
 # 🐰 Rabbit & Memo
 
 A tiny **website** of pastel games and stories starring Rabbit and Memo.
-Open `index.html` and you land on a home page with three things to do:
+Open `index.html` and you land on a home page that **plays Number Balloons right
+there in the main panel**, with everything else a click away:
 
 | Page | File | What it is |
 |------|------|------------|
 | 🎮 **Tower Defense** | `game.html` | Buy guns, place defenders, survive 10 waves. |
-| 🎈 **Number Balloons** | `maths.html` | Pop the balloon with the right answer to the sum. |
+| 🎈 **Number Balloons** | `maths.html` | Pop the balloon with the right answer to the sum. Played on the home page too. |
 | 🔤 **Picture Word Book** | `picture-book.html` | Six mini word books; tap a picture to hear the word. |
 | 📚 **The 153 Stars** | `chapter-book.html` | A bedtime chapter book in 153 illustrated chapters. |
 | 🥞 **The Pancake Song** | `song.html` | A sing-along song the browser plays — as pop or as jazz. |
@@ -26,7 +27,10 @@ A cute pastel tower defense game.
 ## 🎈 Number Balloons (`maths.html`)
 A maths game where every answer floats by on a balloon. A sum appears at the top,
 four balloons drift up from the grass, and you pop the one with the right answer
-before it sails off the sky.
+before it sails off the sky. It is **embedded in the home page** so you can play
+without clicking through, and the same file also stands alone as its own page —
+when it detects that it is inside a frame it hides its title and 🏠 button so it
+sits neatly in the panel.
 
 - Pick what to practise: **🎲 Mix**, **➕ Adding**, **➖ Taking away**, **✖️ Times**
   or **➗ Sharing**.

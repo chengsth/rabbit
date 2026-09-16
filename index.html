@@ -44,9 +44,9 @@
   }
 
   /* ---------- hero ---------- */
-  .hero{text-align:center;margin-bottom:26px;}
-  .mascots{font-size:60px;line-height:1;filter:drop-shadow(0 6px 8px rgba(180,120,160,.35));}
-  .hero h1{margin:6px 0 4px;font-size:40px;font-weight:800;color:var(--pink2);letter-spacing:.3px;}
+  .hero{text-align:center;margin-bottom:12px;}
+  .mascots{font-size:46px;line-height:1;filter:drop-shadow(0 6px 8px rgba(180,120,160,.35));}
+  .hero h1{margin:4px 0 4px;font-size:32px;font-weight:800;color:var(--pink2);letter-spacing:.3px;}
   .hero p{margin:0;font-size:17px;color:var(--muted);}
 
   /* ---------- cards ---------- */
@@ -68,18 +68,30 @@
   .card.book3 .badge{background:#fff0d6;}
   .card.book4 .badge{background:#ffe1ec;}
   .card.book5 .badge{background:#dff3f6;}
-  .card.book6 .badge{background:#e6edff;}
   .card.book2 .go{background:linear-gradient(180deg,var(--lav),var(--lav2));box-shadow:0 9px 18px -8px var(--lav2);}
   .card.book3 .go{background:linear-gradient(180deg,var(--mint),#6fc389);box-shadow:0 9px 18px -8px #6fc389;}
   .card.book4 .go{background:linear-gradient(180deg,var(--amber),#f59a2e);box-shadow:0 9px 18px -8px #f59a2e;}
   .card.book5 .go{background:linear-gradient(180deg,#8fd3e8,#57b4d4);box-shadow:0 9px 18px -8px #57b4d4;}
-  .card.book6 .go{background:linear-gradient(180deg,#9db2f2,#6d84e0);box-shadow:0 9px 18px -8px #6d84e0;}
+
+  /* ---------- the game, played right here ---------- */
+  .panel{background:var(--cream);border-radius:28px;padding:14px;
+    border:3px solid rgba(255,255,255,.7);box-shadow:0 20px 44px -22px rgba(180,120,160,.55);
+    display:flex;flex-direction:column;gap:11px;}
+  .panel-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding:2px 6px 0;}
+  .panel-head h2{margin:0;margin-right:auto;font-size:21px;font-weight:800;color:var(--pink2);}
+  .panel-head .tag{font-size:13.5px;color:var(--muted);}
+  .panel-head a{text-decoration:none;font-weight:800;font-size:14px;color:var(--lav2);white-space:nowrap;}
+  .panel-head a:hover{text-decoration:underline;}
+  .stage{width:100%;display:block;border:none;border-radius:20px;background:#f4e2f7;
+    height:clamp(560px,76vh,740px);}
+
+  .more{margin:34px 0 -4px;text-align:center;font-size:18px;font-weight:800;color:var(--muted);}
 
   .foot{text-align:center;margin-top:26px;font-size:13px;color:var(--muted);line-height:1.5;}
 
   @media(max-width:760px){
     .cards{grid-template-columns:1fr;}
-    .hero h1{font-size:32px;} .mascots{font-size:50px;}
+    .hero h1{font-size:27px;} .mascots{font-size:40px;}
   }
 </style>
 </head>
@@ -103,18 +115,22 @@
     <p>A cozy little corner of games and stories. Pick something to play or read!</p>
   </div>
 
+  <section class="panel">
+    <div class="panel-head">
+      <h2>🎈 Number Balloons</h2>
+      <span class="tag">Pop the right answer!</span>
+      <a href="maths.html">Open its own page →</a>
+    </div>
+    <iframe class="stage" src="maths.html" title="Number Balloons — a maths game"></iframe>
+  </section>
+
+  <h2 class="more">More to do</h2>
+
   <div class="cards">
     <a class="card book1" href="game.html">
       <div class="badge">🎮</div>
       <h2>Tower Defense</h2>
       <p>Buy guns, place Rabbit and Memo on the pads, and stop the enemies before they reach your base. Survive 10 waves to win!</p>
-      <span class="go">Play →</span>
-    </a>
-
-    <a class="card book6" href="maths.html">
-      <div class="badge">🎈</div>
-      <h2>Number Balloons</h2>
-      <p>Sums float past on balloons — pop the one with the right answer before it drifts away. Adding, taking away, times and sharing.</p>
       <span class="go">Play →</span>
     </a>
 
