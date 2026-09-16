@@ -123,9 +123,10 @@
       assists on that is all you do, the aiming and shooting happen for you.<br>
       <b>Touch:</b> drag anywhere on the ground to move.<br>
       <b>Weapons</b> <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd> · <b>Pause</b> <kbd>P</kbd><br>
-      <b>Watchtowers:</b> walk up to one and press <kbd>E</kbd> (or use the button)
-      to post an officer on it. They shoot creatures for you and nothing can reach
-      them up there. Press <kbd>E</kbd> again to bring them down and take them along.<br>
+      <b>Watchtowers:</b> <b>tap or click any tower</b> to send an officer up it —
+      you do not have to walk over, and no keyboard is needed. Tap it again to bring
+      them back down. They shoot creatures for you and nothing can reach them up there.
+      The button above does the same, and <kbd>E</kbd> works too.<br>
       Want to aim yourself? Turn the assists off and hold the mouse button
       (or <kbd>Space</kbd>) to fire; on touch, the right half of the ground fires.<br>
       Walk over <b>supply crates</b> in the woods for ammo and medkits.
@@ -262,24 +263,33 @@ function nearTower(){
   }
   return best;
 }
-function postOrRecall(){
-  const t=nearTower();
-  if(!t){ say('Walk up to a watchtower first, then post an officer on it.'); return; }
+function nearestEmptyTower(){
+  let best=null, bd=1e9;
+  for(const t of towers){
+    if(t.manned) continue;
+    const d=Math.hypot(t.x-player.x, t.y-player.y);
+    if(d<bd){ bd=d; best=t; }
+  }
+  return best;
+}
+function postOrRecall(t){
+  if(!t || !towers.includes(t)) t = nearTower() || nearestEmptyTower();
+  if(!t){ say('Every tower already has an officer on it.'); return; }
   if(t.manned){ t.manned=false; squad++; say('Officer back with you.'); }
   else if(squad>0){ t.manned=true; squad--; t.cool=.3;
-    say('Officer posted — they will cover you from up there.'); }
-  else say('No officers left. Recall one from another tower, or clear a sector to get another.');
+    say('Officer posted — they will cover that ground for you.'); }
+  else say('No officers left. Tap a tower that already has one to bring them back down.');
   sync();
 }
 let postState='';
 function syncPost(){
-  const t=nearTower();
-  const st = !t ? 'far' : t.manned ? 'recall' : squad>0 ? 'post' : 'none';
+  const near=nearTower();
+  const st = near&&near.manned ? 'recall' : squad<=0 ? 'none' : nearestEmptyTower() ? 'post' : 'full';
   if(st===postState) return;
   postState=st;
   const b=$('postbtn');
-  b.disabled = (st==='far'||st==='none');
-  b.textContent = st==='recall' ? '👮 Bring officer down  (E)' : '👮 Post officer on tower  (E)';
+  b.disabled = (st==='none'||st==='full');
+  b.textContent = st==='recall' ? '👮 Bring this officer down' : '👮 Post officer on a tower';
 }
 function sync(){
   $('hpfill').style.width=Math.max(0,player.hp/player.max*100)+'%';
@@ -318,19 +328,39 @@ function toCanvas(cx,cy){
   return {x:(cx-r.left)*(W/r.width), y:(cy-r.top)*(H/r.height)};
 }
 cv.addEventListener('mousemove', e=>{ const p=toCanvas(e.clientX,e.clientY); mouse.x=p.x; mouse.y=p.y; mouse.seen=true; });
-cv.addEventListener('mousedown', e=>{ e.preventDefault(); mouse.down=true; firing=true; });
-addEventListener('mouseup', ()=>{ mouse.down=false; if(!keys.has(' ')) firing=false; });
+// a quick tap or click on a tower posts an officer there; holding still fires
+function towerAt(x,y){
+  for(const t of towers) if(Math.hypot(t.x-x, t.y-y) < t.r+18) return t;
+  return null;
+}
+function tapped(sx,sy,x,y,t0){
+  if(phase!=='play') return false;
+  if(Math.hypot(x-sx, y-sy) > 16 || performance.now()-t0 > 400) return false;
+  const t=towerAt(x,y);
+  if(!t) return false;
+  postOrRecall(t);
+  return true;
+}
+const click={sx:0, sy:0, t0:0};
+cv.addEventListener('mousedown', e=>{ e.preventDefault(); mouse.down=true; firing=true;
+  click.sx=mouse.x; click.sy=mouse.y; click.t0=performance.now(); });
+addEventListener('mouseup', ()=>{
+  if(mouse.down) tapped(click.sx, click.sy, mouse.x, mouse.y, click.t0);
+  mouse.down=false; if(!keys.has(' ')) firing=false; });
 cv.addEventListener('contextmenu', e=>e.preventDefault());
 
 // twin-stick touch: left half moves, right half fires
-const touchMove={id:null, ox:0, oy:0, x:0, y:0};
-const touchFire={id:null, x:0, y:0};
+const touchMove={id:null, ox:0, oy:0, x:0, y:0, sx:0, sy:0, t0:0};
+const touchFire={id:null, x:0, y:0, sx:0, sy:0, t0:0};
 cv.addEventListener('touchstart', e=>{
   e.preventDefault();
   for(const t of e.changedTouches){
     const p=toCanvas(t.clientX,t.clientY);
-    if(touchMove.id===null && (autoFire || p.x<W*0.45)){ touchMove.id=t.identifier; touchMove.ox=p.x; touchMove.oy=p.y; touchMove.x=p.x; touchMove.y=p.y; }
-    else if(touchFire.id===null){ touchFire.id=t.identifier; touchFire.x=p.x; touchFire.y=p.y; firing=true; }
+    if(touchMove.id===null && (autoFire || p.x<W*0.45)){ touchMove.id=t.identifier;
+      touchMove.ox=p.x; touchMove.oy=p.y; touchMove.x=p.x; touchMove.y=p.y;
+      touchMove.sx=p.x; touchMove.sy=p.y; touchMove.t0=performance.now(); }
+    else if(touchFire.id===null){ touchFire.id=t.identifier; touchFire.x=p.x; touchFire.y=p.y;
+      touchFire.sx=p.x; touchFire.sy=p.y; touchFire.t0=performance.now(); firing=true; }
   }
 }, {passive:false});
 cv.addEventListener('touchmove', e=>{
@@ -343,8 +373,14 @@ cv.addEventListener('touchmove', e=>{
 }, {passive:false});
 function endTouch(e){
   for(const t of e.changedTouches){
-    if(t.identifier===touchMove.id) touchMove.id=null;
-    if(t.identifier===touchFire.id){ touchFire.id=null; firing=keys.has(' ')||mouse.down; }
+    if(t.identifier===touchMove.id){
+      tapped(touchMove.sx, touchMove.sy, touchMove.x, touchMove.y, touchMove.t0);
+      touchMove.id=null;
+    }
+    if(t.identifier===touchFire.id){
+      tapped(touchFire.sx, touchFire.sy, touchFire.x, touchFire.y, touchFire.t0);
+      touchFire.id=null; firing=keys.has(' ')||mouse.down;
+    }
   }
 }
 cv.addEventListener('touchend', endTouch);
@@ -354,7 +390,7 @@ $('aimbtn').onclick=()=>{ autoAim=!autoAim; savePref('swat-autoaim', autoAim?'on
   say(autoAim?'Auto-aim on — you point at the closest creature by yourself.':'Auto-aim off — aim with the mouse.'); };
 $('firebtn').onclick=()=>{ autoFire=!autoFire; savePref('swat-autofire', autoFire?'on':'off'); syncAssist();
   say(autoFire?'Auto-fire on — you shoot whenever something is in range.':'Auto-fire off — hold the mouse button to shoot.'); };
-$('postbtn').onclick=postOrRecall;
+$('postbtn').onclick=()=>postOrRecall();
 $('pausebtn').onclick=togglePause;
 function togglePause(){
   if(phase==='play'){ phase='paused'; showCard('⏸️','Paused','Holding position.','Resume sweep'); }
@@ -773,7 +809,7 @@ function markTier(){ [...diffEl.children].forEach(b=>b.classList.toggle('on', b.
 function titleScreen(){
   phase='title';
   showCard('🛡️','S.W.A.T. — FOREST SWEEP',
-    'Something has infested the woods behind the ranger station. You are the entry team. Sweep all eight sectors and put every creature down. Just walk — your officer aims and fires on their own until you turn the assists off. Take your squad with you: walk up to any ranger watchtower and post an officer on it to cover that ground for you. Supply crates are scattered through the trees, so run over them for ammo and medkits.',
+    'Something has infested the woods behind the ranger station. You are the entry team. Sweep all eight sectors and put every creature down. Just walk — your officer aims and fires on their own until you turn the assists off. Tap any ranger watchtower to send one of your squad up it, and they will cover that ground for you. Supply crates are scattered through the trees, so run over them for ammo and medkits.',
     'Deploy', null, true);
   markTier();
 }
@@ -1040,12 +1076,22 @@ function drawTower(t){
     ctx.moveTo(t.x-7,t.y); ctx.lineTo(t.x+7,t.y);
     ctx.moveTo(t.x,t.y-7); ctx.lineTo(t.x,t.y+7); ctx.stroke();
   }
-  if(near && phase==='play'){
+  if(phase==='play'){
     const pulse=.55+.45*Math.sin(performance.now()/220);
-    ctx.strokeStyle=`rgba(232,163,61,${pulse})`; ctx.lineWidth=3;
-    ctx.beginPath(); ctx.arc(t.x,t.y,t.r+8,0,TAU); ctx.stroke();
-    ctx.fillStyle='#e8a33d'; ctx.font='800 13px ui-sans-serif, system-ui, sans-serif'; ctx.textAlign='center';
-    ctx.fillText(t.manned?'E — bring down':(squad>0?'E — post officer':'no officers left'), t.x, t.y-t.r-16);
+    if(near){
+      ctx.strokeStyle=`rgba(232,163,61,${pulse})`; ctx.lineWidth=3;
+      ctx.beginPath(); ctx.arc(t.x,t.y,t.r+8,0,TAU); ctx.stroke();
+    }
+    ctx.textAlign='center';
+    ctx.font='800 12px ui-sans-serif, system-ui, sans-serif';
+    if(!t.manned && squad>0){
+      ctx.fillStyle=near?'#e8a33d':`rgba(232,163,61,${.45+.25*pulse})`;
+      ctx.fillText('tap to post', t.x, t.y-t.r-14);
+    } else if(t.manned && near){
+      ctx.fillStyle='#7dc47d'; ctx.fillText('tap to bring down', t.x, t.y-t.r-14);
+    } else if(!t.manned && near){
+      ctx.fillStyle='#95a98f'; ctx.fillText('no officers left', t.x, t.y-t.r-14);
+    }
   }
 }
 
