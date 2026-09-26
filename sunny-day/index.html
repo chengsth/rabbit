@@ -6,292 +6,712 @@
 <title>Sunny Day</title>
 <style>
   :root{
-    --ink:#5b4a52; --muted:#9a8590; --cream:#fffaf2;
-    --sun:#ffc94d; --sun2:#ffa92e; --pink:#ff9fbf; --sky1:#bfe6ff; --sky2:#fff1d6;
+    --ink:#5b4a52; --muted:#9a8590; --cream:#fffaf2; --cream2:#fff0de;
+    --sun:#ffc94d; --sun2:#ffa92e; --pink:#ff9fbf; --pink2:#f07aa0; --lav:#cdb0ec; --lav2:#b39be8;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;height:100%;overflow:hidden;}
   body{
     font-family:'Nunito',ui-rounded,'Segoe UI',system-ui,sans-serif;
-    color:var(--ink);background:var(--sky1);
+    color:var(--ink);background:#bfe6ff;
     -webkit-user-select:none;user-select:none;touch-action:manipulation;
   }
   canvas{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:pointer;}
 
-  .hud{position:fixed;top:12px;left:16px;right:16px;display:flex;align-items:center;gap:10px;
-    pointer-events:none;z-index:2;}
-  .pill{pointer-events:auto;background:rgba(255,250,242,.85);border-radius:999px;padding:8px 14px;
-    font-weight:800;font-size:15px;box-shadow:0 8px 18px -10px rgba(160,110,90,.5);white-space:nowrap;}
-  .meter{flex:1;height:18px;min-width:80px;background:rgba(255,250,242,.85);border-radius:999px;overflow:hidden;
-    box-shadow:0 8px 18px -10px rgba(160,110,90,.5);}
-  .meter i{display:block;height:100%;width:0;border-radius:999px;
-    background:linear-gradient(90deg,var(--pink),var(--sun));transition:width .3s;}
-  .iconbtn{pointer-events:auto;border:none;cursor:pointer;font-size:18px;width:40px;height:40px;border-radius:50%;
-    background:rgba(255,250,242,.85);box-shadow:0 8px 18px -10px rgba(160,110,90,.5);}
+  /* ---------- hud ---------- */
+  .hud{position:fixed;top:12px;left:16px;right:16px;display:flex;align-items:center;gap:8px;z-index:2;}
+  .hud.hide{display:none;}
+  .pill{background:rgba(255,250,242,.88);border-radius:999px;padding:9px 13px;
+    font-weight:800;font-size:15px;box-shadow:0 8px 18px -10px rgba(120,80,90,.55);white-space:nowrap;}
+  .meter{position:relative;flex:1;height:38px;min-width:90px;background:rgba(255,250,242,.88);border-radius:999px;
+    overflow:hidden;box-shadow:0 8px 18px -10px rgba(120,80,90,.55);}
+  .meter i{position:absolute;inset:0 auto 0 0;width:0;border-radius:999px;
+    background:linear-gradient(90deg,var(--pink),var(--sun));transition:width .35s;}
+  .meter span{position:relative;display:flex;align-items:center;justify-content:center;height:100%;
+    font-weight:800;font-size:14.5px;padding:0 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .iconbtn{border:none;cursor:pointer;font-size:18px;width:40px;height:40px;flex:none;border-radius:50%;
+    background:rgba(255,250,242,.88);box-shadow:0 8px 18px -10px rgba(120,80,90,.55);}
 
-  .intro{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;z-index:3;
-    background:rgba(191,230,255,.55);backdrop-filter:blur(3px);}
-  .intro.hide{display:none;}
-  .card{max-width:420px;width:100%;background:var(--cream);border-radius:28px;padding:26px 22px;text-align:center;
-    box-shadow:0 24px 50px -24px rgba(160,110,90,.6);}
+  /* ---------- cards ---------- */
+  .overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;z-index:3;
+    background:rgba(120,150,190,.35);backdrop-filter:blur(3px);overflow-y:auto;}
+  .overlay.hide{display:none;}
+  .card{max-width:430px;width:100%;margin:auto;background:var(--cream);border-radius:28px;padding:24px 20px;text-align:center;
+    box-shadow:0 24px 50px -24px rgba(90,60,80,.6);animation:pop .35s cubic-bezier(.3,1.6,.5,1);}
+  @keyframes pop{from{transform:scale(.85);opacity:0}to{transform:none;opacity:1}}
   .card h1{margin:0;font-size:32px;color:var(--sun2);}
-  .card .big{font-size:56px;line-height:1;margin-bottom:6px;}
-  .card p{margin:10px 0;line-height:1.5;font-size:15px;}
-  .card ul{text-align:left;margin:10px auto;padding-left:20px;line-height:1.6;font-size:14.5px;max-width:320px;}
-  .card small{color:var(--muted);}
-  .go{border:none;cursor:pointer;font-family:inherit;font-weight:800;color:#fff;font-size:19px;
-    border-radius:20px;padding:14px 34px;margin-top:10px;
-    background:linear-gradient(180deg,var(--sun),var(--sun2));box-shadow:0 10px 20px -8px var(--sun2);}
-  .go:hover{filter:brightness(1.05);transform:translateY(-1px);}
-  button:focus-visible{outline:3px solid var(--pink);outline-offset:2px;}
+  .card h2{margin:2px 0 0;font-size:24px;color:var(--pink2);}
+  .card .kicker{font-weight:800;color:var(--muted);font-size:13px;letter-spacing:1.5px;text-transform:uppercase;}
+  .card .big{font-size:60px;line-height:1.1;margin-bottom:4px;}
+  .card p{margin:10px 0;line-height:1.5;font-size:15.5px;}
+  .card small{color:var(--muted);line-height:1.5;display:block;}
+  .goalbox{background:var(--cream2);border-radius:16px;padding:10px 12px;font-weight:800;margin:12px 0;}
+  .btns{display:flex;flex-direction:column;gap:10px;align-items:center;margin-top:14px;}
+  .btn{border:none;cursor:pointer;font-family:inherit;font-weight:800;color:#fff;font-size:18px;
+    border-radius:20px;padding:13px 30px;min-width:210px;
+    background:linear-gradient(180deg,var(--sun),var(--sun2));box-shadow:0 10px 20px -8px var(--sun2);transition:.12s;}
+  .btn:hover{filter:brightness(1.05);transform:translateY(-1px);}
+  .btn.pink{background:linear-gradient(180deg,var(--pink),var(--pink2));box-shadow:0 10px 20px -8px var(--pink2);}
+  .btn.lav{background:linear-gradient(180deg,var(--lav),var(--lav2));box-shadow:0 10px 20px -8px var(--lav2);}
+  .btn.plain{background:var(--cream2);color:var(--ink);box-shadow:none;font-size:16px;padding:11px 24px;}
+  button:focus-visible{outline:3px solid var(--lav2);outline-offset:2px;}
+
+  .album{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:10px;margin:14px 0 6px;}
+  .sticker{background:var(--cream2);border-radius:18px;padding:10px 4px;font-size:12.5px;font-weight:800;line-height:1.3;}
+  .sticker b{display:block;font-size:36px;line-height:1.2;}
+  .sticker.locked{opacity:.45;filter:grayscale(1);}
+  .friends{font-size:30px;letter-spacing:4px;line-height:1.4;margin:6px 0;word-break:break-all;}
+  .stats{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:12px 0;}
+  .stats div{background:var(--cream2);border-radius:14px;padding:8px 14px;font-weight:800;}
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
 
-<div class="hud">
-  <span class="pill" id="level">☀️ Day 1</span>
-  <div class="meter" title="Happiness"><i id="joy"></i></div>
+<div class="hud hide" id="hud">
+  <button class="iconbtn" id="home" aria-label="Back to the start">🏠</button>
+  <div class="meter"><i id="bar"></i><span id="goal"></span></div>
   <span class="pill" id="smiles">😊 0</span>
   <button class="iconbtn" id="sound" aria-label="Sound on or off">🔊</button>
 </div>
 
-<div class="intro" id="intro">
-  <div class="card">
-    <div class="big">🌞</div>
-    <h1>Sunny Day</h1>
-    <p>A little game with no losing, only nice things.</p>
-    <ul>
-      <li>Tap the happy things floating by: 💖 ⭐ 🎈 🦋</li>
-      <li>Tap a grey rain cloud 🌧️ to turn it into a rainbow.</li>
-      <li>Tap the grass to plant a flower 🌷</li>
-      <li>Fill the happy meter and a new friend comes to dance.</li>
-    </ul>
-    <button class="go" id="go">Let's play!</button>
-    <p><small>Sound on makes it nicer. Tap quickly to play a tune.</small></p>
-  </div>
-</div>
+<div class="overlay" id="overlay"><div class="card" id="card"></div></div>
 
 <script>
 const cv = document.getElementById('c'), ctx = cv.getContext('2d');
-let W = 0, H = 0, DPR = 1;
+const $ = id => document.getElementById(id);
+let W = 0, H = 0;
 function resize(){
-  DPR = Math.min(window.devicePixelRatio || 1, 2);
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
   W = window.innerWidth; H = window.innerHeight;
-  cv.width = W * DPR; cv.height = H * DPR;
-  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  cv.width = W * dpr; cv.height = H * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
 window.addEventListener('resize', resize); resize();
 const groundY = () => H * 0.78;
+const rand = (a, b) => a + Math.random() * (b - a);
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const lerp = (a, b, k) => a + (b - a) * k;
+
+// ---------- the seven days ----------
+const DAYS = [
+  {name: 'Sunny Meadow', icon: '🌞', theme: 'day', friend: '🐶',
+   goal: {kind: 'happy', n: 10, icon: '💖', text: 'Pop 10 happy things'},
+   spawn: [['happy', 10]],
+   intro: 'The sun is up and happy things are floating out of the meadow. Tap them to pop them!'},
+  {name: 'Flower Garden', icon: '🌷', theme: 'day', friend: '🐱',
+   goal: {kind: 'bloom', n: 8, icon: '🌷', text: 'Grow 8 flowers'},
+   spawn: [['happy', 10]], rate: 0.5,
+   intro: 'Tap the grass to plant a seed 🌱. Then tap the seed to water it and watch it bloom. The bees love flowers!'},
+  {name: 'Rainy Day', icon: '🌈', theme: 'rain', friend: '🐸',
+   goal: {kind: 'cloud', n: 6, icon: '🌈', text: 'Make 6 rainbows'},
+   spawn: [['cloud', 6], ['happy', 3]],
+   intro: 'Grey rain clouds have covered the sun! Tap each cloud to turn it into a rainbow and bring the sunshine back.'},
+  {name: 'Balloon Party', icon: '🎈', theme: 'day', friend: '🐥',
+   goal: {kind: 'balloon', n: 15, icon: '🎈', text: 'Pop 15 balloons'},
+   spawn: [['balloon', 8], ['gift', 2], ['happy', 2]],
+   intro: 'It\'s a party! Pop the balloons. Some of them carry a present 🎁. Pop those to see what\'s inside!'},
+  {name: 'Butterfly Dance', icon: '🦋', theme: 'sunset', friend: '🦊',
+   goal: {kind: 'butterfly', n: 10, icon: '🦋', text: 'Say hello to 10 butterflies'},
+   spawn: [['butterfly', 8], ['happy', 2]],
+   intro: 'The evening is golden and the butterflies are dancing. They flutter about, so tap gently to say hello!'},
+  {name: 'Starry Night', icon: '🌙', theme: 'night', friend: '🐼',
+   goal: {kind: 'shoot', n: 8, icon: '🌠', text: 'Make 8 wishes'},
+   spawn: [['shoot', 6], ['happy', 3]],
+   intro: 'The moon is out. Watch for shooting stars zooming across the sky and tap them to make a wish.'},
+  {name: 'Happy Festival', icon: '🎉', theme: 'day', friend: '🦄',
+   goal: {kind: 'joy', n: 100, icon: '🎉', text: 'Fill the happy meter'},
+   spawn: [['happy', 4], ['balloon', 3], ['gift', 1], ['butterfly', 2], ['cloud', 1], ['shoot', 1]],
+   intro: 'Everyone has come to the big festival! Tap anything and everything to fill the happy meter all the way up.'}
+];
+const FREE = {name: 'Free Play', icon: '🎈', theme: 'day', goal: {kind: 'joy', n: 100, icon: '😊', text: 'Happy meter'},
+  spawn: [['happy', 5], ['balloon', 3], ['gift', 1], ['butterfly', 2], ['cloud', 1]]};
+const EXTRA_FRIENDS = ['🐨', '🐧', '🐢', '🐹', '🐙', '🐰', '🦔', '🐳', '🦆', '🐮'];
+
+const KIND = [
+  'You make the world brighter!', 'Big smile!', 'You are awesome!', 'So much sunshine!',
+  'You are loved 💛', 'What a great tap!', 'Keep shining!', 'You are doing great!',
+  'Hooray for you!', 'Happy happy!', 'You are a star ⭐', 'Lovely!', 'Wheee!',
+  'Today is a good day', 'High five! ✋', 'You are kind', 'Sparkly!', 'Yay!', 'The flowers are cheering!'
+];
+const WISHES = [
+  'I wish for ice cream!', 'I wish everyone smiles today', 'I wish for a puppy', 'I wish for sunny skies',
+  'I wish for more hugs', 'I wish for a picnic', 'I wish my friends are happy', 'I wish for pancakes',
+  'I wish for a rainbow', 'I wish to fly like a bird', 'I wish for a big bubble bath', 'I wish for sweet dreams'
+];
+const GIFTS = [['🧸', 'a teddy'], ['🍰', 'some cake'], ['🪁', 'a kite'], ['🎨', 'paints'], ['🍩', 'a doughnut'],
+  ['🦖', 'a dinosaur'], ['🚂', 'a train'], ['📚', 'a book'], ['⚽', 'a ball'], ['🎀', 'a bow'], ['🪀', 'a yo-yo']];
+const HAPPY_DAY = ['💖', '⭐', '🌟', '🍭', '💛', '🫧', '🌼', '🍓', '🍦', '🧁'];
+const HAPPY_NIGHT = ['⭐', '🌟', '✨', '💫', '💜', '🫧'];
+const BALLOON_COLS = ['#ff8fab', '#ffc94d', '#8ed0a0', '#74c0fc', '#b197fc', '#ff9f68'];
+const CONFETTI = ['#ff9fbf', '#ffc94d', '#9fe0b5', '#b9a6ff', '#8fd3ff'];
+const RAINBOW = ['#ff6b6b', '#ffb24d', '#ffe066', '#8ed0a0', '#74c0fc', '#b197fc'];
+
+// ---------- saved progress ----------
+let save = {next: 0, stickers: [], smiles: 0, done: false, extras: 0};
+try { Object.assign(save, JSON.parse(localStorage.getItem('sunny-day') || '{}')); } catch(e){}
+function store(){ try { localStorage.setItem('sunny-day', JSON.stringify(save)); } catch(e){} }
 
 // ---------- sound: every tap is a note from a happy pentatonic scale ----------
 let audio = null, soundOn = true, noteStep = 0, lastNoteAt = 0;
+try { soundOn = localStorage.getItem('sunny-day-sound') !== 'off'; } catch(e){}
+$('sound').textContent = soundOn ? '🔊' : '🔇';
 const SCALE = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21, 24];
-function ac(){ if(!audio) audio = new (window.AudioContext || window.webkitAudioContext)(); if(audio.state==='suspended') audio.resume(); return audio; }
+function ac(){
+  if(!audio){ try { audio = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){ return null; } }
+  if(audio.state === 'suspended') audio.resume();
+  return audio;
+}
 function tone(semi, dur = 0.35, type = 'sine', vol = 0.18, delay = 0){
   if(!soundOn) return;
-  const a = ac(), t = a.currentTime + delay;
-  const o = a.createOscillator(), g = a.createGain();
+  const a = ac(); if(!a) return;
+  const t0 = a.currentTime + delay, o = a.createOscillator(), g = a.createGain();
   o.type = type; o.frequency.value = 523.25 * Math.pow(2, semi / 12);
-  g.gain.setValueAtTime(0, t);
-  g.gain.linearRampToValueAtTime(vol, t + 0.015);
-  g.gain.exponentialRampToValueAtTime(0.001, t + dur);
-  o.connect(g).connect(a.destination); o.start(t); o.stop(t + dur + 0.05);
+  g.gain.setValueAtTime(0, t0);
+  g.gain.linearRampToValueAtTime(vol, t0 + 0.015);
+  g.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+  o.connect(g).connect(a.destination); o.start(t0); o.stop(t0 + dur + 0.05);
 }
 function happyNote(){
-  // quick taps climb the scale, so tapping fast makes a little melody
+  // quick taps climb the scale, so tapping fast plays a little melody
   const now = performance.now();
   noteStep = (now - lastNoteAt < 900) ? (noteStep + 1) % SCALE.length : 0;
   lastNoteAt = now;
   tone(SCALE[noteStep], 0.45, 'triangle', 0.2);
   tone(SCALE[noteStep] + 12, 0.3, 'sine', 0.05);
 }
-function fanfare(){ [0, 4, 7, 12, 16, 19, 24].forEach((s, i) => tone(s, 0.5, 'triangle', 0.16, i * 0.09)); }
-function plantSound(){ tone(-5, 0.25, 'sine', 0.15); tone(2, 0.35, 'sine', 0.12, 0.08); }
+const fanfare = () => [0, 4, 7, 12, 16, 19, 24].forEach((s, i) => tone(s, 0.5, 'triangle', 0.16, i * 0.09));
+const finaleTune = () => [0, 0, 2, 0, 5, 4, -1, 0, 0, 2, 0, 7, 5].forEach((s, i) => tone(s + 7, 0.4, 'triangle', 0.15, i * 0.28));
+const plantSound = () => { tone(-5, 0.25, 'sine', 0.15); tone(2, 0.35, 'sine', 0.12, 0.08); };
+const bloomSound = () => [4, 9, 16].forEach((s, i) => tone(s, 0.35, 'sine', 0.13, i * 0.06));
+const wishSound = () => [12, 19, 24, 28].forEach((s, i) => tone(s, 0.6, 'sine', 0.09, i * 0.07));
 
-// ---------- state ----------
-const KIND = [
-  'You make the world brighter!', 'Big smile!', 'You are awesome!', 'So much sunshine!',
-  'You are loved 💛', 'What a great tap!', 'Keep shining!', 'You are doing great!',
-  'Hooray for you!', 'Happy happy!', 'You are a star ⭐', 'Lovely!', 'Wheee!',
-  'That made a butterfly smile', 'Today is a good day', 'High five! ✋', 'You are kind',
-  'Sparkly!', 'Yay!', 'The flowers are cheering!'
-];
-const THINGS = ['💖', '⭐', '🎈', '🦋', '🌟', '🍭', '💛', '🫧', '🌼', '🍓'];
-const FRIENDS = ['🐶', '🐱', '🐥', '🐸', '🐼', '🦊', '🐨', '🐧', '🦄', '🐢', '🐹', '🐙'];
+// ---------- game state ----------
+let mode = 'title';          // title | story | free | finale
+let dayIdx = 0, cfg = DAYS[0], goalCount = 0, dayDone = false;
+let things = [], sparks = [], words = [], flowers = [], friends = [], bees = [], clouds = [], rainbows = [], drops = [];
+let spawning = false, spawnT = 0, joy = 0, t = 0, banner = null, combo = 0, lastPopAt = 0, cake = null, finaleT = 0;
+let bgStars = [];
+for(let i = 0; i < 70; i++) bgStars.push({x: Math.random(), y: Math.random() * 0.7, r: rand(0.8, 2.2), ph: rand(0, 6.28)});
+for(let i = 0; i < 4; i++) clouds.push({x: rand(0, 900), y: rand(70, 230), s: rand(.7, 1.2), v: rand(8, 18)});
 
-let things = [], sparks = [], words = [], flowers = [], friends = [], clouds = [], rainbows = [];
-let joy = 0, smiles = 0, day = 1, spawnT = 0, playing = false, celebrate = 0, t = 0;
+function setFriends(list){
+  friends = list.map(e => ({e, x: rand(40, W - 40), ph: rand(0, 6.28), dir: Math.random() < .5 ? -1 : 1, jump: 0}));
+}
+function addFriend(e){
+  const f = {e, x: Math.random() < .5 ? -30 : W + 30, ph: rand(0, 6.28), dir: 1, jump: 1};
+  f.dir = f.x < 0 ? 1 : -1;
+  friends.push(f);
+}
+function storyFriends(upTo){ return DAYS.slice(0, upTo).map(d => d.friend); }
 
-function rand(a, b){ return a + Math.random() * (b - a); }
-function pick(a){ return a[Math.floor(Math.random() * a.length)]; }
-
+// ---------- spawning ----------
 function spawnThing(){
-  const cloud = Math.random() < 0.12;
-  things.push({
-    e: cloud ? '🌧️' : pick(THINGS), cloud,
-    x: rand(40, W - 40), y: groundY() + 30,
-    vy: -rand(38, 62) - day * 3, sway: rand(0.6, 1.4), ph: rand(0, 6.28),
-    size: cloud ? 54 : rand(40, 54), born: t
-  });
+  const table = cfg.spawn, total = table.reduce((s, r) => s + r[1], 0);
+  let r = Math.random() * total, kind = table[0][0];
+  for(const [k, w] of table){ if((r -= w) < 0){ kind = k; break; } }
+  if(Math.random() < 0.03) kind = 'lucky';
+  const gy = groundY(), th = {kind, born: t, ph: rand(0, 6.28), sway: rand(0.6, 1.4), size: rand(42, 54)};
+  const speedUp = mode === 'free' ? 1 + Math.min(joy / 400, 0.6) : 1;
+  if(kind === 'cloud'){
+    const left = Math.random() < .5;
+    Object.assign(th, {x: left ? -50 : W + 50, y: rand(110, gy * 0.5), vx: (left ? 1 : -1) * rand(35, 55), vy: 0, size: 62, dropT: 0});
+  } else if(kind === 'shoot'){
+    const left = Math.random() < .5;
+    Object.assign(th, {x: left ? rand(-40, W * .3) : rand(W * .7, W + 40), y: rand(60, 140),
+      vx: (left ? 1 : -1) * rand(110, 160), vy: rand(45, 75), size: 40});
+  } else if(kind === 'butterfly'){
+    Object.assign(th, {x: rand(40, W - 40), y: gy + 20, vx: rand(-40, 40), vy: -rand(30, 45), size: 44, wander: 0});
+  } else {
+    Object.assign(th, {x: rand(40, W - 40), y: gy + 40, vx: 0, vy: -(rand(38, 60) + dayIdx * 2) * speedUp});
+    if(kind === 'happy') th.e = pick(cfg.theme === 'night' ? HAPPY_NIGHT : HAPPY_DAY);
+    if(kind === 'balloon' || kind === 'gift') th.col = pick(BALLOON_COLS);
+    if(kind === 'lucky'){ th.e = '🌟'; th.size = 62; }
+  }
+  things.push(th);
 }
 
-function burst(x, y, n = 16, colors){
-  const cols = colors || ['#ff9fbf', '#ffc94d', '#9fe0b5', '#b9a6ff', '#8fd3ff'];
+// ---------- effects ----------
+function burst(x, y, n = 16, cols = CONFETTI, power = 1){
   for(let i = 0; i < n; i++){
-    const a = rand(0, 6.28), s = rand(80, 260);
+    const a = rand(0, 6.28), s = rand(80, 260) * power;
     sparks.push({x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 60, life: 1, c: pick(cols), r: rand(3, 6)});
   }
 }
-function say(x, y, text){ words.push({x: Math.max(90, Math.min(W - 90, x)), y, text, life: 1}); }
-
-function addJoy(n){
-  joy += n;
-  if(joy >= 100){ joy -= 100; levelUp(); }
-  document.getElementById('joy').style.width = joy + '%';
+function firework(){ burst(rand(60, W - 60), rand(90, H * .45), 30, pick([CONFETTI, RAINBOW, ['#ffe066', '#fff3b0', '#ffc94d']]), 1.2); tone(pick(SCALE) + 12, 0.25, 'sine', 0.06); }
+function say(x, y, text, col = '#e0628a', size = 20){
+  // keep the whole message on screen, even long wishes on a narrow phone
+  ctx.font = `800 ${size}px Nunito, ui-rounded, system-ui, sans-serif`;
+  const half = Math.min(ctx.measureText(text).width / 2 + 12, W / 2);
+  words.push({x: Math.max(half, Math.min(W - half, x)), y: Math.max(80, y), text, life: 1, col, size});
 }
-function levelUp(){
-  day++;
-  celebrate = 3;
+function showBanner(text, sub, secs = 3){ banner = {text, sub, life: secs}; }
+
+// ---------- scoring & goals ----------
+function addSmiles(n){
+  save.smiles += n;
+  $('smiles').textContent = `😊 ${save.smiles}`;
+}
+function updateGoal(){
+  const g = cfg.goal;
+  if(mode === 'free'){
+    $('goal').textContent = `😊 Happy meter · ${friends.length} friends`;
+    $('bar').style.width = joy % 100 + '%';
+    return;
+  }
+  const n = Math.min(goalCount, g.n);
+  $('goal').textContent = g.kind === 'joy' ? `${g.icon} Happy meter ${Math.floor(n)}%` : `${g.icon} ${g.text.replace(/\d+ /, '')} ${n}/${g.n}`;
+  $('bar').style.width = (n / g.n * 100) + '%';
+}
+function progress(kind, joyPts){
+  joy += joyPts;
+  if(mode === 'free'){
+    if(Math.floor(joy / 100) > Math.floor((joy - joyPts) / 100)) freeLevelUp();
+  } else if(mode === 'story' && !dayDone){
+    if(cfg.goal.kind === kind) goalCount++;
+    if(cfg.goal.kind === 'joy') goalCount += joyPts;
+    if(goalCount >= cfg.goal.n) finishDay();
+  }
+  updateGoal();
+}
+function freeLevelUp(){
   fanfare();
-  friends.push({e: FRIENDS[(day - 2) % FRIENDS.length], x: rand(40, W - 40), ph: rand(0, 6.28), dir: Math.random() < .5 ? -1 : 1});
-  for(let i = 0; i < 8; i++) setTimeout(() => burst(rand(60, W - 60), rand(80, H * .5), 26), i * 180);
-  say(W / 2, H * .35, `Day ${day}! ${friends[friends.length - 1].e} came to dance!`);
-  document.getElementById('level').textContent = `☀️ Day ${day}`;
+  for(let i = 0; i < 8; i++) setTimeout(firework, i * 180);
+  const e = EXTRA_FRIENDS[save.extras % EXTRA_FRIENDS.length];
+  if(friends.length < 16){ addFriend(e); save.extras++; store(); }
+  showBanner('Happy Day! 🎉', `${e} came to dance!`);
 }
 
+// ---------- tapping ----------
 function tap(x, y){
-  if(!playing) return;
-  // topmost thing under the finger, generous hit box for small hands
+  if(mode !== 'story' && mode !== 'free') return;
   for(let i = things.length - 1; i >= 0; i--){
     const th = things[i];
-    if(Math.hypot(th.x - x, th.y - y) < th.size * 0.8){
-      things.splice(i, 1);
-      happyNote();
-      smiles++;
-      document.getElementById('smiles').textContent = `😊 ${smiles}`;
-      if(th.cloud){
-        rainbows.push({x: th.x, y: th.y, life: 1});
-        burst(th.x, th.y, 24, ['#ff6b6b', '#ffb24d', '#ffe066', '#8ed0a0', '#74c0fc', '#b197fc']);
-        say(th.x, th.y - 30, 'Rainbow! 🌈');
-        addJoy(15);
-      } else {
-        burst(th.x, th.y);
-        say(th.x, th.y - 30, pick(KIND));
-        addJoy(7);
-      }
+    if(Math.hypot(th.x - x, th.y - y) < th.size * (th.kind === 'shoot' || th.kind === 'butterfly' ? 1.1 : 0.85)){
+      things.splice(i, 1); popThing(th); return;
+    }
+  }
+  for(const f of friends){
+    if(Math.hypot(f.x - x, groundY() + 6 - y) < 36){
+      f.jump = 1; happyNote(); say(f.x, groundY() - 60, pick(['Hehe!', 'Hello!', 'Wiggle!', 'Hug!', 'Wheee!', 'I love this!']));
       return;
     }
   }
-  // friends giggle when tapped
-  for(const f of friends){
-    if(Math.hypot(f.x - x, groundY() + 10 - y) < 36){
-      f.jump = 1; happyNote(); say(f.x, groundY() - 50, pick(['Hehe!', 'Hello!', 'Wiggle!', 'Hug!'])); return;
-    }
+  for(const b of bees){
+    if(Math.hypot(b.x - x, b.y - y) < 32){ happyNote(); say(b.x, b.y - 30, pick(['Bzz! Hello!', 'Bzz bzz!', 'Buzzy hug!'])); b.tx = rand(30, W - 30); b.ty = rand(120, groundY() - 60); return; }
+  }
+  for(const f of flowers){
+    if(f.stage === 0 && Math.hypot(f.x - x, f.y - 14 - y) < 34){ bloom(f); return; }
   }
   if(y > groundY() - 10){
-    flowers.push({x, y: Math.max(y, groundY() + 8), grow: 0, e: pick(['🌷', '🌸', '🌻', '🌼', '🌺', '🍄']), ph: rand(0, 6.28)});
-    if(flowers.length > 60) flowers.shift();
+    flowers.push({x, y: Math.max(y, groundY() + 12), stage: 0, grow: 0, water: 0, e: pick(['🌷', '🌸', '🌻', '🌼', '🌺', '🪻']), ph: rand(0, 6.28)});
+    if(flowers.length > 70){ const old = flowers.findIndex(f => f.stage === 1); flowers.splice(old < 0 ? 0 : old, 1); }
     plantSound();
-    burst(x, y, 6, ['#8ed0a0', '#c3f0c8']);
-    addJoy(2);
+    burst(x, y, 6, ['#8ed0a0', '#c3f0c8'], 0.5);
+    if(cfg.goal.kind === 'bloom' && mode === 'story' && flowers.filter(f => f.stage === 0).length === 1 && goalCount === 0)
+      say(x, y - 70, 'Now tap the seed to water it! 💧', '#4a9e6a');
   }
 }
-cv.addEventListener('pointerdown', e => tap(e.clientX, e.clientY));
+function bloom(f){
+  f.stage = 1; f.grow = 0; f.water = 1;
+  bloomSound();
+  burst(f.x, f.y - 20, 14, ['#ff9fbf', '#ffe066', '#9fe0b5']);
+  say(f.x, f.y - 70, pick(['A flower! 🌸', 'Bloom!', 'So pretty!', 'The bees will love it!']), '#4a9e6a');
+  addSmiles(1);
+  progress('bloom', 8);
+}
+function popThing(th){
+  happyNote();
+  const now = performance.now();
+  combo = (now - lastPopAt < 1300) ? combo + 1 : 1;
+  lastPopAt = now;
+  let bonus = combo >= 3 ? 1 : 0;
+  if(combo >= 3) say(th.x, th.y + 36, `Combo ×${combo}!`, '#8a6ee0', 17);
+  switch(th.kind){
+    case 'happy':
+      burst(th.x, th.y); say(th.x, th.y - 30, pick(KIND));
+      addSmiles(1 + bonus); progress('happy', 7); break;
+    case 'lucky':
+      burst(th.x, th.y, 40, ['#ffe066', '#fff3b0', '#ffc94d'], 1.4); wishSound();
+      say(th.x, th.y - 30, 'Lucky star! +5', '#e0a020', 24);
+      addSmiles(5 + bonus); progress('lucky', 20); break;
+    case 'cloud':
+      rainbows.push({x: th.x, y: th.y, life: 1});
+      burst(th.x, th.y, 24, RAINBOW); say(th.x, th.y - 40, 'Rainbow! 🌈');
+      addSmiles(2 + bonus); progress('cloud', 12); break;
+    case 'balloon':
+      burst(th.x, th.y, 18, [th.col, '#fff']); say(th.x, th.y - 30, pick(['Pop!', 'Boing!', 'Party!', 'Hooray!', 'Pop pop!']));
+      addSmiles(1 + bonus); progress('balloon', 6); break;
+    case 'gift': {
+      const [g, name] = pick(GIFTS);
+      burst(th.x, th.y, 22, [th.col, '#ffe066', '#fff']);
+      sparks.push({x: th.x, y: th.y + 40, vx: 0, vy: -140, life: 1.6, emoji: g});
+      say(th.x, th.y - 30, `You got ${name}!`);
+      addSmiles(3 + bonus); progress('balloon', 10); break;
+    }
+    case 'butterfly':
+      burst(th.x, th.y, 14, ['#b9a6ff', '#8fd3ff', '#ff9fbf']);
+      say(th.x, th.y - 30, pick(['Hello, butterfly!', 'Flutter flutter!', 'So pretty!', 'It waved back!', 'Butterfly kiss!']));
+      sparks.push({x: th.x, y: th.y, vx: rand(-60, 60), vy: -220, g: -40, life: 1.8, emoji: '🦋'});
+      addSmiles(2 + bonus); progress('butterfly', 8); break;
+    case 'shoot':
+      burst(th.x, th.y, 30, ['#ffe066', '#fff3b0', '#ffffff', '#b9a6ff'], 1.1); wishSound();
+      say(th.x, th.y + 40, pick(WISHES), '#8a6ee0');
+      addSmiles(2 + bonus); progress('shoot', 10); break;
+  }
+}
+cv.addEventListener('pointerdown', e => { ac(); tap(e.clientX, e.clientY); });
+
+// ---------- flow between screens ----------
+function card(html){ $('card').innerHTML = html; $('overlay').classList.remove('hide'); spawning = false; }
+function closeCard(){ $('overlay').classList.add('hide'); }
+function btn(label, fn, cls = ''){ return `<button class="btn ${cls}" data-fn="${fn}">${label}</button>`; }
+$('card').addEventListener('click', e => {
+  const b = e.target.closest('[data-fn]'); if(!b) return;
+  ac(); tone(7, 0.2, 'triangle', 0.12);
+  ACTIONS[b.dataset.fn]();
+});
+const ACTIONS = {
+  continue: () => startDay(save.next),
+  newgame: () => { save.next = 0; save.smiles = 0; store(); flowers = []; startDay(0); },
+  free: startFree,
+  album: showAlbum,
+  title: showTitle,
+  play: () => { closeCard(); spawning = true; spawnT = 0.3; },
+  next: () => save.next >= DAYS.length ? startFinale() : startDay(save.next)
+};
+
+function showTitle(){
+  mode = 'title'; $('hud').classList.add('hide'); things = []; cake = null;
+  setFriends(storyFriends(save.done ? DAYS.length : save.next));
+  const mid = save.next > 0 && save.next < DAYS.length;
+  card(`
+    <div class="big">🌞</div>
+    <h1>Sunny Day</h1>
+    <p>Seven happy days of popping, growing, wishing and dancing. There's no losing here, only nice things.</p>
+    ${save.done ? '<div class="goalbox">⭐ You finished all seven days! ⭐</div>' : ''}
+    <div class="btns">
+      ${mid ? btn(`Carry on: Day ${save.next + 1} ${DAYS[save.next].icon}`, 'continue') : ''}
+      ${btn(mid || save.done ? 'Start from Day 1' : 'Let\'s play!', 'newgame', mid ? 'pink' : '')}
+      ${btn('Free play 🎈', 'free', 'lav')}
+      ${btn('Sticker book 📒', 'album', 'plain')}
+    </div>
+    <p><small>Sound on makes it nicer. Tap quickly to play a tune.</small></p>`);
+}
+
+function startDay(i){
+  mode = 'story'; dayIdx = i; cfg = DAYS[i]; goalCount = 0; dayDone = false; things = []; bees = []; cake = null;
+  rainbows = []; combo = 0;
+  setFriends(storyFriends(i));
+  $('hud').classList.remove('hide'); addSmiles(0); updateGoal();
+  card(`
+    <div class="kicker">Day ${i + 1} of ${DAYS.length}</div>
+    <div class="big">${cfg.icon}</div>
+    <h2>${cfg.name}</h2>
+    <p>${cfg.intro}</p>
+    <div class="goalbox">${cfg.goal.icon} ${cfg.goal.text}</div>
+    <div class="btns">${btn('Start!', 'play')}</div>`);
+}
+
+function finishDay(){
+  dayDone = true; spawning = false;
+  fanfare();
+  for(let i = 0; i < 10; i++) setTimeout(firework, i * 170);
+  addFriend(cfg.friend);
+  showBanner(dayIdx === DAYS.length - 1 ? 'Hooray! 🎉' : 'Happy Day! 🎉', `${cfg.friend} came to dance!`);
+  save.stickers[dayIdx] = true;
+  save.next = Math.max(save.next, dayIdx + 1);
+  store();
+  const last = dayIdx === DAYS.length - 1;
+  setTimeout(() => {
+    if(mode !== 'story') return;
+    card(`
+      <div class="kicker">Day ${dayIdx + 1} done!</div>
+      <div class="big">${cfg.icon}</div>
+      <h2>You earned the ${cfg.name} sticker!</h2>
+      <p>${cfg.friend} has come to live in the meadow. ${last ? 'Everyone is getting ready for something special…' : 'Your friends will be waiting tomorrow.'}</p>
+      <div class="btns">
+        ${btn(last ? 'See the surprise 🎂' : `On to Day ${dayIdx + 2} ${DAYS[dayIdx + 1].icon}`, 'next')}
+        ${btn('Sticker book 📒', 'album', 'plain')}
+      </div>`);
+  }, 2600);
+}
+
+function startFinale(){
+  closeCard(); mode = 'finale'; cfg = DAYS[DAYS.length - 1]; things = [];
+  $('hud').classList.add('hide');
+  setFriends(storyFriends(DAYS.length));
+  cake = {x: W / 2, grow: 0};
+  friends.forEach((f, i) => { f.home = W / 2 + (i - (friends.length - 1) / 2) * Math.min(58, (W - 80) / friends.length); });
+  finaleT = 0; finaleTune();
+  showBanner('The Happiest Day Ever!', 'Everyone came to celebrate with you', 6);
+  save.done = true; store();
+}
+function showEnding(){
+  card(`
+    <div class="big">🎂</div>
+    <h1>You did it!</h1>
+    <p>You popped, planted, wished and danced your way through seven happy days. The whole meadow is smiling because of you.</p>
+    <div class="friends">${storyFriends(DAYS.length).join('')}</div>
+    <div class="stats"><div>😊 ${save.smiles} smiles</div><div>📒 ${save.stickers.filter(Boolean).length}/${DAYS.length} stickers</div><div>🌷 ${flowers.filter(f => f.stage).length} flowers</div></div>
+    <div class="btns">
+      ${btn('Free play 🎈', 'free', 'lav')}
+      ${btn('Sticker book 📒', 'album', 'plain')}
+      ${btn('Back to the start', 'title', 'plain')}
+    </div>`);
+}
+
+function startFree(){
+  mode = 'free'; cfg = FREE; dayIdx = 3; joy = 0; things = []; cake = null; combo = 0;
+  const list = storyFriends(save.done ? DAYS.length : save.next);
+  for(let i = 0; i < save.extras && i < EXTRA_FRIENDS.length; i++) list.push(EXTRA_FRIENDS[i]);
+  setFriends(list);
+  $('hud').classList.remove('hide'); addSmiles(0); updateGoal();
+  closeCard(); spawning = true; spawnT = 0.3;
+  showBanner('Free Play', 'Fill the happy meter to invite new friends', 2.5);
+}
+
+function showAlbum(){
+  const tiles = DAYS.map((d, i) => save.stickers[i]
+    ? `<div class="sticker"><b>${d.icon}</b>${d.name}</div>`
+    : `<div class="sticker locked"><b>🔒</b>Day ${i + 1}</div>`).join('');
+  const pals = storyFriends(DAYS.length).filter((_, i) => save.stickers[i]);
+  for(let i = 0; i < save.extras && i < EXTRA_FRIENDS.length; i++) pals.push(EXTRA_FRIENDS[i]);
+  card(`
+    <div class="big">📒</div>
+    <h2>Sticker book</h2>
+    <div class="album">${tiles}</div>
+    <p><b>Your friends</b></p>
+    <div class="friends">${pals.length ? pals.join('') : '<small>Finish a day to meet your first friend!</small>'}</div>
+    <p><small>😊 ${save.smiles} smiles so far</small></p>
+    <div class="btns">${btn('Back', mode === 'story' && dayDone ? 'next' : 'title', 'plain')}</div>`);
+}
+
+$('home').addEventListener('click', () => { tone(0, 0.2, 'triangle', 0.1); showTitle(); });
+$('sound').addEventListener('click', e => {
+  soundOn = !soundOn; e.currentTarget.textContent = soundOn ? '🔊' : '🔇';
+  try { localStorage.setItem('sunny-day-sound', soundOn ? 'on' : 'off'); } catch(err){}
+  if(soundOn) happyNote();
+});
 
 // ---------- drawing ----------
-function drawSky(){
-  const warm = Math.min(1, (day - 1) / 6);
-  const g = ctx.createLinearGradient(0, 0, 0, groundY());
-  g.addColorStop(0, `hsl(${200 - warm * 10},90%,${82 + warm * 4}%)`);
-  g.addColorStop(1, `hsl(${40 - warm * 10},100%,${92 - warm * 2}%)`);
-  ctx.fillStyle = g; ctx.fillRect(0, 0, W, groundY());
+const THEMES = {
+  day:    {top: [170, 222, 255], bot: [255, 241, 214], grass: [159, 224, 165], grass2: [138, 212, 146]},
+  rain:   {top: [140, 152, 172], bot: [196, 202, 212], grass: [128, 180, 140], grass2: [112, 166, 124]},
+  sunset: {top: [250, 160, 190], bot: [255, 214, 150], grass: [150, 205, 140], grass2: [128, 190, 126]},
+  night:  {top: [24, 30, 74],    bot: [78, 66, 138],   grass: [66, 118, 104], grass2: [56, 104, 94]}
+};
+function mix(a, b, k){ return a.map((v, i) => Math.round(lerp(v, b[i], k))); }
+const rgb = c => `rgb(${c[0]},${c[1]},${c[2]})`;
+function theme(){
+  const th = THEMES[cfg.theme];
+  if(cfg.theme !== 'rain') return th;
+  // the sky clears as the rainbows add up
+  const k = Math.min(1, goalCount / cfg.goal.n), d = THEMES.day;
+  return {top: mix(th.top, d.top, k), bot: mix(th.bot, d.bot, k), grass: mix(th.grass, d.grass, k), grass2: mix(th.grass2, d.grass2, k), clear: k};
+}
 
-  // the sun smiles, and grins wider as the day goes on
-  const sx = W - 80, sy = 110, sr = 42 + Math.sin(t * 2) * 2;
-  ctx.save(); ctx.translate(sx, sy); ctx.rotate(t * 0.3);
-  ctx.fillStyle = 'rgba(255,201,77,.45)';
-  for(let i = 0; i < 12; i++){ ctx.rotate(Math.PI / 6); ctx.fillRect(sr + 6, -4, 20, 8); }
-  ctx.restore();
-  ctx.fillStyle = '#ffd35c'; ctx.beginPath(); ctx.arc(sx, sy, sr, 0, 7); ctx.fill();
-  ctx.fillStyle = '#5b4a52';
-  ctx.beginPath(); ctx.arc(sx - 14, sy - 8, 4, 0, 7); ctx.arc(sx + 14, sy - 8, 4, 0, 7); ctx.fill();
-  ctx.fillStyle = 'rgba(255,140,160,.6)';
-  ctx.beginPath(); ctx.arc(sx - 24, sy + 6, 6, 0, 7); ctx.arc(sx + 24, sy + 6, 6, 0, 7); ctx.fill();
-  ctx.strokeStyle = '#5b4a52'; ctx.lineWidth = 3.5; ctx.lineCap = 'round';
-  ctx.beginPath(); ctx.arc(sx, sy + 2, 12 + Math.min(day, 6), 0.2, Math.PI - 0.2); ctx.stroke();
-
-  // fluffy white clouds
-  for(const c of clouds){
-    c.x += c.v / 60; if(c.x > W + 120) c.x = -120;
-    ctx.fillStyle = 'rgba(255,255,255,.9)';
-    ctx.beginPath();
-    ctx.arc(c.x, c.y, 26 * c.s, 0, 7); ctx.arc(c.x + 30 * c.s, c.y - 12 * c.s, 32 * c.s, 0, 7);
-    ctx.arc(c.x + 64 * c.s, c.y, 24 * c.s, 0, 7); ctx.fill();
-  }
-}
-function drawRainbows(dt){
-  const cols = ['#ff6b6b', '#ffb24d', '#ffe066', '#8ed0a0', '#74c0fc', '#b197fc'];
-  for(let i = rainbows.length - 1; i >= 0; i--){
-    const r = rainbows[i]; r.life -= dt / 4;
-    if(r.life <= 0){ rainbows.splice(i, 1); continue; }
-    ctx.globalAlpha = Math.min(1, r.life * 2) * .8; ctx.lineWidth = 8;
-    cols.forEach((c, k) => { ctx.strokeStyle = c; ctx.beginPath(); ctx.arc(r.x, r.y + 40, 90 - k * 8, Math.PI, 0); ctx.stroke(); });
-    ctx.globalAlpha = 1;
-  }
-}
-function drawGround(){
-  const gy = groundY();
-  ctx.fillStyle = '#9fe0a5';
-  ctx.beginPath(); ctx.moveTo(0, gy);
-  for(let x = 0; x <= W; x += 20) ctx.lineTo(x, gy + Math.sin(x / 70 + 1) * 8);
-  ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.fill();
-  ctx.fillStyle = '#8ad492'; ctx.fillRect(0, gy + 40, W, H);
-}
-function emoji(e, x, y, size, rot = 0){
-  ctx.save(); ctx.translate(x, y); ctx.rotate(rot);
+function emoji(e, x, y, size, rot = 0, sx = 1){
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(sx, 1);
   ctx.font = `${size}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(e, 0, 0); ctx.restore();
 }
 
+function drawSky(th, dt){
+  const gy = groundY();
+  const g = ctx.createLinearGradient(0, 0, 0, gy);
+  g.addColorStop(0, rgb(th.top)); g.addColorStop(1, rgb(th.bot));
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, gy + 20);
+
+  if(cfg.theme === 'night'){
+    for(const s of bgStars){
+      ctx.globalAlpha = 0.5 + Math.sin(t * 2 + s.ph) * 0.4; ctx.fillStyle = '#fff8d6';
+      ctx.beginPath(); ctx.arc(s.x * W, s.y * gy, s.r, 0, 7); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    drawFace(W - 80, 130, 38, '#fff3c4', 'rgba(255,243,196,.25)', true);
+  } else {
+    const clear = th.clear === undefined ? 1 : th.clear;
+    const sunY = cfg.theme === 'sunset' ? Math.min(gy - 70, H * .42) : 130;
+    ctx.globalAlpha = 0.25 + clear * 0.75;
+    drawFace(W - 80, sunY, 42 + Math.sin(t * 2) * 2, cfg.theme === 'sunset' ? '#ffb057' : '#ffd35c', 'rgba(255,201,77,.45)', false);
+    ctx.globalAlpha = 1;
+  }
+
+  const cloudCol = cfg.theme === 'night' ? 'rgba(160,160,210,.35)' : cfg.theme === 'rain' ? `rgba(235,238,245,${.6 + .3 * th.clear})` : 'rgba(255,255,255,.9)';
+  for(const c of clouds){
+    c.x += c.v * dt; if(c.x > W + 120) c.x = -120;
+    ctx.fillStyle = cloudCol;
+    ctx.beginPath();
+    ctx.arc(c.x, c.y, 26 * c.s, 0, 7); ctx.arc(c.x + 30 * c.s, c.y - 12 * c.s, 32 * c.s, 0, 7);
+    ctx.arc(c.x + 64 * c.s, c.y, 24 * c.s, 0, 7); ctx.fill();
+  }
+
+  // gentle drizzle that stops as the sky clears
+  if(cfg.theme === 'rain' && mode === 'story'){
+    const amount = (1 - th.clear) * 3;
+    for(let i = 0; i < amount; i++) drops.push({x: rand(0, W), y: -10, v: rand(380, 520)});
+  }
+}
+function drawFace(x, y, r, col, rays, moon){
+  ctx.save(); ctx.translate(x, y); ctx.rotate(t * 0.3); ctx.fillStyle = rays;
+  if(moon){ ctx.beginPath(); ctx.arc(0, 0, r + 14, 0, 7); ctx.fill(); }
+  else for(let i = 0; i < 12; i++){ ctx.rotate(Math.PI / 6); ctx.fillRect(r + 6, -4, 20, 8); }
+  ctx.restore();
+  ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill();
+  ctx.strokeStyle = '#5b4a52'; ctx.fillStyle = '#5b4a52'; ctx.lineWidth = 3.5; ctx.lineCap = 'round';
+  if(moon){ // sleepy closed eyes
+    ctx.beginPath(); ctx.arc(x - 13, y - 6, 5, 0.2, Math.PI - 0.2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(x + 13, y - 6, 5, 0.2, Math.PI - 0.2); ctx.stroke();
+  } else {
+    ctx.beginPath(); ctx.arc(x - 14, y - 8, 4, 0, 7); ctx.arc(x + 14, y - 8, 4, 0, 7); ctx.fill();
+  }
+  ctx.fillStyle = 'rgba(255,140,160,.6)';
+  ctx.beginPath(); ctx.arc(x - r * .57, y + 6, 6, 0, 7); ctx.arc(x + r * .57, y + 6, 6, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.arc(x, y + 2, 12 + Math.min(dayIdx, 6), 0.2, Math.PI - 0.2); ctx.stroke();
+}
+function drawGround(th){
+  const gy = groundY();
+  ctx.fillStyle = rgb(th.grass);
+  ctx.beginPath(); ctx.moveTo(0, gy);
+  for(let x = 0; x <= W + 20; x += 20) ctx.lineTo(x, gy + Math.sin(x / 70 + 1) * 8);
+  ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.fill();
+  ctx.fillStyle = rgb(th.grass2); ctx.fillRect(0, gy + 40, W, H);
+}
+function drawBalloon(th){
+  const x = th.x, y = th.y, r = th.size * 0.5, wob = Math.sin(t * 2 + th.ph) * 0.08;
+  ctx.save(); ctx.translate(x, y); ctx.rotate(wob);
+  ctx.strokeStyle = 'rgba(90,70,80,.5)'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(0, r * 1.2);
+  ctx.quadraticCurveTo(8, r * 1.8, 0, r * (th.kind === 'gift' ? 2.1 : 2.6)); ctx.stroke();
+  ctx.fillStyle = th.col;
+  ctx.beginPath(); ctx.ellipse(0, 0, r * .85, r * 1.05, 0, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(-5, r * 1.02); ctx.lineTo(5, r * 1.02); ctx.lineTo(0, r * 1.2); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.55)';
+  ctx.beginPath(); ctx.ellipse(-r * .35, -r * .4, r * .16, r * .28, -0.5, 0, 7); ctx.fill();
+  ctx.restore();
+  if(th.kind === 'gift') emoji('🎁', x, y + r * 2.5, 28, wob);
+}
+
 // ---------- loop ----------
-for(let i = 0; i < 4; i++) clouds.push({x: rand(0, 900), y: rand(60, 220), s: rand(.7, 1.2), v: rand(8, 18)});
 let last = performance.now();
 function frame(now){
   const dt = Math.min(0.05, (now - last) / 1000); last = now; t += dt;
+  const th = theme(), gy = groundY();
   ctx.clearRect(0, 0, W, H);
-  drawSky(); drawRainbows(dt); drawGround();
+  drawSky(th, dt);
 
+  for(let i = rainbows.length - 1; i >= 0; i--){
+    const r = rainbows[i]; r.life -= dt / 4;
+    if(r.life <= 0){ rainbows.splice(i, 1); continue; }
+    ctx.globalAlpha = Math.min(1, r.life * 2) * .8; ctx.lineWidth = 8;
+    RAINBOW.forEach((c, k) => { ctx.strokeStyle = c; ctx.beginPath(); ctx.arc(r.x, r.y + 40, 90 - k * 8, Math.PI, 0); ctx.stroke(); });
+  }
+  ctx.globalAlpha = 1;
+
+  ctx.strokeStyle = 'rgba(150,180,230,.7)'; ctx.lineWidth = 2;
+  for(let i = drops.length - 1; i >= 0; i--){
+    const d = drops[i]; d.y += d.v * dt;
+    if(d.y > gy){ drops.splice(i, 1); continue; }
+    ctx.beginPath(); ctx.moveTo(d.x, d.y); ctx.lineTo(d.x - 2, d.y + 12); ctx.stroke();
+  }
+
+  drawGround(th);
+
+  // flowers: seeds wiggle, blooms sway
   for(const f of flowers){
-    f.grow = Math.min(1, f.grow + dt * 2.5);
-    const s = 34 * (0.3 + 0.7 * f.grow) * (f.grow < 1 ? 1 + Math.sin(f.grow * 9) * .15 : 1);
-    emoji(f.e, f.x, f.y - s / 2, s, Math.sin(t * 2 + f.ph) * .12);
-  }
-  for(const f of friends){
-    f.x += f.dir * 20 * dt; if(f.x < 30 || f.x > W - 30) f.dir *= -1;
-    f.jump = Math.max(0, (f.jump || 0) - dt * 1.5);
-    const hop = Math.abs(Math.sin(t * 5 + f.ph)) * 12 + Math.sin((f.jump) * Math.PI) * 40;
-    emoji(f.e, f.x, groundY() + 10 - hop, 44, Math.sin(t * 5 + f.ph) * .15);
+    if(f.stage === 0){
+      emoji('🌱', f.x, f.y - 14 + Math.sin(t * 4 + f.ph) * 1.5, 28);
+    } else {
+      f.grow = Math.min(1, f.grow + dt * 2);
+      const s = 38 * (0.35 + 0.65 * f.grow) * (f.grow < 1 ? 1 + Math.sin(f.grow * 9) * .15 : 1);
+      emoji(f.e, f.x, f.y - s / 2, s, Math.sin(t * 2 + f.ph) * .12);
+      if(f.water > 0){ f.water -= dt; emoji('💧', f.x + 16, f.y - 60 + (1 - f.water) * 30, 20); }
+    }
   }
 
-  if(playing){
-    spawnT -= dt;
-    if(spawnT <= 0){ spawnThing(); spawnT = rand(0.5, 1.1) / (1 + day * 0.08); }
+  // bees visit the flowers once there are a few
+  const blooms = flowers.filter(f => f.stage === 1);
+  const wantBees = cfg.theme === 'night' ? 0 : Math.min(3, Math.floor(blooms.length / 3));
+  while(bees.length < wantBees) bees.push({x: -20, y: rand(150, gy - 80), tx: W / 2, ty: gy - 40, rest: 0});
+  if(bees.length > wantBees) bees.length = wantBees;
+  for(const b of bees){
+    const dx = b.tx - b.x, dy = b.ty - b.y, d = Math.hypot(dx, dy);
+    if(d < 6){
+      b.rest -= dt;
+      if(b.rest <= 0){ const f = pick(blooms); b.tx = f.x + 10; b.ty = f.y - 40; b.rest = rand(1, 2.5); }
+    } else { b.x += dx / d * 90 * dt; b.y += dy / d * 90 * dt + Math.sin(t * 9) * .6; }
+    emoji('🐝', b.x, b.y, 26, 0, dx < 0 ? 1 : -1);
   }
+
+  if(cake){
+    cake.grow = Math.min(1, cake.grow + dt * .8);
+    emoji('🎂', cake.x, gy - 10 - 40 * cake.grow, 90 * cake.grow);
+  }
+
+  for(const f of friends){
+    if(f.home !== undefined){
+      const dx = f.home - f.x;
+      f.x += Math.sign(dx) * Math.min(Math.abs(dx), 80 * dt);
+    } else {
+      f.x += f.dir * 20 * dt;
+      if(f.x < 30) f.dir = 1; if(f.x > W - 30) f.dir = -1;
+    }
+    f.jump = Math.max(0, f.jump - dt * 1.5);
+    const party = mode === 'finale' ? 2 : 1;
+    const hop = Math.abs(Math.sin(t * 5 * party + f.ph)) * 12 * party + Math.sin(f.jump * Math.PI) * 40;
+    emoji(f.e, f.x, gy + 6 - hop, 44, Math.sin(t * 5 + f.ph) * .15);
+    if(cfg.theme === 'night' && mode === 'story') emoji('💤', f.x + 22, gy - 34 - (t * 10 + f.ph * 5) % 12, 16);
+  }
+
+  if(spawning){
+    spawnT -= dt;
+    if(spawnT <= 0){ spawnThing(); spawnT = rand(0.55, 1.1) / (cfg.rate || 1) / (mode === 'free' ? 1 + Math.min(joy / 500, 0.8) : 1); }
+  }
+
   for(let i = things.length - 1; i >= 0; i--){
-    const th = things[i];
-    th.y += th.vy * dt; th.x += Math.sin(t * th.sway + th.ph) * 30 * dt;
-    if(th.y < -60){ things.splice(i, 1); continue; }   // floated away, no harm done
-    const pop = Math.min(1, (t - th.born) * 4);
-    emoji(th.e, th.x, th.y, th.size * pop, Math.sin(t * 2 + th.ph) * .2);
+    const o = things[i];
+    if(o.kind === 'butterfly'){
+      o.wander -= dt;
+      if(o.wander <= 0){ o.vx = rand(-70, 70); o.wander = rand(0.4, 1.1); }
+      if(o.x < 30) o.vx = Math.abs(o.vx); if(o.x > W - 30) o.vx = -Math.abs(o.vx);
+      o.x += o.vx * dt; o.y += o.vy * dt + Math.sin(t * 3 + o.ph) * 40 * dt;
+    } else if(o.kind === 'cloud'){
+      o.x += o.vx * dt; o.y += Math.sin(t + o.ph) * 6 * dt;
+      o.dropT -= dt;
+      if(o.dropT <= 0){ drops.push({x: o.x + rand(-20, 20), y: o.y + 20, v: rand(300, 420)}); o.dropT = 0.08; }
+    } else if(o.kind === 'shoot'){
+      o.x += o.vx * dt; o.y += o.vy * dt;
+      const back = Math.hypot(o.vx, o.vy);
+      const grad = ctx.createLinearGradient(o.x, o.y, o.x - o.vx / back * 90, o.y - o.vy / back * 90);
+      grad.addColorStop(0, 'rgba(255,240,180,.9)'); grad.addColorStop(1, 'rgba(255,240,180,0)');
+      ctx.strokeStyle = grad; ctx.lineWidth = 6; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(o.x, o.y); ctx.lineTo(o.x - o.vx / back * 90, o.y - o.vy / back * 90); ctx.stroke();
+    } else {
+      o.y += o.vy * dt; o.x += Math.sin(t * o.sway + o.ph) * 30 * dt;
+    }
+    // anything that floats away is simply gone, no harm done
+    if(o.y < -90 || o.x < -90 || o.x > W + 90 || o.y > H + 40){ things.splice(i, 1); continue; }
+    const grow = Math.min(1, (t - o.born) * 4);
+    if(o.kind === 'balloon' || o.kind === 'gift') drawBalloon(o);
+    else if(o.kind === 'cloud') emoji('🌧️', o.x, o.y, o.size);
+    else if(o.kind === 'shoot') emoji('⭐', o.x, o.y, o.size, t * 6);
+    else if(o.kind === 'butterfly') emoji('🦋', o.x, o.y, o.size * grow, 0, 0.35 + Math.abs(Math.sin(t * 12 + o.ph)) * 0.65);
+    else {
+      if(o.kind === 'lucky'){
+        ctx.fillStyle = 'rgba(255,230,120,.35)'; ctx.beginPath(); ctx.arc(o.x, o.y, 40 + Math.sin(t * 6) * 6, 0, 7); ctx.fill();
+      }
+      emoji(o.e, o.x, o.y, o.size * grow, Math.sin(t * 2 + o.ph) * .2);
+    }
   }
 
   for(let i = sparks.length - 1; i >= 0; i--){
     const s = sparks[i];
     s.life -= dt * 1.3; if(s.life <= 0){ sparks.splice(i, 1); continue; }
-    s.vy += 300 * dt; s.x += s.vx * dt; s.y += s.vy * dt;
-    ctx.globalAlpha = s.life; ctx.fillStyle = s.c;
-    ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 7); ctx.fill();
+    s.x += s.vx * dt; s.y += s.vy * dt;
+    ctx.globalAlpha = Math.min(1, s.life);
+    if(s.emoji){ s.vy += (s.g || 120) * dt; emoji(s.emoji, s.x, s.y, 34); }
+    else { s.vy += 300 * dt; ctx.fillStyle = s.c; ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 7); ctx.fill(); }
   }
   ctx.globalAlpha = 1;
 
@@ -301,32 +721,39 @@ function frame(now){
     w.life -= dt * 0.7; if(w.life <= 0){ words.splice(i, 1); continue; }
     w.y -= 30 * dt;
     ctx.globalAlpha = Math.min(1, w.life * 2);
-    ctx.font = '800 20px Nunito, ui-rounded, system-ui, sans-serif';
+    ctx.font = `800 ${w.size}px Nunito, ui-rounded, system-ui, sans-serif`;
     ctx.lineWidth = 5; ctx.strokeStyle = '#fffaf2'; ctx.strokeText(w.text, w.x, w.y);
-    ctx.fillStyle = '#e0628a'; ctx.fillText(w.text, w.x, w.y);
+    ctx.fillStyle = w.col; ctx.fillText(w.text, w.x, w.y);
   }
   ctx.globalAlpha = 1;
 
-  if(celebrate > 0){
-    celebrate -= dt;
-    ctx.globalAlpha = Math.min(1, celebrate) * .9;
-    ctx.font = '900 42px Nunito, ui-rounded, system-ui, sans-serif';
-    ctx.lineWidth = 8; ctx.strokeStyle = '#fffaf2';
-    const y = H * .22 + Math.sin(t * 6) * 5;
-    ctx.strokeText('Happy Day! 🎉', W / 2, y); ctx.fillStyle = '#ffa92e'; ctx.fillText('Happy Day! 🎉', W / 2, y);
-    ctx.globalAlpha = 1;
+  if(banner){
+    banner.life -= dt;
+    if(banner.life <= 0) banner = null;
+    else {
+      ctx.globalAlpha = Math.min(1, banner.life);
+      const y = H * .24 + Math.sin(t * 6) * 4, size = Math.min(42, W / 11);
+      ctx.font = `900 ${size}px Nunito, ui-rounded, system-ui, sans-serif`;
+      ctx.lineWidth = 8; ctx.strokeStyle = '#fffaf2'; ctx.strokeText(banner.text, W / 2, y);
+      ctx.fillStyle = '#ffa92e'; ctx.fillText(banner.text, W / 2, y);
+      if(banner.sub){
+        ctx.font = '800 19px Nunito, ui-rounded, system-ui, sans-serif';
+        ctx.lineWidth = 5; ctx.strokeText(banner.sub, W / 2, y + size * .9);
+        ctx.fillStyle = '#e0628a'; ctx.fillText(banner.sub, W / 2, y + size * .9);
+      }
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  if(mode === 'finale'){
+    finaleT += dt;
+    if(Math.random() < dt * 5) firework();
+    if(finaleT > 7){ mode = 'ended'; showEnding(); }
   }
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
-
-document.getElementById('go').addEventListener('click', () => {
-  document.getElementById('intro').classList.add('hide');
-  playing = true; ac(); fanfare();
-});
-document.getElementById('sound').addEventListener('click', e => {
-  soundOn = !soundOn; e.currentTarget.textContent = soundOn ? '🔊' : '🔇';
-});
+showTitle();
 </script>
 </body>
 </html>
