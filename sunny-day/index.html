@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sunny Day</title>
+<style>
+  :root{
+    --ink:#5b4a52; --muted:#9a8590; --cream:#fffaf2;
+    --sun:#ffc94d; --sun2:#ffa92e; --pink:#ff9fbf; --sky1:#bfe6ff; --sky2:#fff1d6;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;overflow:hidden;}
+  body{
+    font-family:'Nunito',ui-rounded,'Segoe UI',system-ui,sans-serif;
+    color:var(--ink);background:var(--sky1);
+    -webkit-user-select:none;user-select:none;touch-action:manipulation;
+  }
+  canvas{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:pointer;}
+
+  .hud{position:fixed;top:12px;left:16px;right:16px;display:flex;align-items:center;gap:10px;
+    pointer-events:none;z-index:2;}
+  .pill{pointer-events:auto;background:rgba(255,250,242,.85);border-radius:999px;padding:8px 14px;
+    font-weight:800;font-size:15px;box-shadow:0 8px 18px -10px rgba(160,110,90,.5);white-space:nowrap;}
+  .meter{flex:1;height:18px;min-width:80px;background:rgba(255,250,242,.85);border-radius:999px;overflow:hidden;
+    box-shadow:0 8px 18px -10px rgba(160,110,90,.5);}
+  .meter i{display:block;height:100%;width:0;border-radius:999px;
+    background:linear-gradient(90deg,var(--pink),var(--sun));transition:width .3s;}
+  .iconbtn{pointer-events:auto;border:none;cursor:pointer;font-size:18px;width:40px;height:40px;border-radius:50%;
+    background:rgba(255,250,242,.85);box-shadow:0 8px 18px -10px rgba(160,110,90,.5);}
+
+  .intro{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;z-index:3;
+    background:rgba(191,230,255,.55);backdrop-filter:blur(3px);}
+  .intro.hide{display:none;}
+  .card{max-width:420px;width:100%;background:var(--cream);border-radius:28px;padding:26px 22px;text-align:center;
+    box-shadow:0 24px 50px -24px rgba(160,110,90,.6);}
+  .card h1{margin:0;font-size:32px;color:var(--sun2);}
+  .card .big{font-size:56px;line-height:1;margin-bottom:6px;}
+  .card p{margin:10px 0;line-height:1.5;font-size:15px;}
+  .card ul{text-align:left;margin:10px auto;padding-left:20px;line-height:1.6;font-size:14.5px;max-width:320px;}
+  .card small{color:var(--muted);}
+  .go{border:none;cursor:pointer;font-family:inherit;font-weight:800;color:#fff;font-size:19px;
+    border-radius:20px;padding:14px 34px;margin-top:10px;
+    background:linear-gradient(180deg,var(--sun),var(--sun2));box-shadow:0 10px 20px -8px var(--sun2);}
+  .go:hover{filter:brightness(1.05);transform:translateY(-1px);}
+  button:focus-visible{outline:3px solid var(--pink);outline-offset:2px;}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div class="hud">
+  <span class="pill" id="level">☀️ Day 1</span>
+  <div class="meter" title="Happiness"><i id="joy"></i></div>
+  <span class="pill" id="smiles">😊 0</span>
+  <button class="iconbtn" id="sound" aria-label="Sound on or off">🔊</button>
+</div>
+
+<div class="intro" id="intro">
+  <div class="card">
+    <div class="big">🌞</div>
+    <h1>Sunny Day</h1>
+    <p>A little game with no losing, only nice things.</p>
+    <ul>
+      <li>Tap the happy things floating by: 💖 ⭐ 🎈 🦋</li>
+      <li>Tap a grey rain cloud 🌧️ to turn it into a rainbow.</li>
+      <li>Tap the grass to plant a flower 🌷</li>
+      <li>Fill the happy meter and a new friend comes to dance.</li>
+    </ul>
+    <button class="go" id="go">Let's play!</button>
+    <p><small>Sound on makes it nicer. Tap quickly to play a tune.</small></p>
+  </div>
+</div>
+
+<script>
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+let W = 0, H = 0, DPR = 1;
+function resize(){
+  DPR = Math.min(window.devicePixelRatio || 1, 2);
+  W = window.innerWidth; H = window.innerHeight;
+  cv.width = W * DPR; cv.height = H * DPR;
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+}
+window.addEventListener('resize', resize); resize();
+const groundY = () => H * 0.78;
+
+// ---------- sound: every tap is a note from a happy pentatonic scale ----------
+let audio = null, soundOn = true, noteStep = 0, lastNoteAt = 0;
+const SCALE = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21, 24];
+function ac(){ if(!audio) audio = new (window.AudioContext || window.webkitAudioContext)(); if(audio.state==='suspended') audio.resume(); return audio; }
+function tone(semi, dur = 0.35, type = 'sine', vol = 0.18, delay = 0){
+  if(!soundOn) return;
+  const a = ac(), t = a.currentTime + delay;
+  const o = a.createOscillator(), g = a.createGain();
+  o.type = type; o.frequency.value = 523.25 * Math.pow(2, semi / 12);
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(vol, t + 0.015);
+  g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+  o.connect(g).connect(a.destination); o.start(t); o.stop(t + dur + 0.05);
+}
+function happyNote(){
+  // quick taps climb the scale, so tapping fast makes a little melody
+  const now = performance.now();
+  noteStep = (now - lastNoteAt < 900) ? (noteStep + 1) % SCALE.length : 0;
+  lastNoteAt = now;
+  tone(SCALE[noteStep], 0.45, 'triangle', 0.2);
+  tone(SCALE[noteStep] + 12, 0.3, 'sine', 0.05);
+}
+function fanfare(){ [0, 4, 7, 12, 16, 19, 24].forEach((s, i) => tone(s, 0.5, 'triangle', 0.16, i * 0.09)); }
+function plantSound(){ tone(-5, 0.25, 'sine', 0.15); tone(2, 0.35, 'sine', 0.12, 0.08); }
+
+// ---------- state ----------
+const KIND = [
+  'You make the world brighter!', 'Big smile!', 'You are awesome!', 'So much sunshine!',
+  'You are loved 💛', 'What a great tap!', 'Keep shining!', 'You are doing great!',
+  'Hooray for you!', 'Happy happy!', 'You are a star ⭐', 'Lovely!', 'Wheee!',
+  'That made a butterfly smile', 'Today is a good day', 'High five! ✋', 'You are kind',
+  'Sparkly!', 'Yay!', 'The flowers are cheering!'
+];
+const THINGS = ['💖', '⭐', '🎈', '🦋', '🌟', '🍭', '💛', '🫧', '🌼', '🍓'];
+const FRIENDS = ['🐶', '🐱', '🐥', '🐸', '🐼', '🦊', '🐨', '🐧', '🦄', '🐢', '🐹', '🐙'];
+
+let things = [], sparks = [], words = [], flowers = [], friends = [], clouds = [], rainbows = [];
+let joy = 0, smiles = 0, day = 1, spawnT = 0, playing = false, celebrate = 0, t = 0;
+
+function rand(a, b){ return a + Math.random() * (b - a); }
+function pick(a){ return a[Math.floor(Math.random() * a.length)]; }
+
+function spawnThing(){
+  const cloud = Math.random() < 0.12;
+  things.push({
+    e: cloud ? '🌧️' : pick(THINGS), cloud,
+    x: rand(40, W - 40), y: groundY() + 30,
+    vy: -rand(38, 62) - day * 3, sway: rand(0.6, 1.4), ph: rand(0, 6.28),
+    size: cloud ? 54 : rand(40, 54), born: t
+  });
+}
+
+function burst(x, y, n = 16, colors){
+  const cols = colors || ['#ff9fbf', '#ffc94d', '#9fe0b5', '#b9a6ff', '#8fd3ff'];
+  for(let i = 0; i < n; i++){
+    const a = rand(0, 6.28), s = rand(80, 260);
+    sparks.push({x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 60, life: 1, c: pick(cols), r: rand(3, 6)});
+  }
+}
+function say(x, y, text){ words.push({x: Math.max(90, Math.min(W - 90, x)), y, text, life: 1}); }
+
+function addJoy(n){
+  joy += n;
+  if(joy >= 100){ joy -= 100; levelUp(); }
+  document.getElementById('joy').style.width = joy + '%';
+}
+function levelUp(){
+  day++;
+  celebrate = 3;
+  fanfare();
+  friends.push({e: FRIENDS[(day - 2) % FRIENDS.length], x: rand(40, W - 40), ph: rand(0, 6.28), dir: Math.random() < .5 ? -1 : 1});
+  for(let i = 0; i < 8; i++) setTimeout(() => burst(rand(60, W - 60), rand(80, H * .5), 26), i * 180);
+  say(W / 2, H * .35, `Day ${day}! ${friends[friends.length - 1].e} came to dance!`);
+  document.getElementById('level').textContent = `☀️ Day ${day}`;
+}
+
+function tap(x, y){
+  if(!playing) return;
+  // topmost thing under the finger, generous hit box for small hands
+  for(let i = things.length - 1; i >= 0; i--){
+    const th = things[i];
+    if(Math.hypot(th.x - x, th.y - y) < th.size * 0.8){
+      things.splice(i, 1);
+      happyNote();
+      smiles++;
+      document.getElementById('smiles').textContent = `😊 ${smiles}`;
+      if(th.cloud){
+        rainbows.push({x: th.x, y: th.y, life: 1});
+        burst(th.x, th.y, 24, ['#ff6b6b', '#ffb24d', '#ffe066', '#8ed0a0', '#74c0fc', '#b197fc']);
+        say(th.x, th.y - 30, 'Rainbow! 🌈');
+        addJoy(15);
+      } else {
+        burst(th.x, th.y);
+        say(th.x, th.y - 30, pick(KIND));
+        addJoy(7);
+      }
+      return;
+    }
+  }
+  // friends giggle when tapped
+  for(const f of friends){
+    if(Math.hypot(f.x - x, groundY() + 10 - y) < 36){
+      f.jump = 1; happyNote(); say(f.x, groundY() - 50, pick(['Hehe!', 'Hello!', 'Wiggle!', 'Hug!'])); return;
+    }
+  }
+  if(y > groundY() - 10){
+    flowers.push({x, y: Math.max(y, groundY() + 8), grow: 0, e: pick(['🌷', '🌸', '🌻', '🌼', '🌺', '🍄']), ph: rand(0, 6.28)});
+    if(flowers.length > 60) flowers.shift();
+    plantSound();
+    burst(x, y, 6, ['#8ed0a0', '#c3f0c8']);
+    addJoy(2);
+  }
+}
+cv.addEventListener('pointerdown', e => tap(e.clientX, e.clientY));
+
+// ---------- drawing ----------
+function drawSky(){
+  const warm = Math.min(1, (day - 1) / 6);
+  const g = ctx.createLinearGradient(0, 0, 0, groundY());
+  g.addColorStop(0, `hsl(${200 - warm * 10},90%,${82 + warm * 4}%)`);
+  g.addColorStop(1, `hsl(${40 - warm * 10},100%,${92 - warm * 2}%)`);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, groundY());
+
+  // the sun smiles, and grins wider as the day goes on
+  const sx = W - 80, sy = 110, sr = 42 + Math.sin(t * 2) * 2;
+  ctx.save(); ctx.translate(sx, sy); ctx.rotate(t * 0.3);
+  ctx.fillStyle = 'rgba(255,201,77,.45)';
+  for(let i = 0; i < 12; i++){ ctx.rotate(Math.PI / 6); ctx.fillRect(sr + 6, -4, 20, 8); }
+  ctx.restore();
+  ctx.fillStyle = '#ffd35c'; ctx.beginPath(); ctx.arc(sx, sy, sr, 0, 7); ctx.fill();
+  ctx.fillStyle = '#5b4a52';
+  ctx.beginPath(); ctx.arc(sx - 14, sy - 8, 4, 0, 7); ctx.arc(sx + 14, sy - 8, 4, 0, 7); ctx.fill();
+  ctx.fillStyle = 'rgba(255,140,160,.6)';
+  ctx.beginPath(); ctx.arc(sx - 24, sy + 6, 6, 0, 7); ctx.arc(sx + 24, sy + 6, 6, 0, 7); ctx.fill();
+  ctx.strokeStyle = '#5b4a52'; ctx.lineWidth = 3.5; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.arc(sx, sy + 2, 12 + Math.min(day, 6), 0.2, Math.PI - 0.2); ctx.stroke();
+
+  // fluffy white clouds
+  for(const c of clouds){
+    c.x += c.v / 60; if(c.x > W + 120) c.x = -120;
+    ctx.fillStyle = 'rgba(255,255,255,.9)';
+    ctx.beginPath();
+    ctx.arc(c.x, c.y, 26 * c.s, 0, 7); ctx.arc(c.x + 30 * c.s, c.y - 12 * c.s, 32 * c.s, 0, 7);
+    ctx.arc(c.x + 64 * c.s, c.y, 24 * c.s, 0, 7); ctx.fill();
+  }
+}
+function drawRainbows(dt){
+  const cols = ['#ff6b6b', '#ffb24d', '#ffe066', '#8ed0a0', '#74c0fc', '#b197fc'];
+  for(let i = rainbows.length - 1; i >= 0; i--){
+    const r = rainbows[i]; r.life -= dt / 4;
+    if(r.life <= 0){ rainbows.splice(i, 1); continue; }
+    ctx.globalAlpha = Math.min(1, r.life * 2) * .8; ctx.lineWidth = 8;
+    cols.forEach((c, k) => { ctx.strokeStyle = c; ctx.beginPath(); ctx.arc(r.x, r.y + 40, 90 - k * 8, Math.PI, 0); ctx.stroke(); });
+    ctx.globalAlpha = 1;
+  }
+}
+function drawGround(){
+  const gy = groundY();
+  ctx.fillStyle = '#9fe0a5';
+  ctx.beginPath(); ctx.moveTo(0, gy);
+  for(let x = 0; x <= W; x += 20) ctx.lineTo(x, gy + Math.sin(x / 70 + 1) * 8);
+  ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.fill();
+  ctx.fillStyle = '#8ad492'; ctx.fillRect(0, gy + 40, W, H);
+}
+function emoji(e, x, y, size, rot = 0){
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot);
+  ctx.font = `${size}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(e, 0, 0); ctx.restore();
+}
+
+// ---------- loop ----------
+for(let i = 0; i < 4; i++) clouds.push({x: rand(0, 900), y: rand(60, 220), s: rand(.7, 1.2), v: rand(8, 18)});
+let last = performance.now();
+function frame(now){
+  const dt = Math.min(0.05, (now - last) / 1000); last = now; t += dt;
+  ctx.clearRect(0, 0, W, H);
+  drawSky(); drawRainbows(dt); drawGround();
+
+  for(const f of flowers){
+    f.grow = Math.min(1, f.grow + dt * 2.5);
+    const s = 34 * (0.3 + 0.7 * f.grow) * (f.grow < 1 ? 1 + Math.sin(f.grow * 9) * .15 : 1);
+    emoji(f.e, f.x, f.y - s / 2, s, Math.sin(t * 2 + f.ph) * .12);
+  }
+  for(const f of friends){
+    f.x += f.dir * 20 * dt; if(f.x < 30 || f.x > W - 30) f.dir *= -1;
+    f.jump = Math.max(0, (f.jump || 0) - dt * 1.5);
+    const hop = Math.abs(Math.sin(t * 5 + f.ph)) * 12 + Math.sin((f.jump) * Math.PI) * 40;
+    emoji(f.e, f.x, groundY() + 10 - hop, 44, Math.sin(t * 5 + f.ph) * .15);
+  }
+
+  if(playing){
+    spawnT -= dt;
+    if(spawnT <= 0){ spawnThing(); spawnT = rand(0.5, 1.1) / (1 + day * 0.08); }
+  }
+  for(let i = things.length - 1; i >= 0; i--){
+    const th = things[i];
+    th.y += th.vy * dt; th.x += Math.sin(t * th.sway + th.ph) * 30 * dt;
+    if(th.y < -60){ things.splice(i, 1); continue; }   // floated away, no harm done
+    const pop = Math.min(1, (t - th.born) * 4);
+    emoji(th.e, th.x, th.y, th.size * pop, Math.sin(t * 2 + th.ph) * .2);
+  }
+
+  for(let i = sparks.length - 1; i >= 0; i--){
+    const s = sparks[i];
+    s.life -= dt * 1.3; if(s.life <= 0){ sparks.splice(i, 1); continue; }
+    s.vy += 300 * dt; s.x += s.vx * dt; s.y += s.vy * dt;
+    ctx.globalAlpha = s.life; ctx.fillStyle = s.c;
+    ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 7); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  for(let i = words.length - 1; i >= 0; i--){
+    const w = words[i];
+    w.life -= dt * 0.7; if(w.life <= 0){ words.splice(i, 1); continue; }
+    w.y -= 30 * dt;
+    ctx.globalAlpha = Math.min(1, w.life * 2);
+    ctx.font = '800 20px Nunito, ui-rounded, system-ui, sans-serif';
+    ctx.lineWidth = 5; ctx.strokeStyle = '#fffaf2'; ctx.strokeText(w.text, w.x, w.y);
+    ctx.fillStyle = '#e0628a'; ctx.fillText(w.text, w.x, w.y);
+  }
+  ctx.globalAlpha = 1;
+
+  if(celebrate > 0){
+    celebrate -= dt;
+    ctx.globalAlpha = Math.min(1, celebrate) * .9;
+    ctx.font = '900 42px Nunito, ui-rounded, system-ui, sans-serif';
+    ctx.lineWidth = 8; ctx.strokeStyle = '#fffaf2';
+    const y = H * .22 + Math.sin(t * 6) * 5;
+    ctx.strokeText('Happy Day! 🎉', W / 2, y); ctx.fillStyle = '#ffa92e'; ctx.fillText('Happy Day! 🎉', W / 2, y);
+    ctx.globalAlpha = 1;
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+document.getElementById('go').addEventListener('click', () => {
+  document.getElementById('intro').classList.add('hide');
+  playing = true; ac(); fanfare();
+});
+document.getElementById('sound').addEventListener('click', e => {
+  soundOn = !soundOn; e.currentTarget.textContent = soundOn ? '🔊' : '🔇';
+});
+</script>
+</body>
+</html>
